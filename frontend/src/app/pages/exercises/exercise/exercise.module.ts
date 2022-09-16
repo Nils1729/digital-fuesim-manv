@@ -16,6 +16,7 @@ import { ExerciseSettingsModalComponent } from './shared/exercise-settings/exerc
 import { ExerciseStateBadgeComponent } from './shared/exercise-state-badge/exercise-state-badge.component';
 import { ExerciseStatisticsModule } from './shared/exercise-statistics/exercise-statistics.module';
 import { HospitalEditorModule } from './shared/hospital-editor/hospital-editor.module';
+import { PartialExportSelectionComponent } from './shared/partial-export-selection/partial-export-selection-modal/partial-export-selection.component';
 import { TimeTravelComponent } from './shared/time-travel/time-travel.component';
 import { TrainerMapEditorComponent } from './shared/trainer-map-editor/trainer-map-editor.component';
 import { TrainerToolbarComponent } from './shared/trainer-toolbar/trainer-toolbar.component';
@@ -32,6 +33,7 @@ import { TransferOverviewModule } from './shared/transfer-overview/transfer-over
         CreateImageTemplateModalComponent,
         EditImageTemplateModalComponent,
         ImageTemplateFormComponent,
+        PartialExportSelectionComponent,
     ],
     imports: [
         CommonModule,

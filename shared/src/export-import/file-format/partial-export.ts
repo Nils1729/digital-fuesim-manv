@@ -6,11 +6,8 @@ import {
     IsString,
     ValidateNested,
 } from 'class-validator';
-import {
-    MapImageTemplate,
-    PatientTemplate,
-    VehicleTemplate,
-} from '../../models';
+import { MapImageTemplate, VehicleTemplate } from '../../models';
+import { PatientCategory } from '../../models/patient-category';
 import { BaseExportImportFile } from './base-file';
 
 export class PartialExport extends BaseExportImportFile {
@@ -21,8 +18,8 @@ export class PartialExport extends BaseExportImportFile {
     @IsOptional()
     @IsArray()
     @ValidateNested({ each: true })
-    @Type(() => PatientTemplate)
-    public readonly patientTemplates?: PatientTemplate[];
+    @Type(() => PatientCategory)
+    public readonly patientCategories?: PatientCategory[];
 
     @IsOptional()
     @IsArray()
@@ -35,4 +32,15 @@ export class PartialExport extends BaseExportImportFile {
     @ValidateNested({ each: true })
     @Type(() => MapImageTemplate)
     public readonly mapImageTemplates?: MapImageTemplate[];
+
+    public constructor(
+        patientCategories?: PatientCategory[],
+        vehicleTemplates?: VehicleTemplate[],
+        mapImageTemplates?: MapImageTemplate[]
+    ) {
+        super();
+        this.patientCategories = patientCategories;
+        this.vehicleTemplates = vehicleTemplates;
+        this.mapImageTemplates = mapImageTemplates;
+    }
 }
