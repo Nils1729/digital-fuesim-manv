@@ -1,0 +1,38 @@
+<div class="modal-header">
+    <h4 class="modal-title">Vorlagenimport</h4>
+    <button type="button" class="btn-close" (click)="close()"></button>
+</div>
+<div class="modal-body">
+    <div>
+        Wollen Sie die vorhandenen Vorlagen mit den importierten Vorlagen
+        ersetzen oder ergänzen?
+    </div>
+</div>
+<div class="modal-footer">
+    <label *ngIf="importingPartialExport" class="btn-outline-primary">
+        <span class="spinner-border spinner-border-sm"></span>
+        Import läuft
+    </label>
+    <button
+        type="button"
+        class="btn btn-danger"
+        (click)="partialImportOverwrite('overwrite')"
+    >
+        Überschreiben
+    </button>
+    <button
+        type="button"
+        class="btn btn-warning"
+        (click)="partialImportOverwrite('append')"
+    >
+        Ergänzen
+    </button>
+    <button
+        type="button"
+        class="btn btn-outline-secondary"
+        autofocus
+        (click)="close()"
+    >
+        Abbrechen
+    </button>
+</div>

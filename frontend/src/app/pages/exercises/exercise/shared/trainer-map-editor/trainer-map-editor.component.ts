@@ -4,19 +4,22 @@ import { Store } from '@ngrx/store';
 import type { UUID, VehicleTemplate } from 'digital-fuesim-manv-shared';
 import {
     colorCodeMap,
-    TransferPoint,
     Viewport,
+    TransferPoint,
 } from 'digital-fuesim-manv-shared';
+import { ExerciseService } from 'src/app/core/exercise.service';
+import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
 import {
-    selectMapImagesTemplates,
-    selectPatientCategories,
     selectVehicleTemplates,
+    selectPatientCategories,
+    selectMapImagesTemplates,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { DragElementService } from '../core/drag-element.service';
 import { TransferLinesService } from '../core/transfer-lines.service';
 import { openCreateImageTemplateModal } from '../editor-panel/create-image-template-modal/open-create-image-template-modal';
 import { openEditImageTemplateModal } from '../editor-panel/edit-image-template-modal/open-edit-image-template-modal';
+import { openPartialImportOverwriteModal } from '../partial-import-overwrite/open-partial-import-overwrite-modal';
 
 @Component({
     selector: 'app-trainer-map-editor',
@@ -51,7 +54,9 @@ export class TrainerMapEditorComponent {
         private readonly store: Store<AppState>,
         public readonly dragElementService: DragElementService,
         public readonly transferLinesService: TransferLinesService,
-        private readonly ngbModalService: NgbModal
+        private readonly ngbModalService: NgbModal,
+        private readonly messageService: MessageService,
+        private readonly exerciseService: ExerciseService
     ) {}
 
     public readonly viewportTemplate = {
@@ -81,5 +86,18 @@ export class TrainerMapEditorComponent {
             type: 'vehicle',
             template: vehicleTemplate,
         });
+    }
+
+    public importingTemplates = false;
+    public async importPartialExport(fileList: FileList) {
+        try {
+            this.importingTemplates = true;
+            openPartialImportOverwriteModal(
+                this.ngbModalService,
+                await fileList.item(0)?.text()
+            );
+        } finally {
+            this.importingTemplates = false;
+        }
     }
 }
