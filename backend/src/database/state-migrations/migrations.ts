@@ -1,15 +1,19 @@
+import type { EntityManager } from 'typeorm';
+import type { PatientCategory } from 'digital-fuesim-manv-shared/dist/models/patient-category';
 import type {
     UUID,
-    StateExport,
     Mutable,
+    MapImageTemplate,
+    VehicleTemplate,
     ExerciseAction,
 } from 'digital-fuesim-manv-shared';
 import {
+    StateExport,
     cloneDeepMutable,
+    PartialExport,
     ExerciseState,
     applyAllActions,
 } from 'digital-fuesim-manv-shared';
-import type { EntityManager } from 'typeorm';
 import { RestoreError } from '../../utils/restore-error';
 import { ActionWrapperEntity } from '../entities/action-wrapper.entity';
 import { ExerciseWrapperEntity } from '../entities/exercise-wrapper.entity';
@@ -184,6 +188,45 @@ export function migrateStateExport(
             );
     }
     return stateExport;
+}
+
+export function migratePartialExport(
+    partialExportToMigrate: PartialExport
+): Mutable<PartialExport> {
+    // Encapsulate the partial export in a state export and migrate it
+    const mutablePartialExport = cloneDeepMutable(partialExportToMigrate);
+    const stateExport = cloneDeepMutable(
+        new StateExport({
+            ...cloneDeepMutable(ExerciseState.create('123456')),
+            mapImageTemplates: partialExportToMigrate.mapImageTemplates ?? [],
+            patientCategories: mutablePartialExport.patientCategories ?? [],
+            vehicleTemplates: mutablePartialExport.vehicleTemplates ?? [],
+        })
+    );
+    stateExport.fileVersion = mutablePartialExport.fileVersion;
+    stateExport.dataVersion = mutablePartialExport.dataVersion;
+    const migratedStateExport = migrateStateExport(stateExport as StateExport);
+    const mapImageTemplates =
+        mutablePartialExport.mapImageTemplates !== undefined
+            ? (migratedStateExport.currentState
+                  .mapImageTemplates as MapImageTemplate[])
+            : undefined;
+    const patientCategories =
+        mutablePartialExport.patientCategories !== undefined
+            ? (migratedStateExport.currentState
+                  .patientCategories as PatientCategory[])
+            : undefined;
+    const vehicleTemplates =
+        mutablePartialExport.vehicleTemplates !== undefined
+            ? (migratedStateExport.currentState
+                  .vehicleTemplates as VehicleTemplate[])
+            : undefined;
+    const migratedPartialExport = new PartialExport(
+        patientCategories,
+        vehicleTemplates,
+        mapImageTemplates
+    );
+    return cloneDeepMutable(migratedPartialExport);
 }
 
 /**

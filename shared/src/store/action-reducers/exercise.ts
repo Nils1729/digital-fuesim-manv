@@ -147,8 +147,8 @@ export namespace ExerciseActionReducers {
     export const templateImport: ActionReducer<ImportTemplatesAction> = {
         action: ImportTemplatesAction,
         reducer: (draftState, { mode, partialExport }) => {
+            // TODO: Use `migratePartialExport` function that is currently defined in the backend.
             const mutablePartialExport = cloneDeepMutable(partialExport);
-            // TODO: Migrate export to latest state version
             const validationErrors =
                 validateExerciseExport(mutablePartialExport);
             if (validationErrors.length > 0) {
