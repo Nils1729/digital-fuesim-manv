@@ -182,6 +182,8 @@ export namespace ExerciseActionReducers {
                         ...mutablePartialExport.vehicleTemplates
                     );
                 } else {
+                    // Remove all alarm groups as all existing vehicle templates are being removed
+                    draftState.alarmGroups = {};
                     draftState.vehicleTemplates =
                         mutablePartialExport.vehicleTemplates;
                 }
