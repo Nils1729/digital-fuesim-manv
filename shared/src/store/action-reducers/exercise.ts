@@ -5,7 +5,6 @@ import {
     IsBoolean,
     IsInt,
     IsPositive,
-    IsString,
 } from 'class-validator';
 import { PartialExport } from '../../export-import/file-format';
 import type { Personnel, Vehicle } from '../../models';
@@ -14,7 +13,7 @@ import { getStatus } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable, uuid } from '../../utils';
-import { IsValue } from '../../utils/validators';
+import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { validateExerciseExport } from '../validate-exercise-export';
@@ -59,10 +58,10 @@ export class ExerciseTickAction implements Action {
 }
 
 export class ImportTemplatesAction implements Action {
-    @IsString()
+    @IsValue('[Exercise] Import Templates' as const)
     public readonly type = '[Exercise] Import Templates';
 
-    @IsString()
+    @IsLiteralUnion({ append: true, overwrite: true })
     public readonly mode!: 'append' | 'overwrite';
 
     @ValidateNested()
