@@ -14,11 +14,11 @@ interface PartialExportConfiguration {
 }
 
 @Component({
-    selector: 'app-partial-export-selection',
-    templateUrl: './partial-export-selection.component.html',
-    styleUrls: ['./partial-export-selection.component.scss'],
+    selector: 'app-partial-export-modal',
+    templateUrl: './partial-export-modal.component.html',
+    styleUrls: ['./partial-export-modal.component.scss'],
 })
-export class PartialExportSelectionComponent {
+export class PartialExportComponent {
     constructor(
         private readonly store: Store<AppState>,
         private readonly activeModal: NgbActiveModal

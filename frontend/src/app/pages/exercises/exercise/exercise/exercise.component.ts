@@ -24,7 +24,7 @@ import {
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
-import { openPartialExportSelectionModal } from '../shared/partial-export-selection/open-partial-export-selection-modal';
+import { openPartialExportSelectionModal } from '../shared/partial-export/open-partial-export-selection-modal';
 
 @Component({
     selector: 'app-exercise',
