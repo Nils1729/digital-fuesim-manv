@@ -173,8 +173,15 @@ export namespace ExerciseActionReducers {
                         ...mutablePartialExport.vehicleTemplates
                     );
                 } else {
-                    // Remove all alarm groups as all existing vehicle templates are being removed
-                    draftState.alarmGroups = {};
+                    // Remove all vehicles from all alarm groups as all existing vehicle templates are being removed
+                    draftState.alarmGroups = Object.fromEntries(
+                        Object.entries(draftState.alarmGroups).map(
+                            ([id, alarmGroup]) => {
+                                alarmGroup.alarmGroupVehicles = {};
+                                return [id, alarmGroup];
+                            }
+                        )
+                    );
                     draftState.vehicleTemplates =
                         mutablePartialExport.vehicleTemplates;
                 }
