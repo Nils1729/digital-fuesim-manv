@@ -9,11 +9,11 @@ import { ExerciseService } from 'src/app/core/exercise.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 
 @Component({
-    selector: 'app-partial-import-overwrite',
-    templateUrl: './partial-import-overwrite.component.html',
-    styleUrls: ['./partial-import-overwrite.component.scss'],
+    selector: 'app-partial-import-modal',
+    templateUrl: './partial-import-modal.component.html',
+    styleUrls: ['./partial-import-modal.component.scss'],
 })
-export class PartialImportOverwriteComponent {
+export class PartialImportModalComponent {
     public importingPartialExport = false;
     constructor(
         public activeModal: NgbActiveModal,

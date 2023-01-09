@@ -22,7 +22,7 @@ import { DragElementService } from '../core/drag-element.service';
 import { TransferLinesService } from '../core/transfer-lines.service';
 import { openCreateImageTemplateModal } from '../editor-panel/create-image-template-modal/open-create-image-template-modal';
 import { openEditImageTemplateModal } from '../editor-panel/edit-image-template-modal/open-edit-image-template-modal';
-import { openPartialImportOverwriteModal } from '../partial-import-overwrite/open-partial-import-overwrite-modal';
+import { openPartialImportOverwriteModal } from '../partial-import/open-partial-import-overwrite-modal';
 
 @Component({
     selector: 'app-trainer-map-editor',

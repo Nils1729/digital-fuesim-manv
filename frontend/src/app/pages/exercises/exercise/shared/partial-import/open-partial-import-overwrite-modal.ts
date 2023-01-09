@@ -1,6 +1,6 @@
 import type { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import type { PartialExport } from 'digital-fuesim-manv-shared';
-import { PartialImportOverwriteComponent } from './partial-import-overwrite-modal/partial-import-overwrite.component';
+import { PartialImportModalComponent } from './partial-import-modal/partial-import-modal.component';
 
 /**
  *
@@ -10,10 +10,10 @@ export function openPartialImportOverwriteModal(
     ngbModalService: NgbModal,
     partialExport: PartialExport
 ) {
-    const modelRef = ngbModalService.open(PartialImportOverwriteComponent, {
+    const modelRef = ngbModalService.open(PartialImportModalComponent, {
         size: 'm',
     });
     const componentInstance =
-        modelRef.componentInstance as PartialImportOverwriteComponent;
+        modelRef.componentInstance as PartialImportModalComponent;
     componentInstance.partialExport = partialExport;
 }
