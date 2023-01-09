@@ -1,11 +1,11 @@
 import { Type } from 'class-transformer';
 import {
     IsArray,
+    ValidateNested,
     IsBoolean,
     IsInt,
     IsPositive,
     IsString,
-    ValidateNested,
 } from 'class-validator';
 import { PartialExport } from '../../export-import/file-format';
 import type { Personnel, Vehicle } from '../../models';
@@ -14,25 +14,26 @@ import { getStatus } from '../../models/utils';
 import type { ExerciseState } from '../../state';
 import type { Mutable } from '../../utils';
 import { cloneDeepMutable, uuid } from '../../utils';
+import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
 import { validateExerciseExport } from '../validate-exercise-export';
 import { letElementArrive } from './transfer';
+import { PatientUpdate } from './utils';
 import { updateTreatments } from './utils/calculate-treatments';
-import { PatientUpdate } from './utils/patient-updates';
 
 export class PauseExerciseAction implements Action {
-    @IsString()
+    @IsValue('[Exercise] Pause' as const)
     public readonly type = '[Exercise] Pause';
 }
 
 export class StartExerciseAction implements Action {
-    @IsString()
+    @IsValue('[Exercise] Start' as const)
     public readonly type = '[Exercise] Start';
 }
 
 export class ExerciseTickAction implements Action {
-    @IsString()
+    @IsValue('[Exercise] Tick' as const)
     public readonly type = '[Exercise] Tick';
 
     @IsArray()

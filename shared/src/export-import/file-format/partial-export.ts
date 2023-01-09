@@ -1,18 +1,12 @@
 import { Type } from 'class-transformer';
-import {
-    IsArray,
-    IsIn,
-    IsOptional,
-    IsString,
-    ValidateNested,
-} from 'class-validator';
-import { MapImageTemplate, VehicleTemplate } from '../../models';
+import { IsOptional, IsArray, ValidateNested } from 'class-validator';
+import { VehicleTemplate, MapImageTemplate } from '../../models';
 import { PatientCategory } from '../../models/patient-category';
+import { IsValue } from '../../utils/validators';
 import { BaseExportImportFile } from './base-file';
 
 export class PartialExport extends BaseExportImportFile {
-    @IsIn(['partial'])
-    @IsString()
+    @IsValue('partial' as const)
     public readonly type: 'partial' = 'partial';
 
     @IsOptional()
