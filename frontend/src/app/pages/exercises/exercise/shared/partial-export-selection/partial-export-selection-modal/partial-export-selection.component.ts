@@ -21,7 +21,7 @@ interface PartialExportConfiguration {
 export class PartialExportSelectionComponent {
     constructor(
         private readonly store: Store<AppState>,
-        public activeModal: NgbActiveModal
+        private readonly activeModal: NgbActiveModal
     ) {}
 
     public configuration: PartialExportConfiguration = {
