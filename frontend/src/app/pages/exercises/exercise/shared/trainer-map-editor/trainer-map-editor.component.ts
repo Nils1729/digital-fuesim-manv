@@ -1,11 +1,14 @@
 import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
+import { plainToInstance } from 'class-transformer';
 import type { UUID, VehicleTemplate } from 'digital-fuesim-manv-shared';
 import {
     colorCodeMap,
     Viewport,
     TransferPoint,
+    PartialExport,
+    migratePartialExport,
 } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import { MessageService } from 'src/app/core/messages/message.service';
@@ -92,9 +95,20 @@ export class TrainerMapEditorComponent {
     public async importPartialExport(fileList: FileList) {
         try {
             this.importingTemplates = true;
+            const importedText = await fileList.item(0)?.text();
+            if (importedText === undefined) {
+                // The file dialog has been aborted.
+                return;
+            }
+            const importedPlainObject = JSON.parse(importedText) as object;
+            const importedInstance = plainToInstance(
+                PartialExport,
+                importedPlainObject
+            );
+            const migratedInstance = migratePartialExport(importedInstance);
             openPartialImportOverwriteModal(
                 this.ngbModalService,
-                await fileList.item(0)?.text()
+                migratedInstance
             );
         } finally {
             this.importingTemplates = false;

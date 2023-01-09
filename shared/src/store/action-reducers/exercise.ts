@@ -16,7 +16,6 @@ import { cloneDeepMutable, uuid } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ReducerError } from '../reducer-error';
-import { validateExerciseExport } from '../validate-exercise-export';
 import { letElementArrive } from './transfer';
 import { PatientUpdate } from './utils';
 import { updateTreatments } from './utils/calculate-treatments';
@@ -147,15 +146,7 @@ export namespace ExerciseActionReducers {
     export const templateImport: ActionReducer<ImportTemplatesAction> = {
         action: ImportTemplatesAction,
         reducer: (draftState, { mode, partialExport }) => {
-            // TODO: Use `migratePartialExport` function that is currently defined in the backend.
             const mutablePartialExport = cloneDeepMutable(partialExport);
-            const validationErrors =
-                validateExerciseExport(mutablePartialExport);
-            if (validationErrors.length > 0) {
-                throw new ReducerError(
-                    `Cannot import templates due to validation errors: ${validationErrors}`
-                );
-            }
             if (mutablePartialExport.mapImageTemplates !== undefined) {
                 if (mode === 'append') {
                     draftState.mapImageTemplates.push(
