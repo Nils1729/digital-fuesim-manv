@@ -18,7 +18,7 @@ interface PartialExportConfiguration {
     templateUrl: './partial-export-modal.component.html',
     styleUrls: ['./partial-export-modal.component.scss'],
 })
-export class PartialExportComponent {
+export class PartialExportModalComponent {
     constructor(
         private readonly store: Store<AppState>,
         private readonly activeModal: NgbActiveModal

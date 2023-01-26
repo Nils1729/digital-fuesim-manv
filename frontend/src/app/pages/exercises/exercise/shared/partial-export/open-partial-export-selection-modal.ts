@@ -1,8 +1,8 @@
 import type { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { PartialExportComponent } from './partial-export-modal/partial-export-modal.component';
+import { PartialExportModalComponent } from './partial-export-modal/partial-export-modal.component';
 
-export function openPartialExportSelectionModal(ngbModalService: NgbModal) {
-    ngbModalService.open(PartialExportComponent, {
+export function openPartialExportModal(ngbModalService: NgbModal) {
+    ngbModalService.open(PartialExportModalComponent, {
         size: 'm',
     });
 }

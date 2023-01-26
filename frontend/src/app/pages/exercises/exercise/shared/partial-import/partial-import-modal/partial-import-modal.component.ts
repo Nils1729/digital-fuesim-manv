@@ -1,10 +1,7 @@
 import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { plainToInstance } from 'class-transformer';
-import {
-    PartialExport,
-    preparePartialExportForImport,
-} from 'digital-fuesim-manv-shared';
+import type { PartialExport } from 'digital-fuesim-manv-shared';
+import { preparePartialExportForImport } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 
@@ -30,14 +27,12 @@ export class PartialImportModalComponent {
     public async partialImportOverwrite(mode: 'append' | 'overwrite') {
         this.importingPartialExport = true;
         try {
-            const importInstance = plainToInstance(
-                PartialExport,
-                this.partialExport
-            );
             const result = await this.exerciseService.proposeAction({
                 type: '[Exercise] Import Templates',
                 mode,
-                partialExport: preparePartialExportForImport(importInstance),
+                partialExport: preparePartialExportForImport(
+                    this.partialExport
+                ),
             });
             if (!result.success) {
                 throw new Error((result as { message?: string }).message);

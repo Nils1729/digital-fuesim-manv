@@ -174,14 +174,11 @@ export namespace ExerciseActionReducers {
                     );
                 } else {
                     // Remove all vehicles from all alarm groups as all existing vehicle templates are being removed
-                    draftState.alarmGroups = Object.fromEntries(
-                        Object.entries(draftState.alarmGroups).map(
-                            ([id, alarmGroup]) => {
-                                alarmGroup.alarmGroupVehicles = {};
-                                return [id, alarmGroup];
-                            }
-                        )
-                    );
+                    for (const alarmGroup of Object.values(
+                        draftState.alarmGroups
+                    )) {
+                        alarmGroup.alarmGroupVehicles = {};
+                    }
                     draftState.vehicleTemplates =
                         mutablePartialExport.vehicleTemplates;
                 }
@@ -225,9 +222,9 @@ export function preparePartialExportForImport(
 ): PartialExport {
     const copy = cloneDeepMutable(partialExport);
     // `patientCategories` don't have an `id`
-    const templateType = ['mapImageTemplates', 'vehicleTemplates'] as const;
-    for (const property of templateType) {
-        const templates = copy[property];
+    const templateTypes = ['mapImageTemplates', 'vehicleTemplates'] as const;
+    for (const templateType of templateTypes) {
+        const templates = copy[templateType];
         if (templates !== undefined) {
             for (const template of templates) {
                 template.id = uuid();

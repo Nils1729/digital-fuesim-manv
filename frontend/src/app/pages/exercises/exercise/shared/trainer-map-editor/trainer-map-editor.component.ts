@@ -7,8 +7,9 @@ import {
     colorCodeMap,
     Viewport,
     TransferPoint,
-    PartialExport,
     migratePartialExport,
+    validateExerciseExport,
+    PartialExport,
 } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import { MessageService } from 'src/app/core/messages/message.service';
@@ -100,15 +101,22 @@ export class TrainerMapEditorComponent {
                 // The file dialog has been aborted.
                 return;
             }
-            const importedPlainObject = JSON.parse(importedText) as object;
-            const importedInstance = plainToInstance(
-                PartialExport,
-                importedPlainObject
+            const importedPlainObject = JSON.parse(
+                importedText
+            ) as PartialExport;
+            const migratedPartialExport =
+                migratePartialExport(importedPlainObject);
+            const validation = validateExerciseExport(
+                plainToInstance(PartialExport, migratedPartialExport)
             );
-            const migratedInstance = migratePartialExport(importedInstance);
+            if (validation.length > 0) {
+                throw Error(
+                    `PartialExport is invalid:\n${validation.join('\n')}`
+                );
+            }
             openPartialImportOverwriteModal(
                 this.ngbModalService,
-                migratedInstance
+                migratedPartialExport
             );
         } finally {
             this.importingTemplates = false;

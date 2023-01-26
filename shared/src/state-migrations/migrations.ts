@@ -44,7 +44,7 @@ export function migratePartialExport(
     const stateExport = cloneDeepMutable(
         new StateExport({
             ...cloneDeepMutable(ExerciseState.create('123456')),
-            mapImageTemplates: partialExportToMigrate.mapImageTemplates ?? [],
+            mapImageTemplates: mutablePartialExport.mapImageTemplates ?? [],
             patientCategories: mutablePartialExport.patientCategories ?? [],
             vehicleTemplates: mutablePartialExport.vehicleTemplates ?? [],
         })
