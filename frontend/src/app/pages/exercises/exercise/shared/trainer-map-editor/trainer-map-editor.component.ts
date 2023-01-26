@@ -2,8 +2,16 @@ import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
 import { plainToInstance } from 'class-transformer';
-import type { UUID, VehicleTemplate} from 'digital-fuesim-manv-shared';
-import { colorCodeMap, SimulatedRegion, Viewport, TransferPoint, PartialExport, migratePartialExport, validateExerciseExport } from 'digital-fuesim-manv-shared';
+import type { UUID, VehicleTemplate } from 'digital-fuesim-manv-shared';
+import {
+    colorCodeMap,
+    SimulatedRegion,
+    Viewport,
+    TransferPoint,
+    PartialExport,
+    migratePartialExport,
+    validateExerciseExport,
+} from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import { MessageService } from 'src/app/core/messages/message.service';
 import type { AppState } from 'src/app/state/app.state';
