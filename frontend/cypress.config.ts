@@ -8,6 +8,6 @@ export default defineConfig({
     e2e: {
         baseUrl: 'http://127.0.0.1:4200',
         experimentalStudio: true,
-        defaultCommandTimeout: 8000
+        defaultCommandTimeout: 8000,
     },
 });
