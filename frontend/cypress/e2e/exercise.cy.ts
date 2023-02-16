@@ -6,6 +6,8 @@ describe('A trainer on the exercise page', () => {
     it('can load and unload vehicles', () => {
         cy.dragToMap('[data-cy=draggableVehicleDiv]');
 
+        cy.wait(1000);
+
         cy.log('load a patient to a vehicle').dragToMap(
             '[data-cy=draggablePatientDiv]'
         );
@@ -464,6 +466,9 @@ describe('A trainer on the exercise page', () => {
 
         cy.get('[data-cy=transferPointPopupCloseButton]').click();
         cy.dragToMap('[data-cy=draggableVehicleDiv]');
+
+        cy.wait(1000);
+
         cy.dragToMap('[data-cy=draggablePatientDiv]');
 
         cy.get('[data-cy=chooseTransferTargetPopupHospitalDropdown]')
