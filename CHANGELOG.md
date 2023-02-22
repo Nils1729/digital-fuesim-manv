@@ -7,6 +7,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## [v0.0.1-review] - 2023-02-22
+
 ### Added
 
 -   A new team of contributors joined the project!
@@ -32,3 +34,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Moving the map no longer closes popups but can be closed with ESC.
 -   Minor dependency updates
 -   Updated deprecated actions
+
+[Unreleased]: https://github.com/Nils1729/digital-fuesim-manv/compare/v0.0.1-review...HEAD
+
+[v0.0.1-review]: https://github.com/Nils1729/digital-fuesim-manv/compare/7908fccc27ce7e89d05ed9c4be186d33c92601f4...v0.0.1-review
