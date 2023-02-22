@@ -26,13 +26,11 @@ jobs:
               run: bash .github/update-version.sh "${{ github.event.inputs.versionName }}"
             - name: Update versions in package-locks
               run: npm run setup:package-lock-only
-            - name: Update Changelog
-              uses: thomaseizinger/keep-a-changelog-new-release@v1
-              with:
-                  version: v${{ github.event.inputs.versionName }}
             - name: Commit packages and changelog
               run: git commit -a --message "Prepare release v${{ github.event.inputs.versionName }}"
-            - name: debug setup
+            - name: debug setup 1
+              run: npm run setup:ci
+            - name: debug setup 2
               run: npm run setup:ci
             - name: Push new branch
               run: git push origin release/v${{ github.event.inputs.versionName }}
