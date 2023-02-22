@@ -7,6 +7,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## [v1.2.3-test2] - 2023-02-22
+
 ## [v123-test] - 2023-02-22
 
 ## [v0.0.1-review] - 2023-02-22
@@ -37,7 +39,9 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Minor dependency updates
 -   Updated deprecated actions
 
-[Unreleased]: https://github.com/Nils1729/digital-fuesim-manv/compare/v123-test...HEAD
+[Unreleased]: https://github.com/Nils1729/digital-fuesim-manv/compare/v1.2.3-test2...HEAD
+
+[v1.2.3-test2]: https://github.com/Nils1729/digital-fuesim-manv/compare/v123-test...v1.2.3-test2
 
 [v123-test]: https://github.com/Nils1729/digital-fuesim-manv/compare/v0.0.1-review...v123-test
 
