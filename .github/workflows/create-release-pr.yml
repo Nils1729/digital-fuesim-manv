@@ -26,12 +26,12 @@ jobs:
               run: bash .github/update-version.sh "${{ github.event.inputs.versionName }}"
             - name: Update versions in package-locks
               run: npm run setup:package-lock-only
+            - name: Debug commit
+              run: git commit -a --message "Debug v${{ github.event.inputs.versionName }}"
+            - name: debug setup
+              run: npm run setup:ci
             - name: Commit packages and changelog
               run: git commit -a --message "Prepare release v${{ github.event.inputs.versionName }}"
-            - name: debug setup 1
-              run: npm run setup:ci
-            - name: debug setup 2
-              run: npm run setup:ci
             - name: Push new branch
               run: git push origin release/v${{ github.event.inputs.versionName }}
             - name: Create pull request into main
