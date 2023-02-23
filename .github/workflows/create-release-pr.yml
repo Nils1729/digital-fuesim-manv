@@ -61,7 +61,3 @@ jobs:
                   body: |
                       This PR was created in response to a running workflow.
                       I've updated the version name and changelog.
-    run-pipeline:
-        needs: create-pull-requests
-        uses: ./.github/workflows/pipeline.yml
-        secrets: inherit
