@@ -395,12 +395,11 @@ jobs:
               id: extract_release_notes
               uses: ffurrer2/extract-release-notes@v1
             - name: Create Release
-              uses: actions/create-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              uses: ncipollo/release-action@v1
               with:
-                  tag_name: v${{ env.VERSION_NAME }}
-                  release_name: v${{ env.VERSION_NAME }}
+                  tag: v${{ env.VERSION_NAME }}
+                  name: v${{ env.VERSION_NAME }}
                   body: ${{ steps.extract_release_notes.outputs.release_notes }}
-                  draft: false
                   prerelease: false
+                  draft: false
+                  commit: main
