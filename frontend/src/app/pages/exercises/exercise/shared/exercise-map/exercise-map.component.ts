@@ -49,23 +49,27 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     ) {}
 
     ngAfterViewInit(): void {
+        this.popupManager = new PopupManager(
+            this.popoverContent,
+            this.popoverContainer.nativeElement
+        );
         // run outside angular zone for better performance
         this.ngZone.runOutsideAngular(() => {
             this.olMapManager = new OlMapManager(
                 this.store,
                 this.exerciseService,
                 this.openLayersContainer.nativeElement,
-                this.popoverContainer.nativeElement,
                 this.ngZone,
-                this.transferLinesService
+                this.transferLinesService,
+                this.popupManager!
             );
             this.dragElementService.registerMap(this.olMapManager.olMap);
+            this.dragElementService.registerLayerFeatureManagerDictionary(
+                this.olMapManager.layerFeatureManagerDictionary
+            );
         });
-        this.popupManager = new PopupManager(
-            this.olMapManager!.popupOverlay,
-            this.popoverContent
-        );
-        this.olMapManager!.changePopup$.pipe(
+
+        this.popupManager!.changePopup$.pipe(
             takeUntil(this.destroy$)
         ).subscribe((options) => {
             // Because changePopup$ is coming from outside the angular zone, we need to wrap it in a zone
@@ -98,5 +102,6 @@ export class ExerciseMapComponent implements AfterViewInit, OnDestroy {
     ngOnDestroy(): void {
         this.destroy$.next();
         this.dragElementService.unregisterMap();
+        this.dragElementService.unregisterLayerFeatureManagerDictionary();
     }
 }
