@@ -7,6 +7,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## [1.2.3-test16] - 2023-02-23
+
 ### Added
 
 -   A new team of contributors joined the project!
@@ -33,4 +35,6 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Minor dependency updates
 -   Updated deprecated actions
 
-[Unreleased]: https://github.com/Nils1729/digital-fuesim-manv/compare/v1.2.3-test2...HEAD
+[Unreleased]: https://github.com/Nils1729/digital-fuesim-manv/compare/1.2.3-test16...HEAD
+
+[1.2.3-test16]: https://github.com/Nils1729/digital-fuesim-manv/compare/00b0985fb26c42df3266ce54a003ee642c709891...1.2.3-test16
