@@ -56,7 +56,7 @@ jobs:
                 --title "Release v${{ github.event.inputs.versionName }}"
                 --body "This PR was created in response to a running workflow.
 
-                      I've updated the version name and changelog: ${{ needs.create-release-branch.outputs.commit }}"
+                I've updated the version name and changelog: ${{ needs.create-release-branch.outputs.commit }}"
                 --label release
                 --reviewer "${{ github.event.issue.user.login }}"
               env:
@@ -69,7 +69,7 @@ jobs:
                 --title "Release v${{ github.event.inputs.versionName }}"
                 --body "This PR was created in response to a running workflow.
 
-                      I've updated the version name and changelog: ${{ needs.create-release-branch.outputs.commit }}"
+                I've updated the version name and changelog: ${{ needs.create-release-branch.outputs.commit }}"
                 --label release
                 --reviewer "${{ github.event.issue.user.login }}"
               env:
