@@ -1,28 +1,43 @@
+import type { Type, NgZone } from '@angular/core';
+import type { Store } from '@ngrx/store';
 import type { Personnel, UUID } from 'digital-fuesim-manv-shared';
 import { normalZoom } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
-import type Point from 'ol/geom/Point';
-import type VectorLayer from 'ol/layer/Vector';
 import type OlMap from 'ol/Map';
-import type VectorSource from 'ol/source/Vector';
+import type { Subject } from 'rxjs';
 import type { ExerciseService } from 'src/app/core/exercise.service';
-import type { WithPosition } from '../../utility/types/with-position';
+import type { AppState } from 'src/app/state/app.state';
+import { selectVisiblePersonnel } from 'src/app/state/application/selectors/shared.selectors';
 import { PersonnelPopupComponent } from '../shared/personnel-popup/personnel-popup.component';
+import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
+import { PointGeometryHelper } from '../utility/point-geometry-helper';
 import { ImagePopupHelper } from '../utility/popup-helper';
+import type { OpenPopupOptions } from '../utility/popup-manager';
 import { ImageStyleHelper } from '../utility/style-helper/image-style-helper';
 import { NameStyleHelper } from '../utility/style-helper/name-style-helper';
-import { createPoint, ElementFeatureManager } from './element-feature-manager';
+import { MoveableFeatureManager } from './moveable-feature-manager';
 
-export class PersonnelFeatureManager extends ElementFeatureManager<
-    WithPosition<Personnel>
-> {
-    readonly type = 'personnel';
+export class PersonnelFeatureManager extends MoveableFeatureManager<Personnel> {
+    public register(
+        changePopup$: Subject<OpenPopupOptions<any, Type<any>> | undefined>,
+        destroy$: Subject<void>,
+        ngZone: NgZone,
+        mapInteractionsManager: OlMapInteractionsManager
+    ): void {
+        super.registerFeatureElementManager(
+            this.store.select(selectVisiblePersonnel),
+            changePopup$,
+            destroy$,
+            ngZone,
+            mapInteractionsManager
+        );
+    }
     private readonly imageStyleHelper = new ImageStyleHelper(
-        (feature) => this.getElementFromFeature(feature)!.value.image
+        (feature) => (this.getElementFromFeature(feature) as Personnel).image
     );
     private readonly nameStyleHelper = new NameStyleHelper(
         (feature) => {
-            const personnel = this.getElementFromFeature(feature)!.value;
+            const personnel = this.getElementFromFeature(feature) as Personnel;
             return {
                 name: personnel.vehicleName,
                 offsetY: personnel.image.height / 2 / normalZoom,
@@ -36,12 +51,11 @@ export class PersonnelFeatureManager extends ElementFeatureManager<
 
     constructor(
         olMap: OlMap,
-        layer: VectorLayer<VectorSource<Point>>,
+        private readonly store: Store<AppState>,
         exerciseService: ExerciseService
     ) {
         super(
             olMap,
-            layer,
             (targetPosition, personnel) => {
                 exerciseService.proposeAction({
                     type: '[Personnel] Move personnel',
@@ -49,7 +63,7 @@ export class PersonnelFeatureManager extends ElementFeatureManager<
                     targetPosition,
                 });
             },
-            createPoint
+            new PointGeometryHelper()
         );
 
         this.layer.setStyle((feature, resolution) => [
@@ -57,8 +71,6 @@ export class PersonnelFeatureManager extends ElementFeatureManager<
             this.imageStyleHelper.getStyle(feature as Feature, resolution),
         ]);
     }
-
-    override unsupportedChangeProperties = new Set(['id', 'image'] as const);
 
     public override onFeatureClicked(
         event: MapBrowserEvent<any>,
