@@ -379,6 +379,8 @@ jobs:
         runs-on: ubuntu-latest
         if: github.ref == 'refs/heads/main'
         needs: [test, cypress]
+        permissions:
+            contents: write
         steps:
             - uses: actions/checkout@v3
             - name: Initialize mandatory git config
