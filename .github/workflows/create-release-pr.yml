@@ -8,7 +8,7 @@ on:
                 required: true
 
 jobs:
-    create-release:
+    create-release-branch:
         runs-on: ubuntu-latest
         permissions:
             contents: write
@@ -26,20 +26,18 @@ jobs:
               run: bash .github/update-version.sh "${{ github.event.inputs.versionName }}"
             - name: Update versions in package-locks
               run: npm run setup:package-lock-only
-            - name: stage changes
-              run: git add .
-            - name: show changes
-              run: git diff --staged
-            - name: debug setup
-              run: npm run setup:ci
-            - name: show changes 2
-              run: |
-                git diff
-                git diff --staged
-            - name: Debug commit
-              run: git commit --message "Debug v${{ github.event.inputs.versionName }}"
+            - name: Update changelog
+              uses: thomaseizinger/keep-a-changelog-new-release@v1
+              with:
+                  version: v${{ github.event.inputs.versionName }}
+            - name: Commit updated version and changelog
+              run: git commit -a --message "Debug v${{ github.event.inputs.versionName }}"
             - name: Push new branch
               run: git push origin release/v${{ github.event.inputs.versionName }}
+    create-pull-requests:
+        runs-on: ubuntu-latest
+        needs: create-release-branch
+        steps:
             - name: Create pull request into main
               uses: thomaseizinger/create-pull-request@1.3.0
               with:
@@ -62,4 +60,7 @@ jobs:
                   body: |
                       This PR was created in response to a running workflow.
                       I've updated the version name and changelog.
-
+    run-pipeline:
+        needs: create-pull-requests
+        uses: ./.github/workflows/pipeline.yml
+        secrets: inherit
