@@ -34,8 +34,8 @@ jobs:
             - name: Commit updated version and changelog
               id: create-commit
               run: |
-                git commit -a --message "Debug v${{ github.event.inputs.versionName }}"
-                echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+                  git commit -a --message "Debug v${{ github.event.inputs.versionName }}"
+                  echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
             - name: Push new branch
               run: git push origin release/v${{ github.event.inputs.versionName }}
     create-pull-requests:
@@ -47,32 +47,32 @@ jobs:
             - name: Check out code
               uses: actions/checkout@v3
               with:
-                ref: release/v${{ github.event.inputs.versionName }}
+                  ref: release/v${{ github.event.inputs.versionName }}
             - name: Create pull request into main
               run: >
-                gh pr create
-                --head "release/v${{ github.event.inputs.versionName }}"
-                --base "main"
-                --title "Release v${{ github.event.inputs.versionName }}"
-                --body "This PR was created in response to a running workflow.
+                  gh pr create
+                  --head "release/v${{ github.event.inputs.versionName }}"
+                  --base "main"
+                  --title "Release v${{ github.event.inputs.versionName }}"
+                  --body "This PR was created in response to a running workflow.
 
-                I've updated the version name and changelog: ${{ needs.create-release-branch.outputs.commit }}"
-                --label release
-                --reviewer "${{ github.event.issue.user.login }}"
-                --draft
+                  I've updated the version name and changelog: ${{ needs.create-release-branch.outputs.commit }}"
+                  --label release
+                  --reviewer "${{ github.event.issue.user.login }}"
+                  --draft
               env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             - name: Create pull request into dev
               run: >
-                gh pr create
-                --head "release/v${{ github.event.inputs.versionName }}"
-                --base "dev"
-                --title "Release v${{ github.event.inputs.versionName }} (dev)"
-                --body "This PR was created in response to a running workflow.
+                  gh pr create
+                  --head "release/v${{ github.event.inputs.versionName }}"
+                  --base "dev"
+                  --title "Release v${{ github.event.inputs.versionName }} (dev)"
+                  --body "This PR was created in response to a running workflow.
 
-                I've updated the version name and changelog: ${{ needs.create-release-branch.outputs.commit }}"
-                --label release
-                --reviewer "${{ github.event.issue.user.login }}"
-                --draft
+                  I've updated the version name and changelog: ${{ needs.create-release-branch.outputs.commit }}"
+                  --label release
+                  --reviewer "${{ github.event.issue.user.login }}"
+                  --draft
               env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
