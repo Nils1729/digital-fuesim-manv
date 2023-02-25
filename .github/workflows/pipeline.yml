@@ -2,7 +2,11 @@ name: Complete pipeline
 
 on:
     push:
-    workflow_dispatch:
+    pull_request:
+        types:
+            - ready_for_review
+        branches:
+            - 'release/**'
 
 jobs:
     build:
@@ -218,7 +222,7 @@ jobs:
                   path: coverage
 
     cypress:
-        timeout-minutes: 5
+        timeout-minutes: 10
         runs-on: ${{ matrix.os }}
 
         needs: build
