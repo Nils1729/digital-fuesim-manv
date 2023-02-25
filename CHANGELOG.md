@@ -33,4 +33,4 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 -   Minor dependency updates
 -   Updated deprecated actions
 
-[Unreleased]: https://github.com/Nils1729/digital-fuesim-manv/compare/v1.2.3-test2...HEAD
+[Unreleased]: https://github.com/Nils1729/digital-fuesim-manv/compare/v0.0.0...HEAD

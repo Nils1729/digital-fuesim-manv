@@ -23,6 +23,18 @@ jobs:
               run: |
                   git config user.name "GitHub Actions"
                   git config user.email noreply@github.com
+            - name: Cache node modules
+              uses: actions/cache@v3
+              id: cache-node-modules
+              env:
+                  cache-name: cache-node-modules
+              with:
+                  path: |
+                      node_modules
+                      shared/node_modules
+                      frontend/node_modules
+                      backend/node_modules
+                  key: ${{ secrets.CACHE_VERSION }}-${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('package-lock.json') }}
             - name: Update version in packages
               run: bash .github/update-version.sh "${{ github.event.inputs.versionName }}"
             - name: Update versions in package-locks
@@ -31,6 +43,8 @@ jobs:
               uses: thomaseizinger/keep-a-changelog-new-release@v1
               with:
                   tag: ${{ github.event.inputs.versionName }}
+            - name: Format changelog
+              run: npm run prettier
             - name: Commit updated version and changelog
               id: create-commit
               run: |
