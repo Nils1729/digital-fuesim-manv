@@ -7,6 +7,12 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## [0.2.0-review] - 2023-02-27
+
+### Changed
+
+-   Improved release documentation
+
 ## [0.1.0-review] - 2023-02-27
 
 ### Added
@@ -39,6 +45,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Initial unstable release of Digitale FüSim MANV
 
-[Unreleased]: https://github.com/Nils1729/digital-fuesim-manv/compare/0.1.0-review...HEAD
+[Unreleased]: https://github.com/Nils1729/digital-fuesim-manv/compare/0.2.0-review...HEAD
+[0.2.0-review]: https://github.com/Nils1729/digital-fuesim-manv/compare/0.1.0-review...0.2.0-review
 [0.1.0-review]: https://github.com/Nils1729/digital-fuesim-manv/compare/v0.0.0...0.1.0-review
 [0.0.0]: https://github.com/Nils1729/digital-fuesim-manv/compare/37bd43bc1beb4aa9ad597b1ac763dd71b5709737...v0.0.0
