@@ -7,6 +7,10 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+### Changed
+
+-   Improved release documentation
+
 ## [0.1.0-review] - 2023-02-27
 
 ### Added
