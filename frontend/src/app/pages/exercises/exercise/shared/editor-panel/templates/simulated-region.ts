@@ -35,7 +35,7 @@ const size = {
 };
 const position: MapPosition = MapPosition.create({ x: 0, y: 0 });
 
-const stereotypes: SimulatedRegion[] = [
+export const stereotypes: SimulatedRegion[] = [
     {
         type: 'simulatedRegion',
         id: '',

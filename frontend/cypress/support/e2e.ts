@@ -37,23 +37,20 @@ import {
 declare global {
     namespace Cypress {
         interface Chainable {
-            dragToMap(
-                elementSelector: string,
-                offset?: { x: number; y: number }
-            ): Chainable;
-            store(): Chainable;
-            getState(): Chainable;
-            createExercise(): Chainable;
-            joinExerciseAsTrainer(): Chainable;
-            joinExerciseAsParticipant(): Chainable;
-            firstElement(): Chainable;
-            lastElement(): Chainable;
-            atPosition(n: number): Chainable;
-            itsKeys(): Chainable;
-            itsValues(): Chainable;
-            initializeParticipantSocket(): Chainable;
-            initializeTrainerSocket(): Chainable;
-            atKey(key: string): Chainable;
+            dragToMap: typeof dragToMap;
+            store: typeof store;
+            getState: typeof getState;
+            createExercise: typeof createExercise;
+            joinExerciseAsTrainer: typeof joinExerciseAsTrainer;
+            joinExerciseAsParticipant: typeof joinExerciseAsParticipant;
+            firstElement: typeof firstElement;
+            lastElement: typeof lastElement;
+            atPosition: typeof atPosition;
+            itsKeys: typeof itsKeys;
+            itsValues: typeof itsValues;
+            initializeParticipantSocket: typeof initializeParticipantSocket;
+            initializeTrainerSocket: typeof initializeTrainerSocket;
+            atKey: typeof atKey;
         }
     }
 }

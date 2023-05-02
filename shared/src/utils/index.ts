@@ -11,3 +11,4 @@ export * from './sleep';
 export * from './assert-exhaustiveness';
 export * from './sort-object';
 export * from './format-duration';
+export * from './element-type-plural-map';
