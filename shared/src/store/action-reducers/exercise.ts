@@ -36,6 +36,7 @@ import {
     logActive,
     logPatient,
 } from './utils/log';
+import { patientTick } from './utils/patient-ticking';
 
 export class PauseExerciseAction implements Action {
     @IsValue('[Exercise] Pause' as const)
@@ -98,12 +99,14 @@ export namespace ExerciseActionReducers {
 
     export const exerciseTick: ActionReducer<ExerciseTickAction> = {
         action: ExerciseTickAction,
-        reducer: (draftState, { tickInterval, patientUpdates }) => {
+        reducer: (draftState, { tickInterval }) => {
+            const patientUpdates = patientTick(draftState, tickInterval);
+
             // Refresh the current time
             draftState.currentTime += tickInterval;
 
             // Refresh patient status
-            (patientUpdates ?? []).forEach((patientUpdate) => {
+            patientUpdates.forEach((patientUpdate) => {
                 const currentPatient = draftState.patients[patientUpdate.id]!;
 
                 const visibleStatusBefore = Patient.getVisibleStatus(

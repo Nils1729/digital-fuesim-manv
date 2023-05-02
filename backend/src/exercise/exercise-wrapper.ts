@@ -14,7 +14,6 @@ import {
     ReducerError,
     validateExerciseAction,
     validateExerciseState,
-    patientTick
 } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
 import { LessThan } from 'typeorm';
@@ -208,13 +207,8 @@ export class ExerciseWrapper extends NormalType<
      */
     private readonly tick = async () => {
         try {
-            const patientUpdates = patientTick(
-                this.getStateSnapshot(),
-                this.tickInterval
-            );
             const updateAction: ExerciseAction = {
                 type: '[Exercise] Tick',
-                patientUpdates,
                 /**
                  * Refresh every {@link refreshTreatmentInterval} * {@link tickInterval} ms seconds
                  */
