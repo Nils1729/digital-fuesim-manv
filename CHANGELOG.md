@@ -9,7 +9,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Added
 
--   Added a new favicon.
+-   Added a new favicon. `some text here`
+$(Some text there)
 -   2 new events related to patient transport have been added to the simulation.
 -   Selected material, personnel and vehicles are now highlighted on the map.
     -   When material or personnel is selected, the corresponding vehicle is highlighted as well.
