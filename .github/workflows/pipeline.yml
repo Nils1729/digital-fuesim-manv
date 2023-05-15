@@ -75,10 +75,10 @@ jobs:
               id: extract_release_notes
               uses: ffurrer2/extract-release-notes@v1
             - name: Create release
-              uses: actions/create-release@v1
+              uses: softprops/action-gh-release@v1
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                   tag_name: v${{ env.VERSION_NAME }}
-                  release_name: v${{ env.VERSION_NAME }}
-                  body: ${{ steps.extract-release-notes.outputs.release_notes }}
+                  name: v${{ env.VERSION_NAME }}
+                  body: ${{ steps.extract_release_notes.outputs.release_notes }}
