@@ -7,9 +7,7 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
-## [1.2.6] - 2023-05-15
-
-## [1.2.4] - 2023-05-15
+## [1.2.7] - 2023-05-15
 
 ### Added
 
@@ -226,9 +224,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Initial unstable release of Digitale FüSim MANV
 
-[Unreleased]: https://github.com/Nils1729/digital-fuesim-manv/compare/v1.2.6...HEAD
-[1.2.6]: https://github.com/Nils1729/digital-fuesim-manv/compare/v1.2.4...v1.2.6
-[1.2.4]: https://github.com/Nils1729/digital-fuesim-manv/compare/v0.5.1...v1.2.4
+[Unreleased]: https://github.com/Nils1729/digital-fuesim-manv/compare/v1.2.7...HEAD
+[1.2.7]: https://github.com/Nils1729/digital-fuesim-manv/compare/v0.5.1...v1.2.7
 [0.5.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.3.0...v0.4.0
