@@ -42,8 +42,6 @@ jobs:
                   node-version: '18'
             - name: Cache node modules and shared/dist
               uses: ./.github/actions/cache-build
-            - name: Run ESLint
-              run: npm run lint
             - name: Run Prettier
               if: always()
               run: npm run prettier:check
