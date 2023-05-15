@@ -1,6 +1,6 @@
 {
     "name": "digital-fuesim-manv-shared",
-    "version": "1.2.4",
+    "version": "1.2.6",
     "type": "module",
     "main": "./dist/index.js",
     "esnext": "./dist/index.js",
