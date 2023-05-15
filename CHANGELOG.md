@@ -7,6 +7,28 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## [1.2.4] - 2023-05-15
+
+### Added
+
+-   Added a new favicon.
+-   2 new events related to patient transport have been added to the simulation.
+-   Selected material, personnel and vehicles are now highlighted on the map.
+    -   When material or personnel is selected, the corresponding vehicle is highlighted as well.
+    -   When a vehicle is selected, the corresponding material and personnel are highlighted as well.
+-   A generic catch-all hospital is present in every exercise and cannot be deleted.
+-   The reports behavior can generate reports on the counts of transferred patients per triage category.
+-   The reports behavior can generate event-based reports when the last patient of a triage category has been transferred to a hospital.
+
+### Changed
+
+-   Add behaviors button now opens towards the top.
+-   Simulated regions can now send patients to any hospital. The hospitals tab was removed.
+
+### Fixed
+
+-   Removed the id property of events.
+
 ## [0.5.1] - 2023-05-09
 
 ### Fixed
@@ -201,7 +223,8 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ### Initial unstable release of Digitale FüSim MANV
 
-[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/Nils1729/digital-fuesim-manv/compare/v1.2.4...HEAD
+[1.2.4]: https://github.com/Nils1729/digital-fuesim-manv/compare/v0.5.1...v1.2.4
 [0.5.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.3.0...v0.4.0

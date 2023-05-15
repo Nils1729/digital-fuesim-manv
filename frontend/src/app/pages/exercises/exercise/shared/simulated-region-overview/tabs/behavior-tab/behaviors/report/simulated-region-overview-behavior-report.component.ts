@@ -43,6 +43,7 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
         personnelCount: 'Anzahl an Rettungskräften',
         materialCount: 'Anzahl an Material',
         treatmentStatus: 'Behandlungsstatus',
+        transferCounts: 'Anzahl der ins Krankenhaus transportierten Patienten',
     };
 
     createReportCollapsed = true;
@@ -94,6 +95,28 @@ export class SimulatedRegionOverviewBehaviorReportComponent implements OnInit {
             simulatedRegionId: this.simulatedRegionId,
             behaviorId: this.reportBehaviorId,
             reportTreatmentProgressChanges: reportsEnabled,
+        });
+    }
+
+    updateReportTransferOfCategoryInSingleRegionCompleted(
+        reportsEnabled: boolean
+    ) {
+        this.exerciseService.proposeAction({
+            type: '[ReportBehavior] Update report transfer of category in single region completed',
+            simulatedRegionId: this.simulatedRegionId,
+            behaviorId: this.reportBehaviorId,
+            reportChanges: reportsEnabled,
+        });
+    }
+
+    updateReportTransferOfCategoryInMultipleRegionsCompleted(
+        reportsEnabled: boolean
+    ) {
+        this.exerciseService.proposeAction({
+            type: '[ReportBehavior] Update report transfer of category in multiple regions completed',
+            simulatedRegionId: this.simulatedRegionId,
+            behaviorId: this.reportBehaviorId,
+            reportChanges: reportsEnabled,
         });
     }
 
