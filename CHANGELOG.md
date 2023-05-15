@@ -7,10 +7,12 @@ and this project does **not** adhere to [Semantic Versioning](https://semver.org
 
 ## [Unreleased]
 
+## [1.2.5] - 2023-05-15
+
 ### Added
 
 -   Added a new favicon. `some text here`
-$(Some text there)
+    $(Some text there)
 -   2 new events related to patient transport have been added to the simulation.
 -   Selected material, personnel and vehicles are now highlighted on the map.
     -   When material or personnel is selected, the corresponding vehicle is highlighted as well.
@@ -222,7 +224,8 @@ $(Some text there)
 
 ### Initial unstable release of Digitale FüSim MANV
 
-[Unreleased]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/Nils1729/digital-fuesim-manv/compare/v1.2.5...HEAD
+[1.2.5]: https://github.com/Nils1729/digital-fuesim-manv/compare/v0.5.1...v1.2.5
 [0.5.1]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/hpi-sam/digital-fuesim-manv/compare/v0.3.0...v0.4.0
