@@ -61,7 +61,7 @@ export class ScenarioBuilder {
             x: region.size.width * 1.1 * (index % cols),
             y: region.size.height * 1.1 * Math.floor(index / cols),
         });
-        region.name = `PA ${index + 1}`;
+        region.name = `PA ${index}`;
         const position = SimulatedRegionPosition.create(region.id);
         const patients = defaultPatientCategories.flatMap((category) =>
             category.patientTemplates.map((template) =>
