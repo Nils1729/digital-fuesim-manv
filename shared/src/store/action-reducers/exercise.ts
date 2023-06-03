@@ -1,10 +1,8 @@
-import { Type } from 'class-transformer';
 import {
-    IsArray,
     IsBoolean,
     IsInt,
+    IsOptional,
     IsPositive,
-    ValidateNested,
 } from 'class-validator';
 import type { Personnel, PersonnelType, Vehicle } from '../../models';
 import {
@@ -32,7 +30,7 @@ import { ReducerError } from '../reducer-error';
 import type { TransferableElementType } from './transfer';
 import { letElementArrive } from './transfer';
 import { updateTreatments } from './utils/calculate-treatments';
-import { PatientUpdate } from './utils/patient-updates';
+import type { PatientUpdate } from './utils/patient-updates';
 import {
     logPatientVisibleStatusChanged,
     logActive,
@@ -53,10 +51,8 @@ export class ExerciseTickAction implements Action {
     @IsValue('[Exercise] Tick' as const)
     public readonly type = '[Exercise] Tick';
 
-    @IsArray()
-    @ValidateNested()
-    @Type(() => PatientUpdate)
-    public readonly patientUpdates!: readonly PatientUpdate[];
+    @IsOptional()
+    public readonly patientUpdates?: readonly PatientUpdate[];
 
     /**
      * If true, it is updated which personnel and material treats which patient.
@@ -102,12 +98,12 @@ export namespace ExerciseActionReducers {
 
     export const exerciseTick: ActionReducer<ExerciseTickAction> = {
         action: ExerciseTickAction,
-        reducer: (draftState, { patientUpdates, tickInterval }) => {
+        reducer: (draftState, { tickInterval, patientUpdates }) => {
             // Refresh the current time
             draftState.currentTime += tickInterval;
 
             // Refresh patient status
-            patientUpdates.forEach((patientUpdate) => {
+            (patientUpdates ?? []).forEach((patientUpdate) => {
                 const currentPatient = draftState.patients[patientUpdate.id]!;
 
                 const visibleStatusBefore = Patient.getVisibleStatus(

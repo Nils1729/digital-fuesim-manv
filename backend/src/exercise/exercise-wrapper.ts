@@ -14,6 +14,7 @@ import {
     ReducerError,
     validateExerciseAction,
     validateExerciseState,
+    patientTick
 } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
 import { LessThan } from 'typeorm';
@@ -31,7 +32,6 @@ import { ValidationErrorWrapper } from '../utils/validation-error-wrapper';
 import { ActionWrapper } from './action-wrapper';
 import type { ClientWrapper } from './client-wrapper';
 import { exerciseMap } from './exercise-map';
-import { patientTick } from './patient-ticking';
 import { PeriodicEventHandler } from './periodic-events/periodic-event-handler';
 
 export class ExerciseWrapper extends NormalType<

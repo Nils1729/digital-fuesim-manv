@@ -1,14 +1,10 @@
-import type {
-    ExerciseState,
-    HealthPoints,
-    PatientUpdate,
-    PersonnelType,
-} from 'digital-fuesim-manv-shared';
-import {
-    getElement,
-    healthPointsDefaults,
-    Patient,
-} from 'digital-fuesim-manv-shared';
+import type { HealthPoints, PersonnelType } from '../../../models';
+import { healthPointsDefaults } from '../../../models/utils';
+import { Patient } from '../../../models/patient';
+import type { ExerciseState } from '../../../state';
+import { StrictObject } from '../../../utils';
+import { getElement } from './get-element';
+import type { PatientUpdate } from './patient-updates';
 
 /**
  * The count of assigned personnel and material that cater for a {@link Patient}.
@@ -25,7 +21,7 @@ export function patientTick(
     state: ExerciseState,
     patientTickInterval: number
 ): PatientUpdate[] {
-    return Object.values(state.patients)
+    return StrictObject.values(state.patients)
         .filter((patient) => Patient.canBeTreated(patient))
         .map((patient) => {
             // update the time a patient is being treated, to check for pretriage later
@@ -69,11 +65,11 @@ function getDedicatedResources(
         rettSan: 0,
         san: 0,
         gf: 0,
-        material: Object.keys(patient.assignedMaterialIds).length,
+        material: StrictObject.keys(patient.assignedMaterialIds).length,
     };
 
     // Get the number of every personnel
-    Object.keys(patient.assignedPersonnelIds).forEach(
+    StrictObject.keys(patient.assignedPersonnelIds).forEach(
         (personnelId) =>
             cateringTypes[
                 getElement(state, 'personnel', personnelId).personnelType
