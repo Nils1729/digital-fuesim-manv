@@ -1,0 +1,15 @@
+{
+    "name": "nh-thesis",
+    "version": "1.0.0",
+    "description": "",
+    "scripts": {
+        "cy:tick:firefox": "cypress run --spec cypress/tick-patients.cy.ts --browser firefox"
+    },
+    "private": true,
+    "dependencies": {
+        "cypress": "^12.13.0",
+        "digital-fuesim-manv-shared": "file:../shared",
+        "digital-fuesim-manv-frontend": "file:../frontend",
+        "socket.io-client": "^4.6.2"
+    }
+}

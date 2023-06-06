@@ -4,11 +4,11 @@ import type {
     Patient,
     Personnel,
     Vehicle,
+    SimulatedRegion,
 } from 'digital-fuesim-manv-shared';
 import {
     MapPosition,
     PatientTemplate,
-    SimulatedRegion,
     cloneDeepMutable,
     createVehicleParameters,
     defaultPatientCategories,
@@ -22,7 +22,7 @@ import {
 import {
     reconstituteSimulatedRegionTemplate,
     stereotypes,
-} from '../src/app/pages/exercises/exercise/shared/editor-panel/templates/simulated-region';
+} from '../../frontend/src/app/pages/exercises/exercise/shared/editor-panel/templates/simulated-region';
 
 export class ScenarioBuilder {
     draftState: Mutable<ExerciseState>;

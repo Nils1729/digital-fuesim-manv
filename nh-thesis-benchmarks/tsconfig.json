@@ -1,0 +1,18 @@
+{
+    "extends": "../tsconfig.base.json",
+    "compileOnSave": false,
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "baseUrl": "./",
+        "outDir": "./dist/out-tsc",
+        "lib": ["ES2022", "dom"],
+        "useDefineForClassFields": false
+    },
+    "include": ["src", "cypress/benchmark.cy.ts", "cypress/tick-patient.cy.ts"],
+    "angularCompilerOptions": {
+        "enableI18nLegacyMessageIdFormat": false,
+        "strictInjectionParameters": true,
+        "strictInputAccessModifiers": true,
+        "strictTemplates": true
+    }
+}

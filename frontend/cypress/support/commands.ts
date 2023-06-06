@@ -49,6 +49,7 @@ import type {
     ExerciseAction,
 } from 'digital-fuesim-manv-shared';
 import { io } from 'socket.io-client';
+import type { ActionTiming } from '../../src/app/shared/benchmark-data';
 
 export function dragToMap(
     elementSelector: string,
@@ -72,6 +73,21 @@ export function dragToMap(
 
 export function store() {
     return cy.window().its('cypressTestingValues').its('store');
+}
+
+declare global {
+    interface Window {
+        __thesis: {
+            actionTiming: ActionTiming;
+        };
+    }
+}
+export function thesis() {
+    return cy.window().its('__thesis');
+}
+
+export function actionTiming() {
+    return cy.thesis().its('actionTiming');
 }
 
 export function getState() {

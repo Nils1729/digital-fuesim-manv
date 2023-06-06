@@ -39,6 +39,7 @@ import {
     selectVisibleVehicles,
 } from '../state/application/selectors/shared.selectors';
 import { selectStateSnapshot } from '../state/get-state-snapshot';
+import { actionTiming } from '../shared/benchmark-data';
 import { websocketOrigin } from './api-origins';
 import { MessageService } from './messages/message.service';
 import { OptimisticActionHandler } from './optimistic-action-handler';
@@ -155,8 +156,11 @@ export class ExerciseService {
             (exercise) =>
                 this.store.dispatch(createSetExerciseStateAction(exercise)),
             () => selectStateSnapshot(selectExerciseState, this.store),
-            (action) =>
-                this.store.dispatch(createApplyServerActionAction(action)),
+            actionTiming.measureWrap<(action: ExerciseAction) => void>(
+                (action) =>
+                    this.store.dispatch(createApplyServerActionAction(action)),
+                (args) => args[0].type
+            ),
             async (action) => {
                 const response = await new Promise<SocketResponse>(
                     (resolve) => {
