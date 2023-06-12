@@ -72,10 +72,16 @@ export class ExerciseService {
         private readonly store: Store<AppState>,
         private readonly messageService: MessageService
     ) {
-        this.socket.on('performAction', (action: ExerciseAction) => {
-            freeze(action, true);
-            this.optimisticActionHandler?.performAction(action);
-        });
+        this.socket.on(
+            'performAction',
+            actionTiming.measureWrap<(action: ExerciseAction) => void>(
+                (action: ExerciseAction) => {
+                    freeze(action, true);
+                    this.optimisticActionHandler?.performAction(action);
+                },
+                (args) => ({ type: args[0].type, stage: 'receive' })
+            )
+        );
         this.socket.on('disconnect', (reason) => {
             if (reason === 'io client disconnect') {
                 return;
@@ -159,7 +165,7 @@ export class ExerciseService {
             actionTiming.measureWrap<(action: ExerciseAction) => void>(
                 (action) =>
                     this.store.dispatch(createApplyServerActionAction(action)),
-                (args) => args[0].type
+                (args) => ({ type: args[0].type, stage: 'apply' })
             ),
             async (action) => {
                 const response = await new Promise<SocketResponse>(

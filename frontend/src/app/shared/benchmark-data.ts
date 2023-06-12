@@ -1,81 +1,97 @@
 import type { ExerciseAction } from 'digital-fuesim-manv-shared';
-import { StrictObject } from 'digital-fuesim-manv-shared';
 
-export class ActionTiming<Key extends string = ExerciseAction['type']> {
-    _timings: { [key in Key]?: number[] } = {};
+export interface ActionTimeRecord {
+    ctx: {
+        // action type
+        type: ExerciseAction['type'];
+        stage?: 'apply' | 'receive';
+    };
+    ms: number;
+}
 
-    add(type: Key, time: number) {
-        this._timings[type] ??= [];
-        this._timings[type]?.push(time);
+export class ActionTiming {
+    _timings: ActionTimeRecord[] = [];
+
+    add(time: number, context: ActionTimeRecord['ctx']) {
+        this._timings.push({
+            ms: time,
+            ctx: context,
+        });
     }
 
     measureWrap<FuncType extends (...args: any) => any>(
         f: (...args: Parameters<FuncType>) => ReturnType<FuncType>,
-        keyExtractor: (
+        contextExtractor: (
             args: Parameters<FuncType>,
             ret: ReturnType<FuncType>
-        ) => Key
+        ) => ActionTimeRecord['ctx']
     ) {
         return (...args: Parameters<FuncType>) => {
             const beforeProcessing = performance.now();
             const ret = f(...args);
             const afterProcessing = performance.now();
             this.add(
-                keyExtractor(args, ret),
-                afterProcessing - beforeProcessing
+                afterProcessing - beforeProcessing,
+                contextExtractor(args, ret)
             );
         };
     }
 
-    measureTime(key: Key, f: () => void) {
-        const beforeProcessing = performance.now();
-        f();
-        const afterProcessing = performance.now();
-        this.add(key, afterProcessing - beforeProcessing);
-    }
-
     clear() {
-        this._timings = {};
+        this._timings = [];
     }
 
-    stats(n?: number) {
-        return Object.fromEntries(
-            StrictObject.entries(this._timings)
-                .filter(([k, v]) => !!v)
-                .map(([actionType, values]) => {
-                    const v = values!.slice(0, n);
+    series(seriesLimit?: number) {
+        const series: { ctx: ActionTimeRecord['ctx']; times: number[] }[] = [];
+        this._timings.forEach(({ ctx, ms }) => {
+            let s = series.find(
+                (a) => a.ctx.stage === ctx.stage && a.ctx.type === ctx.type
+            );
+            if (!s) {
+                s = { ctx, times: [] };
+                series.push(s);
+            }
+            if (!seriesLimit || s.times.length < seriesLimit) {
+                s.times.push(ms);
+            }
+        });
+        return series;
+    }
 
-                    const plus = (a: number, b: number) => a + b;
-                    const count = v.length;
-                    const total = v.reduce(plus, 0);
-                    const avg = total / count;
-                    const stddev =
-                        v.map((a) => (a * a) / count).reduce(plus, 0) -
-                        avg * avg;
-                    const variance = Math.sqrt(stddev);
-                    v.sort((a, b) => a - b);
+    series_stats(seriesLimit?: number) {
+        const series = this.series(seriesLimit);
+        return series.map(({ ctx, times }) => ({
+            ctx,
+            stats: this.stat(times),
+        }));
+    }
 
-                    const max = v[count - 1];
-                    const min = v[0];
-                    const med =
-                        (v[Math.floor((count - 1) / 2)]! +
-                            v[Math.ceil((count - 1) / 2)]!) /
-                        2;
-                    return [
-                        actionType,
-                        {
-                            count,
-                            total,
-                            avg,
-                            stddev,
-                            variance,
-                            min,
-                            med,
-                            max,
-                        },
-                    ];
-                })
-        );
+    stat(times: number[]) {
+        const plus = (a: number, b: number) => a + b;
+        const count = times.length;
+        const total = times.reduce(plus, 0);
+        const avg = total / count;
+        const stddev =
+            times.map((a) => (a * a) / count).reduce(plus, 0) - avg * avg;
+        const variance = Math.sqrt(stddev);
+        times.sort((a, b) => a - b);
+
+        const max = times[count - 1];
+        const min = times[0];
+        const med =
+            (times[Math.floor((count - 1) / 2)]! +
+                times[Math.ceil((count - 1) / 2)]!) /
+            2;
+        return {
+            count,
+            total,
+            avg,
+            stddev,
+            variance,
+            min,
+            med,
+            max,
+        };
     }
 
     raw() {
@@ -83,7 +99,7 @@ export class ActionTiming<Key extends string = ExerciseAction['type']> {
     }
 
     table() {
-        console.table(this.stats());
+        console.table(this.series_stats());
     }
 }
 
