@@ -14,6 +14,7 @@ import {
     ReducerError,
     validateExerciseAction,
     validateExerciseState,
+    patientTick
 } from 'digital-fuesim-manv-shared';
 import type { EntityManager } from 'typeorm';
 import { LessThan } from 'typeorm';
