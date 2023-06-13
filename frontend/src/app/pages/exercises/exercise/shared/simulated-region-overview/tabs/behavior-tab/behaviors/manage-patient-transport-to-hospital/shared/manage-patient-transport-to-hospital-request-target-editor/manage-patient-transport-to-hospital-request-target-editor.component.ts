@@ -31,7 +31,9 @@ export class ManagePatientTransportToHospitalRequestTargetEditorComponent
     @Input() behaviorId!: UUID;
 
     public behaviorState$!: Observable<ManagePatientTransportToHospitalBehaviorState>;
-    public possibleRequestTargets$!: Observable<(SimulatedRegion | SimulatedRegionStandIn)[]>;
+    public possibleRequestTargets$!: Observable<
+        (SimulatedRegion | SimulatedRegionStandIn)[]
+    >;
 
     constructor(
         private readonly store: Store<AppState>,

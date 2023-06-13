@@ -132,23 +132,16 @@ export class ExerciseService {
             });
             return false;
         }
-        const getStateResponse = await new Promise<
-            SocketResponse<ExerciseState>
-        >((resolve) => {
-            this.socket.emit('getState', resolve);
-        });
-        freeze(getStateResponse, true);
-        if (!getStateResponse.success) {
-            this.messageService.postError({
-                title: 'Fehler beim Laden der Übung',
-                error: getStateResponse.message,
-            });
+
+        const fetchedState = await this.fetchStateFromServer();
+        if (fetchedState === undefined) {
             return false;
         }
+
         this.store.dispatch(
             createJoinExerciseAction(
                 joinResponse.payload,
-                getStateResponse.payload,
+                fetchedState,
                 exerciseId,
                 clientName
             )
@@ -191,6 +184,23 @@ export class ExerciseService {
         );
         this.startNotifications();
         return true;
+    }
+
+    public async fetchStateFromServer() {
+        const getStateResponse = await new Promise<
+            SocketResponse<ExerciseState>
+        >((resolve) => {
+            this.socket.emit('getState', resolve);
+        });
+        freeze(getStateResponse, true);
+        if (!getStateResponse.success) {
+            this.messageService.postError({
+                title: 'Fehler beim Laden der Übung',
+                error: getStateResponse.message,
+            });
+            return;
+        }
+        return getStateResponse.payload;
     }
 
     /**

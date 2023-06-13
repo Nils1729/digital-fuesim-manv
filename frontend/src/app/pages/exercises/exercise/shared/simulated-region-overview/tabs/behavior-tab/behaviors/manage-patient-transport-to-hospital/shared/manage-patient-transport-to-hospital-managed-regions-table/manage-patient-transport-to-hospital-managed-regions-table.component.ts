@@ -33,9 +33,13 @@ export class ManagePatientTransportToHospitalManagedRegionsTableComponent
     @Input() behaviorId!: UUID;
 
     public behaviorState$!: Observable<ManagePatientTransportToHospitalBehaviorState>;
-    public managedSimulatedRegions$!: Observable<(SimulatedRegion | SimulatedRegionStandIn)[]>;
+    public managedSimulatedRegions$!: Observable<
+        (SimulatedRegion | SimulatedRegionStandIn)[]
+    >;
     public patientStatusOptions$!: Observable<PatientStatus[]>;
-    public possibleNewSimulatedRegionsToManage$!: Observable<(SimulatedRegion | SimulatedRegionStandIn)[]>;
+    public possibleNewSimulatedRegionsToManage$!: Observable<
+        (SimulatedRegion | SimulatedRegionStandIn)[]
+    >;
 
     public selectedSimulatedRegionId?: UUID;
 

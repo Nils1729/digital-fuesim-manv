@@ -124,6 +124,7 @@ export function getBehaviorById<T extends ExerciseSimulationBehaviorType>(
         'simulatedRegion',
         simulatedRegionId
     );
+    SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
     const behavior = simulatedRegion.behaviors.find((b) => b.id === behaviorId);
     if (!behavior) {
         throw new ReducerError(
@@ -149,6 +150,7 @@ export function getActivityById<T extends ExerciseSimulationActivityType>(
         'simulatedRegion',
         simulatedRegionId
     );
+    SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
     const activity = simulatedRegion.activities[activityId];
     if (!activity) {
         throw new ReducerError(

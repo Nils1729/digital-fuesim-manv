@@ -2,6 +2,7 @@ import { createAction } from '@ngrx/store';
 import type {
     ExerciseAction,
     ExerciseState,
+    SimulatedRegion,
     UUID,
 } from 'digital-fuesim-manv-shared';
 
@@ -51,4 +52,13 @@ export const createApplyServerActionAction = createAction(
 export const createSetExerciseStateAction = createAction(
     '[Exercise] Set state',
     (exercise: ExerciseState) => ({ exercise })
+);
+
+export const createReplaceRegionWithStandInAction = createAction(
+    '[StandIn] SimulatedRegion -> StandIn',
+    (simulatedRegionId: UUID) => ({ simulatedRegionId })
+);
+export const createRestoreRegionStandInAction = createAction(
+    '[StandIn]  StandIn -> SimulatedRegion',
+    (simulatedRegion: SimulatedRegion) => ({ simulatedRegion })
 );

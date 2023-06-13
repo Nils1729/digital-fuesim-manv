@@ -11,6 +11,7 @@ import type {
     WithPosition,
 } from 'digital-fuesim-manv-shared';
 import {
+    SimulatedRegionMissingError,
     isInSpecificSimulatedRegion,
     isInTransfer,
     nestedCoordinatesOf,
@@ -219,14 +220,20 @@ export function createSelectByPredicate<E extends WithPosition>(
 export function createSelectBehaviorStates(simulatedRegionId: UUID) {
     return createSelector(
         createSelectSimulatedRegion(simulatedRegionId),
-        (simulatedRegion) => simulatedRegion.behaviors
+        (simulatedRegion) => {
+            SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
+            return simulatedRegion.behaviors;
+        }
     );
 }
 
 export function createSelectActivityStates(simulatedRegionId: UUID) {
     return createSelector(
         createSelectSimulatedRegion(simulatedRegionId),
-        (simulatedRegion) => simulatedRegion.activities
+        (simulatedRegion) => {
+            SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
+            return simulatedRegion.activities;
+        }
     );
 }
 

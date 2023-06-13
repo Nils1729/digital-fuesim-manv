@@ -339,6 +339,7 @@ export namespace SimulatedRegionActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
                 simulatedRegion.behaviors.push(cloneDeepMutable(behaviorState));
 
                 logBehaviorAdded(

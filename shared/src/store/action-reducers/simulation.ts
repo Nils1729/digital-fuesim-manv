@@ -658,6 +658,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
+
                 const behaviorStates = simulatedRegion.behaviors;
                 const treatPatientsBehaviorState = behaviorStates.find(
                     (behaviorState) => behaviorState.id === behaviorStateId
@@ -771,6 +773,7 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
                 const behaviorState = simulatedRegion.behaviors.find(
                     (behavior) => behavior.id === behaviorId
                 ) as Mutable<UnloadArrivingVehiclesBehaviorState> | undefined;
@@ -968,6 +971,7 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
                 const reportBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -1027,6 +1031,7 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
                 const reportBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -1084,6 +1089,7 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
                 const reportBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,

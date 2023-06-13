@@ -38,7 +38,9 @@ const unavailableClient = Client.create('Unbekannt', 'participant');
 export class RadiogramCardComponent implements OnInit {
     @Input() radiogramId!: UUID;
     radiogram$!: Observable<ExerciseRadiogram>;
-    simulatedRegion$!: Observable<SimulatedRegion | SimulatedRegionStandIn | undefined>;
+    simulatedRegion$!: Observable<
+        SimulatedRegion | SimulatedRegionStandIn | undefined
+    >;
 
     ownClientId!: UUID;
 

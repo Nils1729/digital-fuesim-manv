@@ -1,6 +1,17 @@
 <ng-container *appLet="simulatedRegion$ | async as simulatedRegion">
-    <ng-container *ngIf="simulatedRegion.type === 'simulatedRegion'; else regionIsStandIn">
+    <ng-container
+        *ngIf="simulatedRegion.type === 'simulatedRegion'; else regionIsStandIn"
+    >
         <div class="h-100 d-flex flex-column">
+            <button
+                class="btn btn-secondary"
+                type="button"
+                (click)="
+                    standInService.replaceRegionWithStandIn(simulatedRegionId)
+                "
+            >
+                Replace with StandIn
+            </button>
             <nav
                 #nav="ngbNav"
                 ngbNav
@@ -90,6 +101,15 @@
     </ng-container>
     <ng-template #regionIsStandIn>
         <div class="h-100 d-flex flex-column">
+            <button
+                class="btn btn-secondary"
+                type="button"
+                (click)="
+                    standInService.replaceStandInWithRegion(simulatedRegionId)
+                "
+            >
+                Replace with real region
+            </button>
             Diese Region ist nicht geladen.
         </div>
     </ng-template>

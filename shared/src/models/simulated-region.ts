@@ -10,7 +10,7 @@ import { getSimulationActivityConstructor } from '../simulation/activities/exerc
 import type { ExerciseSimulationBehaviorState } from '../simulation/behaviors/exercise-simulation-behavior';
 import { simulationBehaviorTypeOptions } from '../simulation/behaviors/exercise-simulation-behavior';
 import type { ImageProperties, MapCoordinates } from './utils';
-import { getCreate, MapPosition, Position, Size } from './utils';
+import { MapPosition, Position, Size, getCreate } from './utils';
 
 /**
  * Basic info about a region, used as a mock if the real region is missing on the client.
@@ -40,20 +40,6 @@ export class SimulatedRegionStandIn {
 
     @IsString()
     public readonly borderColor: string;
-
-    @Type(...simulationEventTypeOptions)
-    @ValidateNested()
-    public readonly inEvents: readonly ExerciseSimulationEvent[] = [];
-
-    @Type(...simulationBehaviorTypeOptions)
-    @ValidateNested()
-    public readonly behaviors: readonly ExerciseSimulationBehaviorState[] = [];
-
-    @IsMultiTypedIdMap(getSimulationActivityConstructor)
-    @ValidateNested()
-    public readonly activities: {
-        readonly [stateId: UUID]: ExerciseSimulationActivityState;
-    } = {};
 
     /**
      * @param position top-left position

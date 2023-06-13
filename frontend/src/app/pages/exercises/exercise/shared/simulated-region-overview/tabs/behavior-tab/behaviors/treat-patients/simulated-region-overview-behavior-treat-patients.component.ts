@@ -1,7 +1,7 @@
 import type { OnInit } from '@angular/core';
 import { Component, Input } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import { UUID } from 'digital-fuesim-manv-shared';
+import { SimulatedRegionMissingError, UUID } from 'digital-fuesim-manv-shared';
 import type {
     TreatPatientsBehaviorState,
     DelayEventActivityState,
@@ -115,6 +115,8 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
                 if (behaviorState.treatmentProgress === 'unknown') {
                     if (!behaviorState.treatmentActivityId) return null;
 
+                    SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
+
                     const reassignActivity = simulatedRegion.activities[
                         behaviorState.treatmentActivityId
                     ] as ReassignTreatmentsActivityState | undefined;
@@ -129,6 +131,8 @@ export class SimulatedRegionOverviewBehaviorTreatPatientsComponent
                 }
 
                 if (behaviorState.delayActivityId === null) return null;
+
+                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
 
                 const delayActivity = simulatedRegion.activities[
                     behaviorState.delayActivityId

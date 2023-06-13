@@ -115,8 +115,9 @@ export const selectVisibleMapImages = selectVisibleElementsFactory<MapImage>(
 );
 export const selectVisibleTransferPoints =
     selectVisibleElementsFactory<TransferPoint>(selectTransferPoints);
-export const selectVisibleSimulatedRegions =
-    selectVisibleElementsFactory<SimulatedRegion | SimulatedRegionStandIn>(selectSimulatedRegions);
+export const selectVisibleSimulatedRegions = selectVisibleElementsFactory<
+    SimulatedRegion | SimulatedRegionStandIn
+>(selectSimulatedRegions);
 
 export const selectVisibleCateringLines = createSelector(
     selectRestrictedViewport,

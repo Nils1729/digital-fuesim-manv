@@ -1,7 +1,10 @@
 import type { OnDestroy, OnInit } from '@angular/core';
 import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import type { SimulatedRegion, SimulatedRegionStandIn } from 'digital-fuesim-manv-shared';
+import type {
+    SimulatedRegion,
+    SimulatedRegionStandIn,
+} from 'digital-fuesim-manv-shared';
 import { UUID, isInSpecificSimulatedRegion } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { Subject, takeUntil } from 'rxjs';
@@ -10,6 +13,7 @@ import {
     selectTransferPoints,
     createSelectSimulatedRegion,
 } from 'src/app/state/application/selectors/exercise.selectors';
+import { SimregStandinService } from 'src/app/state/standins/simreg-standin.service';
 import { SelectPatientService } from '../select-patient.service';
 import type { TransferOptions } from '../start-transfer.service';
 import { StartTransferService } from '../start-transfer.service';
@@ -57,7 +61,8 @@ export class SimulatedRegionOverviewGeneralComponent
     constructor(
         private readonly store: Store<AppState>,
         readonly selectPatientService: SelectPatientService,
-        readonly startTransferService: StartTransferService
+        readonly startTransferService: StartTransferService,
+        readonly standInService: SimregStandinService
     ) {}
 
     ngOnInit(): void {

@@ -33,7 +33,10 @@ import type { PopupService } from '../utility/popup.service';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class SimulatedRegionFeatureManager
-    extends MoveableFeatureManager<SimulatedRegion | SimulatedRegionStandIn, Polygon>
+    extends MoveableFeatureManager<
+        SimulatedRegion | SimulatedRegionStandIn,
+        Polygon
+    >
     implements FeatureManager<Polygon>
 {
     public register(
