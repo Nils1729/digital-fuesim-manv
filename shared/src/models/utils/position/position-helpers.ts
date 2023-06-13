@@ -1,7 +1,10 @@
 import type { ExerciseState } from '../../../state';
 import { getElement } from '../../../store/action-reducers/utils/get-element';
 import type { Mutable, UUID } from '../../../utils';
-import type { SimulatedRegion } from '../../simulated-region';
+import type {
+    SimulatedRegion,
+    SimulatedRegionStandIn,
+} from '../../simulated-region';
 import type { Transfer } from '../transfer';
 import { MapCoordinates } from './map-coordinates';
 import type { MapPosition } from './map-position';
@@ -98,7 +101,7 @@ export function currentSimulatedRegionIdOf(withPosition: WithPosition): UUID {
 export function currentSimulatedRegionOf(
     draftState: Mutable<ExerciseState>,
     withPosition: WithPosition
-): Mutable<SimulatedRegion> {
+): Mutable<SimulatedRegion | SimulatedRegionStandIn> {
     if (isInSimulatedRegion(withPosition)) {
         return getElement(
             draftState,

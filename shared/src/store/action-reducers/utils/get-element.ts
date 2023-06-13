@@ -9,7 +9,7 @@ import type { ExerciseState } from '../../../state';
 import type { Mutable, UUID } from '../../../utils';
 import type { ElementTypePluralMap } from '../../../utils/element-type-plural-map';
 import { elementTypePluralMap } from '../../../utils/element-type-plural-map';
-import { ReducerError } from '../../reducer-error';
+import { ReducerError, SimulatedRegionMissingError } from '../../reducer-error';
 
 /**
  * @returns The element with the given id
@@ -103,6 +103,7 @@ export function getExerciseBehaviorById(
         'simulatedRegion',
         simulatedRegionId
     );
+    SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
     const behavior = simulatedRegion.behaviors.find((b) => b.id === behaviorId);
     if (!behavior) {
         throw new ReducerError(

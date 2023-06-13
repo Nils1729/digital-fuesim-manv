@@ -12,6 +12,7 @@ export function simulateAllRegions(
     tickInterval: number
 ) {
     Object.values(draftState.simulatedRegions).forEach((simulatedRegion) => {
+        if (simulatedRegion.type === 'simulatedRegionStandIn') return;
         simulateSingleRegion(draftState, simulatedRegion, tickInterval);
     });
 }

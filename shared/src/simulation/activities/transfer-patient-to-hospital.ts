@@ -14,6 +14,7 @@ import {
 import { catchAllHospitalId } from '../../data/default-state/catch-all-hospital';
 import { getElement, tryGetElement } from '../../store/action-reducers/utils';
 import { Patient } from '../../models/patient';
+import { SimulatedRegionMissingError } from '../../store/reducer-error';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -107,6 +108,9 @@ export const transferPatientToHospitalActivity: SimulationActivity<TransferPatie
             );
 
             if (transferManagementRegion !== undefined) {
+                SimulatedRegionMissingError.throwIfMissing(
+                    transferManagementRegion
+                );
                 patients.forEach((patient) => {
                     sendSimulationEvent(
                         transferManagementRegion,

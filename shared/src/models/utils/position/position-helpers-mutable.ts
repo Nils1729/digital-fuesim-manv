@@ -40,6 +40,7 @@ type MovableType =
     | 'patient'
     | 'personnel'
     | 'simulatedRegion'
+    | 'simulatedRegionStandIn'
     | 'transferPoint'
     | 'vehicle'
     | 'viewport';
@@ -50,7 +51,15 @@ export function changePositionWithId(
     type: MovableType,
     inState: Mutable<ExerciseState>
 ) {
-    changePosition(getElement(inState, type, of) as any, to, inState);
+    changePosition(
+        getElement(
+            inState,
+            type === 'simulatedRegionStandIn' ? 'simulatedRegion' : type,
+            of
+        ) as any,
+        to,
+        inState
+    );
 }
 
 export function changePosition(

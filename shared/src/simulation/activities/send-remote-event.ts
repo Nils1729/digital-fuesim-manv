@@ -6,6 +6,7 @@ import { IsValue } from '../../utils/validators';
 import { ExerciseSimulationEvent, simulationEventTypeOptions } from '../events';
 import { sendSimulationEvent } from '../events/utils';
 import { tryGetElement } from '../../store/action-reducers/utils';
+import { SimulatedRegionMissingError } from '../../store/reducer-error';
 import type {
     SimulationActivity,
     SimulationActivityState,
@@ -57,6 +58,9 @@ export const sendRemoteEventActivity: SimulationActivity<SendRemoteEventActivity
                 activityState.targetSimulatedRegionId
             );
             if (targetSimulatedRegion) {
+                SimulatedRegionMissingError.throwIfMissing(
+                    targetSimulatedRegion
+                );
                 sendSimulationEvent(targetSimulatedRegion, activityState.event);
             }
             terminate();

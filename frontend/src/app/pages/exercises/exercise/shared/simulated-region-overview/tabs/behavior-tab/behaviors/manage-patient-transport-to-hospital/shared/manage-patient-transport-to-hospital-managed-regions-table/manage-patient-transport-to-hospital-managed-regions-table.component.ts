@@ -5,6 +5,7 @@ import type {
     ManagePatientTransportToHospitalBehaviorState,
     SimulatedRegion,
     PatientStatus,
+    SimulatedRegionStandIn,
 } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
@@ -32,9 +33,9 @@ export class ManagePatientTransportToHospitalManagedRegionsTableComponent
     @Input() behaviorId!: UUID;
 
     public behaviorState$!: Observable<ManagePatientTransportToHospitalBehaviorState>;
-    public managedSimulatedRegions$!: Observable<SimulatedRegion[]>;
+    public managedSimulatedRegions$!: Observable<(SimulatedRegion | SimulatedRegionStandIn)[]>;
     public patientStatusOptions$!: Observable<PatientStatus[]>;
-    public possibleNewSimulatedRegionsToManage$!: Observable<SimulatedRegion[]>;
+    public possibleNewSimulatedRegionsToManage$!: Observable<(SimulatedRegion | SimulatedRegionStandIn)[]>;
 
     public selectedSimulatedRegionId?: UUID;
 

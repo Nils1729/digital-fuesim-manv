@@ -27,7 +27,7 @@ import {
 } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
+import { ReducerError, SimulatedRegionMissingError } from '../reducer-error';
 import { PatientRemovedEvent } from '../../simulation/events';
 import { sendSimulationEvent } from '../../simulation/events/utils';
 import { updateTreatments } from './utils/calculate-treatments';
@@ -47,6 +47,7 @@ export function deletePatient(
     const patient = getElement(draftState, 'patient', patientId);
     if (isInSimulatedRegion(patient)) {
         const simulatedRegion = currentSimulatedRegionOf(draftState, patient);
+        SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
         sendSimulationEvent(
             simulatedRegion,
             PatientRemovedEvent.create(patientId)
@@ -189,6 +190,7 @@ export namespace PatientActionReducers {
                     'simulatedRegion',
                     currentSimulatedRegionIdOf(patient)
                 );
+                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
                 sendSimulationEvent(
                     simulatedRegion,
                     PatientRemovedEvent.create(patientId)
@@ -225,6 +227,7 @@ export namespace PatientActionReducers {
                     'simulatedRegion',
                     currentSimulatedRegionIdOf(patient)
                 );
+                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
                 sendSimulationEvent(
                     simulatedRegion,
                     PatientRemovedEvent.create(patientId)

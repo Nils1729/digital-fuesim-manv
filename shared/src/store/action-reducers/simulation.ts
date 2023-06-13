@@ -41,7 +41,11 @@ import {
 } from '../../utils';
 import { IsLiteralUnion, IsUUIDSet, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ExpectedReducerError, ReducerError } from '../reducer-error';
+import {
+    ExpectedReducerError,
+    ReducerError,
+    SimulatedRegionMissingError,
+} from '../reducer-error';
 import {
     PatientStatus,
     requestTargetTypeOptions,
@@ -806,6 +810,7 @@ export namespace SimulationActionReducers {
                 'simulatedRegion',
                 simulatedRegionId
             );
+            SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
             sendSimulationEvent(
                 simulatedRegion,
                 StartCollectingInformationEvent.create(informationType)
@@ -1206,6 +1211,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
+
                 logBehavior(
                     draftState,
                     [],
@@ -1321,6 +1328,7 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
 
                 logBehavior(
                     draftState,
@@ -1646,6 +1654,7 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
 
                 let event: ExerciseSimulationEvent;
                 if (Object.keys(cloneDeepMutable(patients)).length === 0) {

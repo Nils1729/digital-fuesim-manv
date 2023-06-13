@@ -26,7 +26,11 @@ import { sendSimulationEvent } from '../../simulation/events/utils';
 import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ExpectedReducerError, ReducerError } from '../reducer-error';
+import {
+    ExpectedReducerError,
+    ReducerError,
+    SimulatedRegionMissingError,
+} from '../reducer-error';
 import { TransferPointActionReducers } from './transfer-point';
 import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement, getElementByPredicate } from './utils/get-element';
@@ -262,6 +266,7 @@ export namespace SimulatedRegionActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
                 const element = getElement(
                     draftState,
                     elementToBeAddedType,
@@ -356,6 +361,7 @@ export namespace SimulatedRegionActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
                 const index = simulatedRegion.behaviors.findIndex(
                     (behavior) => behavior.id === behaviorId
                 );

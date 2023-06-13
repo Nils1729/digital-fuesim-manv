@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 import type {
     ManagePatientTransportToHospitalBehaviorState,
     SimulatedRegion,
+    SimulatedRegionStandIn,
 } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
@@ -30,7 +31,7 @@ export class ManagePatientTransportToHospitalRequestTargetEditorComponent
     @Input() behaviorId!: UUID;
 
     public behaviorState$!: Observable<ManagePatientTransportToHospitalBehaviorState>;
-    public possibleRequestTargets$!: Observable<SimulatedRegion[]>;
+    public possibleRequestTargets$!: Observable<(SimulatedRegion | SimulatedRegionStandIn)[]>;
 
     constructor(
         private readonly store: Store<AppState>,

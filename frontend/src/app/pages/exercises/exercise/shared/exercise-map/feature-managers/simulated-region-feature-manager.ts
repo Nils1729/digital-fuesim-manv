@@ -4,6 +4,7 @@ import type {
     SimulatedRegion,
     // eslint-disable-next-line @typescript-eslint/no-shadow
     Element,
+    SimulatedRegionStandIn,
 } from 'digital-fuesim-manv-shared';
 import { MapCoordinates, Size } from 'digital-fuesim-manv-shared';
 import type { Feature, MapBrowserEvent } from 'ol';
@@ -32,7 +33,7 @@ import type { PopupService } from '../utility/popup.service';
 import { MoveableFeatureManager } from './moveable-feature-manager';
 
 export class SimulatedRegionFeatureManager
-    extends MoveableFeatureManager<SimulatedRegion, Polygon>
+    extends MoveableFeatureManager<SimulatedRegion | SimulatedRegionStandIn, Polygon>
     implements FeatureManager<Polygon>
 {
     public register(

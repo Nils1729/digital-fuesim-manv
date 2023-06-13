@@ -1,7 +1,7 @@
 import type { OnDestroy, OnInit } from '@angular/core';
 import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
-import type { SimulatedRegion } from 'digital-fuesim-manv-shared';
+import type { SimulatedRegion, SimulatedRegionStandIn } from 'digital-fuesim-manv-shared';
 import { UUID, isInSpecificSimulatedRegion } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import { Subject, takeUntil } from 'rxjs';
@@ -37,7 +37,7 @@ export class SimulatedRegionOverviewGeneralComponent
 {
     @Input() simulatedRegionId!: UUID;
 
-    simulatedRegion$!: Observable<SimulatedRegion>;
+    simulatedRegion$!: Observable<SimulatedRegion | SimulatedRegionStandIn>;
 
     selectedPatientId!: UUID;
 

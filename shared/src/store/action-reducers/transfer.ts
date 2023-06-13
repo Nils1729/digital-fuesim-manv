@@ -24,7 +24,7 @@ import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import type { AllowedValues } from '../../utils/validators';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
+import { ReducerError, SimulatedRegionMissingError } from '../reducer-error';
 import { sendSimulationEvent } from '../../simulation/events/utils';
 import { TransferPoint } from '../../models/transfer-point';
 import { PersonnelAvailableEvent } from '../../simulation/events/personnel-available';
@@ -77,6 +77,7 @@ export function letElementArrive(
             'simulatedRegion',
             simulatedRegionIdOfPosition(newPosition)
         );
+        SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
         if (elementType === 'personnel') {
             sendSimulationEvent(
                 simulatedRegion,

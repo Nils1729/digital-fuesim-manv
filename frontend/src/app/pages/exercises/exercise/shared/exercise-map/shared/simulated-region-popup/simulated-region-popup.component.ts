@@ -2,7 +2,7 @@ import type { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Store } from '@ngrx/store';
-import type { UUID, SimulatedRegion } from 'digital-fuesim-manv-shared';
+import type { UUID, SimulatedRegion, SimulatedRegionStandIn } from 'digital-fuesim-manv-shared';
 import type { Observable } from 'rxjs';
 import type { AppState } from 'src/app/state/app.state';
 import { createSelectSimulatedRegion } from 'src/app/state/application/selectors/exercise.selectors';
@@ -19,7 +19,7 @@ export class SimulatedRegionPopupComponent implements OnInit {
     // These properties are only set after OnInit
     public simulatedRegionId!: UUID;
 
-    public simulatedRegion$?: Observable<SimulatedRegion>;
+    public simulatedRegion$?: Observable<SimulatedRegion | SimulatedRegionStandIn>;
     public readonly currentRole$ = this.store.select(selectCurrentRole);
 
     constructor(

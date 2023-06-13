@@ -4,6 +4,7 @@ import { createSelector, Store } from '@ngrx/store';
 import type {
     ExerciseRadiogram,
     SimulatedRegion,
+    SimulatedRegionStandIn,
 } from 'digital-fuesim-manv-shared';
 import {
     Client,
@@ -37,7 +38,7 @@ const unavailableClient = Client.create('Unbekannt', 'participant');
 export class RadiogramCardComponent implements OnInit {
     @Input() radiogramId!: UUID;
     radiogram$!: Observable<ExerciseRadiogram>;
-    simulatedRegion$!: Observable<SimulatedRegion | undefined>;
+    simulatedRegion$!: Observable<SimulatedRegion | SimulatedRegionStandIn | undefined>;
 
     ownClientId!: UUID;
 

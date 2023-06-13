@@ -1,9 +1,4 @@
-import {
-    IsBoolean,
-    IsInt,
-    IsOptional,
-    IsPositive,
-} from 'class-validator';
+import { IsBoolean, IsInt, IsOptional, IsPositive } from 'class-validator';
 import type { Personnel, PersonnelType, Vehicle } from '../../models';
 import {
     createPersonnelTypeTag,
