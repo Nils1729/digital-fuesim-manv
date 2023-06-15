@@ -1,10 +1,10 @@
-import { createAction } from '@ngrx/store';
+import { createAction, props } from '@ngrx/store';
 import type {
     ExerciseAction,
     ExerciseState,
-    SimulatedRegion,
     UUID,
 } from 'digital-fuesim-manv-shared';
+import type { SimRegAssociatedElements } from '../standins/simreg-standin-helpers';
 
 export const createStartTimeTravelAction = createAction(
     '[Application] Start time travel',
@@ -60,5 +60,5 @@ export const createReplaceRegionWithStandInAction = createAction(
 );
 export const createRestoreRegionStandInAction = createAction(
     '[StandIn]  StandIn -> SimulatedRegion',
-    (simulatedRegion: SimulatedRegion) => ({ simulatedRegion })
+    props<SimRegAssociatedElements>()
 );

@@ -45,7 +45,18 @@ export namespace StrictObject {
      * See {@link StrictObject}
      * @returns an object from an array of key/value pairs
      */
-    export function fromEntries<K extends string, V>(objectEntries: [K, V][]) {
+    export function fromEntries<K extends number | string | symbol, V>(
+        objectEntries: [K, V][]
+    ) {
         return Object.fromEntries(objectEntries) as { [key in K]?: V };
+    }
+
+    export function filterValues<T extends { [key: string]: any }>(
+        object: T,
+        predicate: <K extends keyof T>(key: K, value: T[K]) => boolean
+    ) {
+        return fromEntries(
+            entries(object).filter(([k, v]) => predicate(k, v))
+        ) as { [key in keyof T]: T[key] };
     }
 }

@@ -6,6 +6,10 @@ import {
     SimulatedRegionMissingError,
 } from 'digital-fuesim-manv-shared';
 import {
+    addAssociatedElements,
+    omitAssociatedElements,
+} from '../standins/simreg-standin-helpers';
+import {
     createApplyServerActionAction,
     createJoinExerciseAction,
     createJumpToTimeAction,
@@ -90,35 +94,21 @@ export const applicationReducer = createReducer(
         ...state,
         exerciseStateMode: undefined,
     })),
-    on(createReplaceRegionWithStandInAction, (state, { simulatedRegionId }) => {
-        const simReg =
-            state.exerciseState!.simulatedRegions[simulatedRegionId]!;
-        return {
+    on(
+        createReplaceRegionWithStandInAction,
+        (state, { simulatedRegionId }) => ({
             ...state,
-            exerciseState: {
-                ...state.exerciseState!,
-                simulatedRegions: {
-                    ...state.exerciseState!.simulatedRegions,
-                    [simulatedRegionId]: {
-                        type: 'simulatedRegionStandIn',
-                        id: simulatedRegionId,
-                        name: simReg.name,
-                        size: simReg.size,
-                        borderColor: simReg.borderColor,
-                        position: simReg.position,
-                    },
-                },
-            },
-        };
-    }),
-    on(createRestoreRegionStandInAction, (state, { simulatedRegion }) => ({
+            exerciseState: omitAssociatedElements(
+                state.exerciseState!,
+                simulatedRegionId
+            ),
+        })
+    ),
+    on(createRestoreRegionStandInAction, (state, associatedElements) => ({
         ...state,
-        exerciseState: {
-            ...state.exerciseState!,
-            simulatedRegions: {
-                ...state.exerciseState!.simulatedRegions,
-                [simulatedRegion.id]: simulatedRegion,
-            },
-        },
+        exerciseState: addAssociatedElements(
+            state.exerciseState!,
+            associatedElements
+        ),
     }))
 );

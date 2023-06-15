@@ -13,7 +13,7 @@ import {
     selectTransferPoints,
     createSelectSimulatedRegion,
 } from 'src/app/state/application/selectors/exercise.selectors';
-import { SimregStandinService } from 'src/app/state/standins/simreg-standin.service';
+import { SimulatedRegionStandInService } from 'src/app/state/standins/simreg-standin.service';
 import { SelectPatientService } from '../select-patient.service';
 import type { TransferOptions } from '../start-transfer.service';
 import { StartTransferService } from '../start-transfer.service';
@@ -62,7 +62,7 @@ export class SimulatedRegionOverviewGeneralComponent
         private readonly store: Store<AppState>,
         readonly selectPatientService: SelectPatientService,
         readonly startTransferService: StartTransferService,
-        readonly standInService: SimregStandinService
+        readonly standInService: SimulatedRegionStandInService
     ) {}
 
     ngOnInit(): void {
