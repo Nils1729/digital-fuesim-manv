@@ -1,5 +1,6 @@
-import type { SimulatedRegion } from '../../models';
+import { SimulatedRegion, isPositionNotInSimulatedRegion } from '../../models';
 import type { ExerciseState } from '../../state';
+import { isStandIn } from '../../state-helpers/simreg-standin-helpers';
 import type { Mutable } from '../../utils';
 import { simulationActivityDictionary } from '../activities';
 import { terminateActivity } from '../activities/utils';

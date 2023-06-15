@@ -1,20 +1,21 @@
+import type { Material } from '../models/material';
+import type { Patient } from '../models/patient';
+import type { Personnel } from '../models/personnel';
 import type {
-    UUID,
-    Patient,
-    Vehicle,
-    Personnel,
-    Material,
     SimulatedRegion,
-    ExerciseState,
-    Mutable,
-    UUIDSet,
-} from 'digital-fuesim-manv-shared';
+    SimulatedRegionStandIn,
+} from '../models/simulated-region';
 import {
-    isInVehicle,
-    StrictObject,
     isInSpecificSimulatedRegion,
     isInSpecificVehicle,
-} from 'digital-fuesim-manv-shared';
+    isInVehicle,
+} from '../models/utils/position/position-helpers';
+import type { Vehicle } from '../models/vehicle';
+import type { ExerciseState } from '../state';
+import type { Mutable } from '../utils/immutability';
+import { StrictObject } from '../utils/strict-object';
+import type { UUID } from '../utils/uuid';
+import type { UUIDSet } from '../utils/uuid-set';
 
 export interface SimRegAssociatedElements {
     patients: { [key: UUID]: Patient };
@@ -22,6 +23,12 @@ export interface SimRegAssociatedElements {
     personnel: { [key: UUID]: Personnel };
     materials: { [key: UUID]: Material };
     simulatedRegions: { [key: UUID]: SimulatedRegion };
+}
+
+export function isStandIn(
+    simulatedRegion: SimulatedRegion | SimulatedRegionStandIn
+): simulatedRegion is SimulatedRegionStandIn {
+    return simulatedRegion.type === 'simulatedRegionStandIn';
 }
 
 export function extractAssociatedElements(
@@ -151,7 +158,7 @@ function shouldKeepVehicle(
 ) {
     return (
         !isInSpecificSimulatedRegion(vehicle, omittedRegionId) ||
-        Object.keys(vehicle.materialIds).some(
+        StrictObject.keys(vehicle.materialIds).some(
             (materialId) =>
                 !(
                     isInSpecificSimulatedRegion(
@@ -164,7 +171,7 @@ function shouldKeepVehicle(
                     )
                 )
         ) ||
-        Object.keys(vehicle.personnelIds).some(
+        StrictObject.keys(vehicle.personnelIds).some(
             (personnelId) =>
                 !(
                     isInSpecificSimulatedRegion(

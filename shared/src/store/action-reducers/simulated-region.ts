@@ -23,7 +23,12 @@ import {
     simulationBehaviorDictionary,
 } from '../../simulation';
 import { sendSimulationEvent } from '../../simulation/events/utils';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
+import {
+    cloneDeepMutable,
+    elementTypePluralMap,
+    UUID,
+    uuidValidationOptions,
+} from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import {

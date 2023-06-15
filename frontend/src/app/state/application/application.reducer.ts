@@ -4,11 +4,9 @@ import {
     reduceExerciseState,
     ReducerError,
     SimulatedRegionMissingError,
-} from 'digital-fuesim-manv-shared';
-import {
     addAssociatedElements,
     omitAssociatedElements,
-} from '../standins/simreg-standin-helpers';
+} from 'digital-fuesim-manv-shared';
 import {
     createApplyServerActionAction,
     createJoinExerciseAction,

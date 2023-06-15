@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { UUID } from 'digital-fuesim-manv-shared';
+import { extractAssociatedElements } from 'digital-fuesim-manv-shared';
 import type { AppState } from '../app.state';
 import {
     createReplaceRegionWithStandInAction,
     createRestoreRegionStandInAction,
 } from '../application/application.actions';
-import { extractAssociatedElements } from './simreg-standin-helpers';
 
 @Injectable({
     providedIn: 'root',

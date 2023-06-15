@@ -3,8 +3,8 @@ import type {
     ExerciseAction,
     ExerciseState,
     UUID,
+    SimRegAssociatedElements,
 } from 'digital-fuesim-manv-shared';
-import type { SimRegAssociatedElements } from '../standins/simreg-standin-helpers';
 
 export const createStartTimeTravelAction = createAction(
     '[Application] Start time travel',
