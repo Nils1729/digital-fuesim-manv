@@ -7,6 +7,7 @@ import type {
     Patient,
     Personnel,
     SimulatedRegion,
+    SimulatedRegionStandIn,
     TransferPoint,
     Vehicle,
     Viewport,
@@ -21,6 +22,7 @@ export type Element =
     | Patient
     | Personnel
     | SimulatedRegion
+    | SimulatedRegionStandIn
     | TransferPoint
     | Vehicle
     | Viewport;

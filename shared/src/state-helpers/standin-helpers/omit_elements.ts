@@ -1,21 +1,18 @@
-import type { Material } from '../models/material';
-import type { Patient } from '../models/patient';
-import type { Personnel } from '../models/personnel';
-import type {
-    SimulatedRegion,
-    SimulatedRegionStandIn,
-} from '../models/simulated-region';
+import type { Material } from '../../models/material';
+import type { Patient } from '../../models/patient';
+import type { Personnel } from '../../models/personnel';
+import type { SimulatedRegion } from '../../models/simulated-region';
 import {
     isInSpecificSimulatedRegion,
     isInSpecificVehicle,
     isInVehicle,
-} from '../models/utils/position/position-helpers';
-import type { Vehicle } from '../models/vehicle';
-import type { ExerciseState } from '../state';
-import type { Mutable } from '../utils/immutability';
-import { StrictObject } from '../utils/strict-object';
-import type { UUID } from '../utils/uuid';
-import type { UUIDSet } from '../utils/uuid-set';
+} from '../../models/utils/position/position-helpers';
+import type { Vehicle } from '../../models/vehicle';
+import type { ExerciseState } from '../../state';
+import type { Mutable } from '../../utils/immutability';
+import { StrictObject } from '../../utils/strict-object';
+import type { UUID } from '../../utils/uuid';
+import type { UUIDSet } from '../../utils/uuid-set';
 
 export interface SimRegAssociatedElements {
     patients: { [key: UUID]: Patient };
@@ -23,12 +20,6 @@ export interface SimRegAssociatedElements {
     personnel: { [key: UUID]: Personnel };
     materials: { [key: UUID]: Material };
     simulatedRegions: { [key: UUID]: SimulatedRegion };
-}
-
-export function isStandIn(
-    simulatedRegion: SimulatedRegion | SimulatedRegionStandIn
-): simulatedRegion is SimulatedRegionStandIn {
-    return simulatedRegion.type === 'simulatedRegionStandIn';
 }
 
 export function extractAssociatedElements(
@@ -48,11 +39,19 @@ export function extractAssociatedElements(
     const vehicles = StrictObject.filterValues(state.vehicles, (_, vehicle) =>
         isInSpecificSimulatedRegion(vehicle, simulatedRegionId)
     );
-    const personnel = StrictObject.filterValues(state.personnel, (_, p) =>
-        Object.values(vehicles).some((vehicle) => vehicle.personnelIds[p.id])
+    const personnel = StrictObject.filterValues(
+        state.personnel,
+        (_, p) =>
+            isInSpecificSimulatedRegion(p, simulatedRegionId) ||
+            Object.values(vehicles).some(
+                (vehicle) => vehicle.personnelIds[p.id]
+            )
     );
-    const materials = StrictObject.filterValues(state.materials, (_, m) =>
-        Object.values(vehicles).some((vehicle) => vehicle.materialIds[m.id])
+    const materials = StrictObject.filterValues(
+        state.materials,
+        (_, m) =>
+            isInSpecificSimulatedRegion(m, simulatedRegionId) ||
+            Object.values(vehicles).some((vehicle) => vehicle.materialIds[m.id])
     );
     return {
         patients,

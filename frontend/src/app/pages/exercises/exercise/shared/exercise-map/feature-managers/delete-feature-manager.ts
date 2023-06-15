@@ -124,6 +124,7 @@ export class DeleteFeatureManager implements FeatureManager<Point> {
                 });
                 return true;
             }
+            case 'simulatedRegionStandIn':
             case 'simulatedRegion': {
                 this.exerciseService.proposeAction({
                     type: '[SimulatedRegion] Remove simulated region',
@@ -131,7 +132,11 @@ export class DeleteFeatureManager implements FeatureManager<Point> {
                 });
                 return true;
             }
-            default: {
+            case 'client':
+            case 'hospital':
+            case 'material':
+            case 'personnel':
+            case 'alarmGroup': {
                 return false;
             }
         }

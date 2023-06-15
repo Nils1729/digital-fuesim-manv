@@ -1,6 +1,6 @@
 import { SimulatedRegion, isPositionNotInSimulatedRegion } from '../../models';
 import type { ExerciseState } from '../../state';
-import { isStandIn } from '../../state-helpers/simreg-standin-helpers';
+import { isStandIn } from '../../state-helpers/standin-helpers/is-standin';
 import type { Mutable } from '../../utils';
 import { simulationActivityDictionary } from '../activities';
 import { terminateActivity } from '../activities/utils';
@@ -13,7 +13,7 @@ export function simulateAllRegions(
     tickInterval: number
 ) {
     Object.values(draftState.simulatedRegions).forEach((simulatedRegion) => {
-        if (simulatedRegion.type === 'simulatedRegionStandIn') return;
+        if (isStandIn(simulatedRegion)) return;
         simulateSingleRegion(draftState, simulatedRegion, tickInterval);
     });
 }

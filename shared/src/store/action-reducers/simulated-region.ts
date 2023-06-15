@@ -31,11 +31,8 @@ import {
 } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import {
-    ExpectedReducerError,
-    ReducerError,
-    SimulatedRegionMissingError,
-} from '../reducer-error';
+import { ExpectedReducerError, ReducerError } from '../reducer-error';
+import { isStandIn } from '../../state-helpers';
 import { TransferPointActionReducers } from './transfer-point';
 import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement, getElementByPredicate } from './utils/get-element';
@@ -271,7 +268,6 @@ export namespace SimulatedRegionActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
-                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
                 const element = getElement(
                     draftState,
                     elementToBeAddedType,
@@ -294,40 +290,45 @@ export namespace SimulatedRegionActionReducers {
                     elementToBeAddedType
                 );
 
-                changePosition(
-                    element,
-                    SimulatedRegionPosition.create(simulatedRegionId),
-                    draftState
-                );
-
-                switch (element.type) {
-                    case 'vehicle':
-                        sendSimulationEvent(
-                            simulatedRegion,
-                            VehicleArrivedEvent.create(
-                                element.id,
-                                draftState.currentTime
-                            )
-                        );
-                        break;
-                    case 'patient':
-                        sendSimulationEvent(
-                            simulatedRegion,
-                            NewPatientEvent.create(element.id)
-                        );
-                        break;
-                    case 'personnel':
-                        sendSimulationEvent(
-                            simulatedRegion,
-                            PersonnelAvailableEvent.create(element.id)
-                        );
-                        break;
-                    case 'material':
-                        sendSimulationEvent(
-                            simulatedRegion,
-                            MaterialAvailableEvent.create(element.id)
-                        );
-                        break;
+                if (isStandIn(simulatedRegion)) {
+                    delete draftState[elementTypePluralMap[element.type]][
+                        element.id
+                    ];
+                } else {
+                    changePosition(
+                        element,
+                        SimulatedRegionPosition.create(simulatedRegionId),
+                        draftState
+                    );
+                    switch (element.type) {
+                        case 'vehicle':
+                            sendSimulationEvent(
+                                simulatedRegion,
+                                VehicleArrivedEvent.create(
+                                    element.id,
+                                    draftState.currentTime
+                                )
+                            );
+                            break;
+                        case 'patient':
+                            sendSimulationEvent(
+                                simulatedRegion,
+                                NewPatientEvent.create(element.id)
+                            );
+                            break;
+                        case 'personnel':
+                            sendSimulationEvent(
+                                simulatedRegion,
+                                PersonnelAvailableEvent.create(element.id)
+                            );
+                            break;
+                        case 'material':
+                            sendSimulationEvent(
+                                simulatedRegion,
+                                MaterialAvailableEvent.create(element.id)
+                            );
+                            break;
+                    }
                 }
 
                 return draftState;
@@ -344,8 +345,11 @@ export namespace SimulatedRegionActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
-                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
-                simulatedRegion.behaviors.push(cloneDeepMutable(behaviorState));
+                if (!isStandIn(simulatedRegion)) {
+                    simulatedRegion.behaviors.push(
+                        cloneDeepMutable(behaviorState)
+                    );
+                }
 
                 logBehaviorAdded(
                     draftState,
@@ -367,29 +371,36 @@ export namespace SimulatedRegionActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
-                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
-                const index = simulatedRegion.behaviors.findIndex(
-                    (behavior) => behavior.id === behaviorId
-                );
-
-                if (index === -1) {
-                    throw new ReducerError(
-                        `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}. Therefore it could not be removed.`
-                    );
-                }
 
                 logBehaviorRemoved(draftState, simulatedRegionId, behaviorId);
 
-                const behaviorState = simulatedRegion.behaviors[index]!;
-                if (simulationBehaviorDictionary[behaviorState.type].onRemove) {
-                    simulationBehaviorDictionary[behaviorState.type].onRemove!(
-                        draftState,
-                        simulatedRegion,
-                        behaviorState as any
+                if (!isStandIn(simulatedRegion)) {
+                    const index = simulatedRegion.behaviors.findIndex(
+                        (behavior) => behavior.id === behaviorId
                     );
+
+                    if (index === -1) {
+                        throw new ReducerError(
+                            `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}. Therefore it could not be removed.`
+                        );
+                    }
+
+                    const behaviorState = simulatedRegion.behaviors[index]!;
+                    if (
+                        simulationBehaviorDictionary[behaviorState.type]
+                            .onRemove
+                    ) {
+                        simulationBehaviorDictionary[behaviorState.type]
+                            .onRemove!(
+                            draftState,
+                            simulatedRegion,
+                            behaviorState as any
+                        );
+                    }
+
+                    simulatedRegion.behaviors.splice(index, 1);
                 }
 
-                simulatedRegion.behaviors.splice(index, 1);
                 return draftState;
             },
             rights: 'participant',

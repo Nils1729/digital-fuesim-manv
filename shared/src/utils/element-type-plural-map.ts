@@ -13,6 +13,7 @@ export const elementTypePluralMap = {
     patient: 'patients',
     personnel: 'personnel',
     simulatedRegion: 'simulatedRegions',
+    simulatedRegionStandIn: 'simulatedRegions',
     transferPoint: 'transferPoints',
     vehicle: 'vehicles',
     viewport: 'viewports',

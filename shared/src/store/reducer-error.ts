@@ -2,6 +2,7 @@ import type {
     SimulatedRegion,
     SimulatedRegionStandIn,
 } from '../models/simulated-region';
+import { isStandIn } from '../state-helpers/standin-helpers/is-standin';
 import type { UUID } from '../utils/uuid';
 
 /**
@@ -21,7 +22,7 @@ export class SimulatedRegionMissingError extends ReducerError {
     static throwIfMissing(
         sr: SimulatedRegion | SimulatedRegionStandIn
     ): asserts sr is SimulatedRegion {
-        if (sr.type === 'simulatedRegionStandIn') {
+        if (isStandIn(sr)) {
             throw new this(sr.id);
         }
     }

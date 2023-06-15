@@ -54,7 +54,7 @@ export function changePositionWithId(
     changePosition(
         getElement(
             inState,
-            type === 'simulatedRegionStandIn' ? 'simulatedRegion' : type,
+            type,
             of
         ) as any,
         to,
