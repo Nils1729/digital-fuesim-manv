@@ -35,7 +35,7 @@ export const applicationReducer = createReducer(
         } catch (error: any) {
             if (error instanceof SimulatedRegionMissingError) {
                 console.error(
-                    `Error while applying server action: Simulated Region with ID ${error.simulatedRegionId} is currently not loaded.`
+                    `Error while applying server action: Simulated Region with ID ${error.simulatedRegionId} is currently not loaded.`, error
                 );
             }
             if (error instanceof ReducerError) {

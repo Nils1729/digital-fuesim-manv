@@ -283,52 +283,51 @@ export namespace SimulatedRegionActionReducers {
                     );
                 }
 
+                if (isStandIn(simulatedRegion)) {
+                    delete draftState[elementTypePluralMap[element.type]][
+                        element.id
+                    ];
+                    return draftState;
+                }
                 logSimulatedRegionAddElement(
                     draftState,
                     simulatedRegionId,
                     elementToBeAddedId,
                     elementToBeAddedType
                 );
-
-                if (isStandIn(simulatedRegion)) {
-                    delete draftState[elementTypePluralMap[element.type]][
-                        element.id
-                    ];
-                } else {
-                    changePosition(
-                        element,
-                        SimulatedRegionPosition.create(simulatedRegionId),
-                        draftState
-                    );
-                    switch (element.type) {
-                        case 'vehicle':
-                            sendSimulationEvent(
-                                simulatedRegion,
-                                VehicleArrivedEvent.create(
-                                    element.id,
-                                    draftState.currentTime
-                                )
-                            );
-                            break;
-                        case 'patient':
-                            sendSimulationEvent(
-                                simulatedRegion,
-                                NewPatientEvent.create(element.id)
-                            );
-                            break;
-                        case 'personnel':
-                            sendSimulationEvent(
-                                simulatedRegion,
-                                PersonnelAvailableEvent.create(element.id)
-                            );
-                            break;
-                        case 'material':
-                            sendSimulationEvent(
-                                simulatedRegion,
-                                MaterialAvailableEvent.create(element.id)
-                            );
-                            break;
-                    }
+                changePosition(
+                    element,
+                    SimulatedRegionPosition.create(simulatedRegionId),
+                    draftState
+                );
+                switch (element.type) {
+                    case 'vehicle':
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            VehicleArrivedEvent.create(
+                                element.id,
+                                draftState.currentTime
+                            )
+                        );
+                        break;
+                    case 'patient':
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            NewPatientEvent.create(element.id)
+                        );
+                        break;
+                    case 'personnel':
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            PersonnelAvailableEvent.create(element.id)
+                        );
+                        break;
+                    case 'material':
+                        sendSimulationEvent(
+                            simulatedRegion,
+                            MaterialAvailableEvent.create(element.id)
+                        );
+                        break;
                 }
 
                 return draftState;
@@ -345,12 +344,9 @@ export namespace SimulatedRegionActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
-                if (!isStandIn(simulatedRegion)) {
-                    simulatedRegion.behaviors.push(
-                        cloneDeepMutable(behaviorState)
-                    );
-                }
+                if (isStandIn(simulatedRegion)) return draftState;
 
+                simulatedRegion.behaviors.push(cloneDeepMutable(behaviorState));
                 logBehaviorAdded(
                     draftState,
                     simulatedRegionId,
@@ -371,35 +367,30 @@ export namespace SimulatedRegionActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
 
                 logBehaviorRemoved(draftState, simulatedRegionId, behaviorId);
 
-                if (!isStandIn(simulatedRegion)) {
-                    const index = simulatedRegion.behaviors.findIndex(
-                        (behavior) => behavior.id === behaviorId
+                const index = simulatedRegion.behaviors.findIndex(
+                    (behavior) => behavior.id === behaviorId
+                );
+
+                if (index === -1) {
+                    throw new ReducerError(
+                        `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}. Therefore it could not be removed.`
                     );
-
-                    if (index === -1) {
-                        throw new ReducerError(
-                            `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}. Therefore it could not be removed.`
-                        );
-                    }
-
-                    const behaviorState = simulatedRegion.behaviors[index]!;
-                    if (
-                        simulationBehaviorDictionary[behaviorState.type]
-                            .onRemove
-                    ) {
-                        simulationBehaviorDictionary[behaviorState.type]
-                            .onRemove!(
-                            draftState,
-                            simulatedRegion,
-                            behaviorState as any
-                        );
-                    }
-
-                    simulatedRegion.behaviors.splice(index, 1);
                 }
+
+                const behaviorState = simulatedRegion.behaviors[index]!;
+                if (simulationBehaviorDictionary[behaviorState.type].onRemove) {
+                    simulationBehaviorDictionary[behaviorState.type].onRemove!(
+                        draftState,
+                        simulatedRegion,
+                        behaviorState as any
+                    );
+                }
+
+                simulatedRegion.behaviors.splice(index, 1);
 
                 return draftState;
             },

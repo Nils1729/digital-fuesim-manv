@@ -51,15 +51,7 @@ export function changePositionWithId(
     type: MovableType,
     inState: Mutable<ExerciseState>
 ) {
-    changePosition(
-        getElement(
-            inState,
-            type,
-            of
-        ) as any,
-        to,
-        inState
-    );
+    changePosition(getElement(inState, type, of) as any, to, inState);
 }
 
 export function changePosition(

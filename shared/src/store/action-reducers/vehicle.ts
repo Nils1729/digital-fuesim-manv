@@ -33,7 +33,7 @@ import {
 } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError, SimulatedRegionMissingError } from '../reducer-error';
+import { ReducerError } from '../reducer-error';
 import { sendSimulationEvent } from '../../simulation/events/utils';
 import {
     MaterialAvailableEvent,
@@ -72,7 +72,6 @@ export function deleteVehicle(
                 draftState,
                 material
             );
-            SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
             sendSimulationEvent(
                 simulatedRegion,
                 MaterialRemovedEvent.create(materialId)
@@ -90,7 +89,6 @@ export function deleteVehicle(
                 draftState,
                 personnel
             );
-            SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
             sendSimulationEvent(
                 simulatedRegion,
                 PersonnelRemovedEvent.create(personnelId)
@@ -108,7 +106,6 @@ export function deleteVehicle(
 
     if (isInSimulatedRegion(vehicle)) {
         const simulatedRegion = currentSimulatedRegionOf(draftState, vehicle);
-        SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
         sendSimulationEvent(
             simulatedRegion,
             VehicleRemovedEvent.create(vehicleId)
@@ -414,7 +411,6 @@ export namespace VehicleActionReducers {
                         'patient',
                         draftState
                     );
-                    SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
                     sendSimulationEvent(
                         simulatedRegion,
                         NewPatientEvent.create(patientId)
@@ -436,9 +432,6 @@ export namespace VehicleActionReducers {
                             'personnel',
                             draftState
                         );
-                        SimulatedRegionMissingError.throwIfMissing(
-                            simulatedRegion
-                        );
                         sendSimulationEvent(
                             simulatedRegion,
                             PersonnelAvailableEvent.create(personnelId)
@@ -458,9 +451,6 @@ export namespace VehicleActionReducers {
                             material,
                             SimulatedRegionPosition.create(simulatedRegionId),
                             draftState
-                        );
-                        SimulatedRegionMissingError.throwIfMissing(
-                            simulatedRegion
                         );
                         sendSimulationEvent(
                             simulatedRegion,
@@ -583,7 +573,6 @@ export namespace VehicleActionReducers {
                     draftState,
                     vehicle
                 );
-                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
                 sendSimulationEvent(
                     simulatedRegion,
                     VehicleRemovedEvent.create(vehicleId)

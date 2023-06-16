@@ -9,11 +9,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import type {
-    ExerciseSimulationEvent,
-    TreatPatientsBehaviorState,
-    UnloadArrivingVehiclesBehaviorState,
-} from '../../simulation';
+import type { ExerciseSimulationEvent } from '../../simulation';
 import {
     reportableInformationTypeToGermanNameDictionary,
     behaviorTypeToGermanNameDictionary,
@@ -30,7 +26,6 @@ import {
 import { StartCollectingInformationEvent } from '../../simulation/events/start-collecting';
 import { sendSimulationEvent } from '../../simulation/events/utils';
 import { nextUUID } from '../../simulation/utils/randomness';
-import type { Mutable } from '../../utils';
 import {
     UUID,
     uuidValidationOptions,
@@ -41,11 +36,7 @@ import {
 } from '../../utils';
 import { IsLiteralUnion, IsUUIDSet, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import {
-    ExpectedReducerError,
-    ReducerError,
-    SimulatedRegionMissingError,
-} from '../reducer-error';
+import { ExpectedReducerError, ReducerError } from '../reducer-error';
 import {
     PatientStatus,
     requestTargetTypeOptions,
@@ -65,6 +56,7 @@ import {
     TransferDestination,
     transferDestinationTypeAllowedValues,
 } from '../../simulation/utils/transfer-destination';
+import { isStandIn } from '../../state-helpers';
 import { getActivityById, getBehaviorById, getElement } from './utils';
 import { logBehavior } from './utils/log';
 
@@ -658,12 +650,14 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
-                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
+                if (isStandIn(simulatedRegion)) return draftState;
 
-                const behaviorStates = simulatedRegion.behaviors;
-                const treatPatientsBehaviorState = behaviorStates.find(
-                    (behaviorState) => behaviorState.id === behaviorStateId
-                ) as Mutable<TreatPatientsBehaviorState>;
+                const treatPatientsBehaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorStateId,
+                    'treatPatientsBehavior'
+                );
 
                 if (unknown !== undefined) {
                     treatPatientsBehaviorState.intervals.unknown = unknown;
@@ -773,33 +767,28 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
-                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
-                const behaviorState = simulatedRegion.behaviors.find(
-                    (behavior) => behavior.id === behaviorId
-                ) as Mutable<UnloadArrivingVehiclesBehaviorState> | undefined;
+                if (isStandIn(simulatedRegion)) return draftState;
+                const behaviorState = getBehaviorById(
+                    draftState,
+                    simulatedRegionId,
+                    behaviorId,
+                    'unloadArrivingVehiclesBehavior'
+                );
 
-                if (behaviorState) {
-                    behaviorState.unloadDelay = unloadDelay;
-                    logBehavior(
-                        draftState,
-                        [],
-                        `Das ${
-                            behaviorTypeToGermanNameDictionary[
-                                behaviorState.type
-                            ]
-                        } Verhalten im Bereich ${
-                            simulatedRegion.name
-                        } benötigt ${formatDuration(
-                            unloadDelay
-                        )}, um Fahrzeuge zu entladen.`,
-                        simulatedRegionId,
-                        behaviorId
-                    );
-                } else {
-                    throw new ReducerError(
-                        `The simulated region with id ${simulatedRegionId} has no behavior with id ${behaviorId}.`
-                    );
-                }
+                behaviorState.unloadDelay = unloadDelay;
+                logBehavior(
+                    draftState,
+                    [],
+                    `Das ${
+                        behaviorTypeToGermanNameDictionary[behaviorState.type]
+                    } Verhalten im Bereich ${
+                        simulatedRegion.name
+                    } benötigt ${formatDuration(
+                        unloadDelay
+                    )}, um Fahrzeuge zu entladen.`,
+                    simulatedRegionId,
+                    behaviorId
+                );
                 return draftState;
             },
             rights: 'trainer',
@@ -813,7 +802,6 @@ export namespace SimulationActionReducers {
                 'simulatedRegion',
                 simulatedRegionId
             );
-            SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
             sendSimulationEvent(
                 simulatedRegion,
                 StartCollectingInformationEvent.create(informationType)
@@ -840,6 +828,7 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
                 const reportBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -883,6 +872,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const reportBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -926,6 +917,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const reportBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -971,7 +964,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
-                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const reportBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -1031,7 +1025,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
-                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const reportBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -1089,7 +1084,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
-                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const reportBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -1146,6 +1142,7 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
                 const automaticDistributionBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -1206,18 +1203,19 @@ export namespace SimulationActionReducers {
                 draftState,
                 { simulatedRegionId, behaviorId, requestInterval }
             ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
                     behaviorId,
                     'requestBehavior'
                 );
-                const simulatedRegion = getElement(
-                    draftState,
-                    'simulatedRegion',
-                    simulatedRegionId
-                );
-                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
 
                 logBehavior(
                     draftState,
@@ -1255,20 +1253,16 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const automaticDistributionBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
                     behaviorId,
                     'automaticallyDistributeVehiclesBehavior'
                 );
-                const destination = getElement(
-                    draftState,
-                    'transferPoint',
-                    destinationId
-                );
 
                 //  Do not re-add the destination if it was already added previously
-
                 if (
                     automaticDistributionBehaviorState.distributionDestinations[
                         destinationId
@@ -1279,6 +1273,11 @@ export namespace SimulationActionReducers {
                     );
                 }
 
+                const destination = getElement(
+                    draftState,
+                    'transferPoint',
+                    destinationId
+                );
                 logBehavior(
                     draftState,
                     [
@@ -1323,18 +1322,19 @@ export namespace SimulationActionReducers {
                 draftState,
                 { simulatedRegionId, behaviorId, requestTarget }
             ) {
+                const simulatedRegion = getElement(
+                    draftState,
+                    'simulatedRegion',
+                    simulatedRegionId
+                );
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
                     behaviorId,
                     'requestBehavior'
                 );
-                const simulatedRegion = getElement(
-                    draftState,
-                    'simulatedRegion',
-                    simulatedRegionId
-                );
-                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
 
                 logBehavior(
                     draftState,
@@ -1386,6 +1386,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const automaticDistributionBehaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -1438,6 +1440,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -1473,6 +1477,7 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -1521,6 +1526,7 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -1561,6 +1567,7 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -1601,6 +1608,7 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -1660,7 +1668,6 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
-                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
 
                 let event: ExerciseSimulationEvent;
                 if (Object.keys(cloneDeepMutable(patients)).length === 0) {
@@ -1699,6 +1706,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -1752,6 +1761,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -1823,6 +1834,7 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -1880,6 +1892,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -1951,6 +1965,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -2010,6 +2026,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -2064,6 +2082,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -2108,6 +2128,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -2152,6 +2174,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -2191,6 +2215,8 @@ export namespace SimulationActionReducers {
                     'simulatedRegion',
                     simulatedRegionId
                 );
+                if (isStandIn(simulatedRegion)) return draftState;
+
                 const behaviorState = getBehaviorById(
                     draftState,
                     simulatedRegionId,
@@ -2231,6 +2257,8 @@ export namespace SimulationActionReducers {
                 'simulatedRegion',
                 simulatedRegionId
             );
+            if (isStandIn(simulatedRegion)) return draftState;
+
             const behaviorState = getBehaviorById(
                 draftState,
                 simulatedRegionId,
@@ -2264,6 +2292,8 @@ export namespace SimulationActionReducers {
                 'simulatedRegion',
                 simulatedRegionId
             );
+            if (isStandIn(simulatedRegion)) return draftState;
+
             const behaviorState = getBehaviorById(
                 draftState,
                 simulatedRegionId,

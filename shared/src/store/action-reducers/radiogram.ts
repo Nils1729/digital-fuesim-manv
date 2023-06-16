@@ -14,7 +14,6 @@ import {
     createRadiogramActionTag,
     isInSpecificSimulatedRegion,
 } from '../../models';
-import { SimulatedRegionMissingError } from '../reducer-error';
 import {
     getElement,
     getElementByPredicate,
@@ -83,7 +82,6 @@ export namespace RadiogramActionReducers {
                     'simulatedRegion',
                     radiogram.simulatedRegionId
                 );
-                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
                 const transferPoint = getElementByPredicate(
                     draftState,
                     'transferPoint',
@@ -132,7 +130,6 @@ export namespace RadiogramActionReducers {
                     'simulatedRegion',
                     radiogram.simulatedRegionId
                 );
-                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
                 const transferPoint = getElementByPredicate(
                     draftState,
                     'transferPoint',
@@ -182,7 +179,6 @@ export namespace RadiogramActionReducers {
                     'simulatedRegion',
                     radiogram.simulatedRegionId
                 );
-                SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
                 const transferPoint = getElementByPredicate(
                     draftState,
                     'transferPoint',

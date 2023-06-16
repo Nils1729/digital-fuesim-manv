@@ -1,4 +1,4 @@
-import { SimulatedRegion, isPositionNotInSimulatedRegion } from '../../models';
+import type { SimulatedRegion } from '../../models';
 import type { ExerciseState } from '../../state';
 import { isStandIn } from '../../state-helpers/standin-helpers/is-standin';
 import type { Mutable } from '../../utils';

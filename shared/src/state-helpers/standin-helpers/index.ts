@@ -1,2 +1,2 @@
-export * from './is-standin'
-export * from './omit_elements'
+export * from './is-standin';
+export * from './omit-elements';

@@ -17,7 +17,6 @@ import {
 import { sendSimulationEvent } from '../../../simulation/events/utils';
 import type { ExerciseState } from '../../../state';
 import type { Mutable } from '../../../utils';
-import { SimulatedRegionMissingError } from '../../reducer-error';
 import { getElement } from './get-element';
 
 /**
@@ -82,9 +81,8 @@ export function completelyLoadVehicle(
         );
 
         if (inSimulation) {
-            SimulatedRegionMissingError.throwIfMissing(simulatedRegion!);
             sendSimulationEvent(
-                simulatedRegion,
+                simulatedRegion!,
                 MaterialRemovedEvent.create(materialId)
             );
         }
@@ -96,9 +94,8 @@ export function completelyLoadVehicle(
         if (isNotInTransfer(personnel)) {
             changePosition(personnel, vehiclePosition, draftState);
             if (inSimulation) {
-                SimulatedRegionMissingError.throwIfMissing(simulatedRegion!);
                 sendSimulationEvent(
-                    simulatedRegion,
+                    simulatedRegion!,
                     PersonnelRemovedEvent.create(personnelId)
                 );
             }

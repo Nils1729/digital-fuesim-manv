@@ -5,7 +5,6 @@ import { getCreate } from '../../../models/utils/get-create';
 import { getElement } from '../../../store/action-reducers/utils/get-element';
 import { sendSimulationEvent } from '../../../simulation/events/utils';
 import { ResourceRequiredEvent } from '../../../simulation/events/resources-required';
-import { SimulatedRegionMissingError } from '../../../store/reducer-error';
 import type {
     RequestTarget,
     RequestTargetConfiguration,
@@ -45,7 +44,6 @@ export const simulatedRegionRequestTarget: RequestTarget<SimulatedRegionRequestT
                 'simulatedRegion',
                 configuration.targetSimulatedRegionId
             );
-            SimulatedRegionMissingError.throwIfMissing(simulatedRegion);
 
             sendSimulationEvent(
                 simulatedRegion,
