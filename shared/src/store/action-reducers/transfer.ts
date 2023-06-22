@@ -30,6 +30,7 @@ import { PersonnelAvailableEvent } from '../../simulation/events/personnel-avail
 import { VehicleArrivedEvent } from '../../simulation/events/vehicle-arrived';
 import { imageSizeToPosition } from '../../state-helpers/image-size-to-position';
 import type { Vehicle } from '../../models/vehicle';
+import { ExpectedReducerError, ReducerError } from '../reducer-error';
 import { getElement } from './utils';
 import {
     logElementAddedToTransfer,
@@ -38,7 +39,7 @@ import {
     logTransferPause,
     logVehicle,
 } from './utils/log';
-import { ReducerError } from '../reducer-error';
+import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 
 export type TransferableElementType = 'personnel' | 'vehicle';
 const transferableElementTypeAllowedValues: AllowedValues<TransferableElementType> =
@@ -187,6 +188,15 @@ export namespace TransferActionReducers {
             if (isInTransfer(element)) {
                 throw new ReducerError(
                     `Element with id ${element.id} is already in transfer`
+                );
+            }
+
+            if (
+                element.type === 'vehicle' &&
+                !isCompletelyLoaded(draftState, element)
+            ) {
+                throw new ExpectedReducerError(
+                    'Das Fahrzeug kann nur transferiert werden, wenn Personal und Material eingestiegen sind.'
                 );
             }
 
