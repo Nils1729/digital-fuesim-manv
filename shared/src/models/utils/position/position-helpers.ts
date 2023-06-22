@@ -1,9 +1,7 @@
 import type { ExerciseState } from '../../../state';
 import { getElement } from '../../../store/action-reducers/utils/get-element';
 import type { Mutable, UUID } from '../../../utils';
-import type {
-    SimulatedRegion,
-} from '../../simulated-region';
+import type { SimulatedRegion } from '../../simulated-region';
 import type { SimulatedRegionStandIn } from '../../simulated-region-standin';
 import type { Transfer } from '../transfer';
 import { MapCoordinates } from './map-coordinates';

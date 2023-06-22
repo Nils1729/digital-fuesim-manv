@@ -1,6 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
-import { ElementOmittedError, ExerciseState } from 'digital-fuesim-manv-shared';
+import type { ExerciseState } from 'digital-fuesim-manv-shared';
 import {
+    ElementOmittedError,
     reduceExerciseState,
     ReducerError,
     SimulatedRegionMissingError,
@@ -39,7 +40,9 @@ export const applicationReducer = createReducer(
                     error
                 );
             } else if (error instanceof ElementOmittedError) {
-                console.warn(`Element of type ${error.elementType} with id ${error.elementId} was omitted`)
+                console.warn(
+                    `Element of type ${error.elementType} with id ${error.elementId} was omitted`
+                );
                 return state;
             } else if (error instanceof ReducerError) {
                 console.warn(

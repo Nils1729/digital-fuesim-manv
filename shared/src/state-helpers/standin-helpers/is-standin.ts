@@ -1,7 +1,7 @@
 import type { SimulatedRegion, SimulatedRegionStandIn } from '../../models';
 import type { StandInElement } from '../../models/simulated-region-standin';
 import type { ExerciseState } from '../../state';
-import type { Mutable, UUID} from '../../utils';
+import type { Mutable, UUID } from '../../utils';
 import { StrictObject, elementTypePluralMap } from '../../utils';
 
 export function isStandIn(

@@ -1,4 +1,4 @@
-import { Material, Personnel} from '../models';
+import { Material, Personnel } from '../models';
 import type { Vehicle, VehicleTemplate } from '../models';
 import type { MaterialTemplate } from '../models/material-template';
 import type { PersonnelTemplate } from '../models/personnel-template';

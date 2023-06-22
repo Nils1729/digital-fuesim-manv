@@ -74,7 +74,7 @@ export function deleteVehicle(
                 e.elementId
             );
         }
-        return
+        return;
     }
 
     // Delete related material and personnel

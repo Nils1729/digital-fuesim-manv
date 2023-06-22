@@ -57,7 +57,7 @@ export function deletePatient(
                 e.elementId
             );
         }
-        return
+        return;
     }
     if (isInSimulatedRegion(patient)) {
         const simulatedRegion = currentSimulatedRegionOf(draftState, patient);
