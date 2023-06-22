@@ -6,10 +6,15 @@ import type {
     ExerciseSimulationBehaviorType,
 } from '../../../simulation';
 import type { ExerciseState } from '../../../state';
+import { isOmitted } from '../../../state-helpers/standin-helpers/is-standin';
 import type { Mutable, UUID } from '../../../utils';
 import type { ElementTypePluralMap } from '../../../utils/element-type-plural-map';
 import { elementTypePluralMap } from '../../../utils/element-type-plural-map';
-import { ReducerError, SimulatedRegionMissingError } from '../../reducer-error';
+import {
+    ElementOmittedError,
+    ReducerError,
+    SimulatedRegionMissingError,
+} from '../../reducer-error';
 
 /**
  * @returns The element with the given id
@@ -21,6 +26,18 @@ export function getElement<
 >(state: State, elementType: ElementType, elementId: UUID) {
     const element = tryGetElement(state, elementType, elementId);
     if (!element) {
+        switch (elementType) {
+            case 'patient':
+            case 'personnel':
+            case 'material':
+            case 'vehicle': {
+                if (isOmitted(state, elementType, elementId)) {
+                    throw new ElementOmittedError(elementType, elementId);
+                }
+                break;
+            }
+            default:
+        }
         throw new ReducerError(
             `Element of type ${elementType} with id ${elementId} does not exist`
         );

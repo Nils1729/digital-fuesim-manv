@@ -2,6 +2,10 @@ import type { Material } from '../../models/material';
 import type { Patient } from '../../models/patient';
 import type { Personnel } from '../../models/personnel';
 import type { SimulatedRegion } from '../../models/simulated-region';
+import type {
+    SimulatedRegionStandIn,
+    StandInElement,
+} from '../../models/simulated-region-standin';
 import {
     isInSpecificSimulatedRegion,
     isInSpecificVehicle,
@@ -9,6 +13,8 @@ import {
 } from '../../models/utils/position/position-helpers';
 import type { Vehicle } from '../../models/vehicle';
 import type { ExerciseState } from '../../state';
+import { removeElementPosition } from '../../store/action-reducers/utils/spatial-elements';
+import { elementTypePluralMap } from '../../utils/element-type-plural-map';
 import type { Mutable } from '../../utils/immutability';
 import { StrictObject } from '../../utils/strict-object';
 import type { UUID } from '../../utils/uuid';
@@ -20,6 +26,15 @@ export interface SimRegAssociatedElements {
     personnel: { [key: UUID]: Personnel };
     materials: { [key: UUID]: Material };
     simulatedRegions: { [key: UUID]: SimulatedRegion };
+}
+
+export function addOmitted(
+    simulatedRegion: Mutable<SimulatedRegionStandIn>,
+    type: keyof SimulatedRegionStandIn['elements'],
+    id: UUID
+) {
+    simulatedRegion.elements[type] ??= {};
+    simulatedRegion.elements[type]![id] = true;
 }
 
 export function extractAssociatedElements(
@@ -62,7 +77,7 @@ export function extractAssociatedElements(
     };
 }
 
-export function omitAssociatedElements(
+export function omitAssociatedElementsForRegion(
     state: ExerciseState,
     simulatedRegionId: UUID
 ): ExerciseState {
@@ -81,12 +96,11 @@ export function omitAssociatedElements(
         }
     });
 
-    const newPatients = StrictObject.filterValues(
-        state.patients,
-        (_, elm) =>
-            !isInSpecificSimulatedRegion(elm, simulatedRegionId) &&
-            !omittedPatientIds[elm.id]
-    );
+    const newPatients = StrictObject.filterValues(state.patients, (_, elm) => {
+        if (isInSpecificSimulatedRegion(elm, simulatedRegionId))
+            omittedPatientIds[elm.id] = true;
+        return !omittedPatientIds[elm.id];
+    });
 
     const newPersonnel = StrictObject.filterValues(
         state.personnel,
@@ -112,6 +126,12 @@ export function omitAssociatedElements(
                 size: simReg.size,
                 borderColor: simReg.borderColor,
                 position: simReg.position,
+                elements: {
+                    materials: omittedMaterialIds,
+                    vehicles: omittedVehicleIds,
+                    patients: omittedPatientIds,
+                    personnel: omittedPersonnelIds,
+                },
             },
         },
         patients: newPatients,
@@ -126,6 +146,7 @@ export function addAssociatedElements(
     associatedElements: SimRegAssociatedElements
 ): ExerciseState {
     return {
+        // TODO: add stuff to spatial trees if necessary
         ...state,
         simulatedRegions: {
             ...state.simulatedRegions,
@@ -184,4 +205,34 @@ function shouldKeepVehicle(
                 )
         )
     );
+}
+
+function deleteElement(
+    draftState: Mutable<ExerciseState>,
+    simulatedRegion: Mutable<SimulatedRegionStandIn>,
+    type: StandInElement['type'],
+    id: UUID
+) {
+    addOmitted(simulatedRegion, elementTypePluralMap[type], id);
+    if (type !== 'vehicle') removeElementPosition(draftState, type, id);
+    delete draftState[elementTypePluralMap[type]][id];
+}
+
+export function standInElement(
+    draftState: Mutable<ExerciseState>,
+    simulatedRegion: Mutable<SimulatedRegionStandIn>,
+    element: StandInElement
+) {
+    if (element.type === 'vehicle') {
+        StrictObject.keys(element.materialIds).forEach((id) =>
+            deleteElement(draftState, simulatedRegion, 'material', id)
+        );
+        StrictObject.keys(element.personnelIds).forEach((id) =>
+            deleteElement(draftState, simulatedRegion, 'personnel', id)
+        );
+        StrictObject.keys(element.patientIds).forEach((id) =>
+            deleteElement(draftState, simulatedRegion, 'patient', id)
+        );
+    }
+    deleteElement(draftState, simulatedRegion, element.type, element.id);
 }

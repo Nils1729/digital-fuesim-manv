@@ -25,14 +25,13 @@ import {
 import { sendSimulationEvent } from '../../simulation/events/utils';
 import {
     cloneDeepMutable,
-    elementTypePluralMap,
     UUID,
     uuidValidationOptions,
 } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError, ReducerError } from '../reducer-error';
-import { isStandIn } from '../../state-helpers';
+import { isMutableStandIn, isStandIn, standInElement } from '../../state-helpers';
 import { TransferPointActionReducers } from './transfer-point';
 import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement, getElementByPredicate } from './utils/get-element';
@@ -283,10 +282,23 @@ export namespace SimulatedRegionActionReducers {
                     );
                 }
 
-                if (isStandIn(simulatedRegion)) {
-                    delete draftState[elementTypePluralMap[element.type]][
-                        element.id
-                    ];
+                if (isMutableStandIn(simulatedRegion)) {
+                    switch (element.type) {
+                        case 'patient':
+                        case 'vehicle': {
+                            standInElement(draftState, simulatedRegion, element)
+                            break;
+                        }
+                        case "material":
+                        case "personnel":
+                            // Material and personnel are only really removed when they are in a vehicle.
+                            // This is a hack to hide them from the map.
+                            changePosition(
+                                element,
+                                SimulatedRegionPosition.create(simulatedRegionId),
+                                draftState
+                            );
+                    }
                     return draftState;
                 }
                 logSimulatedRegionAddElement(

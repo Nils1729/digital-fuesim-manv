@@ -1,7 +1,8 @@
+import type { SimulatedRegion } from '../models/simulated-region';
 import type {
-    SimulatedRegion,
     SimulatedRegionStandIn,
-} from '../models/simulated-region';
+    StandInElement,
+} from '../models/simulated-region-standin';
 import { isStandIn } from '../state-helpers/standin-helpers/is-standin';
 import type { UUID } from '../utils/uuid';
 
@@ -25,5 +26,14 @@ export class SimulatedRegionMissingError extends ReducerError {
         if (isStandIn(sr)) {
             throw new this(sr.id);
         }
+    }
+}
+
+export class ElementOmittedError extends ReducerError {
+    constructor(
+        readonly elementType: StandInElement['type'],
+        readonly elementId: UUID
+    ) {
+        super();
     }
 }

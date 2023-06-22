@@ -1,11 +1,11 @@
 import { createReducer, on } from '@ngrx/store';
-import type { ExerciseState } from 'digital-fuesim-manv-shared';
+import { ElementOmittedError, ExerciseState } from 'digital-fuesim-manv-shared';
 import {
     reduceExerciseState,
     ReducerError,
     SimulatedRegionMissingError,
     addAssociatedElements,
-    omitAssociatedElements,
+    omitAssociatedElementsForRegion,
 } from 'digital-fuesim-manv-shared';
 import {
     createApplyServerActionAction,
@@ -35,10 +35,13 @@ export const applicationReducer = createReducer(
         } catch (error: any) {
             if (error instanceof SimulatedRegionMissingError) {
                 console.error(
-                    `Error while applying server action: Simulated Region with ID ${error.simulatedRegionId} is currently not loaded.`, error
+                    `Error while applying server action: Simulated Region with ID ${error.simulatedRegionId} is currently not loaded.`,
+                    error
                 );
-            }
-            if (error instanceof ReducerError) {
+            } else if (error instanceof ElementOmittedError) {
+                console.warn(`Element of type ${error.elementType} with id ${error.elementId} was omitted`)
+                return state;
+            } else if (error instanceof ReducerError) {
                 console.warn(
                     `Error while applying server action: ${error.message} \n
                             This is expected if an optimistic update has been applied.`
@@ -96,7 +99,7 @@ export const applicationReducer = createReducer(
         createReplaceRegionWithStandInAction,
         (state, { simulatedRegionId }) => ({
             ...state,
-            exerciseState: omitAssociatedElements(
+            exerciseState: omitAssociatedElementsForRegion(
                 state.exerciseState!,
                 simulatedRegionId
             ),

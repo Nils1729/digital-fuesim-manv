@@ -3,8 +3,8 @@ import { getElement } from '../../../store/action-reducers/utils/get-element';
 import type { Mutable, UUID } from '../../../utils';
 import type {
     SimulatedRegion,
-    SimulatedRegionStandIn,
 } from '../../simulated-region';
+import type { SimulatedRegionStandIn } from '../../simulated-region-standin';
 import type { Transfer } from '../transfer';
 import { MapCoordinates } from './map-coordinates';
 import type { MapPosition } from './map-position';
@@ -212,12 +212,7 @@ export function nestedCoordinatesOf(
     }
     if (isInVehicle(withPosition)) {
         const vehicleId = currentVehicleIdOf(withPosition);
-        const vehicle = state.vehicles[vehicleId];
-        if (!vehicle) {
-            throw new Error(
-                `The vehicle with the id ${vehicleId} could not be found`
-            );
-        }
+        const vehicle = getElement(state, 'vehicle', vehicleId);
         return nestedCoordinatesOf(vehicle, state);
     }
     if (isInSimulatedRegion(withPosition)) {

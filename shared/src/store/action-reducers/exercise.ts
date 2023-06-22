@@ -21,7 +21,7 @@ import type { ElementTypePluralMap } from '../../utils/element-type-plural-map';
 import { elementTypePluralMap } from '../../utils/element-type-plural-map';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
+import { ElementOmittedError, ReducerError } from '../reducer-error';
 import type { TransferableElementType } from './transfer';
 import { letElementArrive } from './transfer';
 import { updateTreatments } from './utils/calculate-treatments';
@@ -32,6 +32,7 @@ import {
     logPatient,
 } from './utils/log';
 import { patientTick } from './utils/patient-ticking';
+import { getElement } from './utils';
 
 export class PauseExerciseAction implements Action {
     @IsValue('[Exercise] Pause' as const)
@@ -102,37 +103,51 @@ export namespace ExerciseActionReducers {
 
             // Refresh patient status
             patientUpdates.forEach((patientUpdate) => {
-                const currentPatient = draftState.patients[patientUpdate.id]!;
-
-                const visibleStatusBefore = Patient.getVisibleStatus(
-                    currentPatient,
-                    draftState.configuration.pretriageEnabled,
-                    draftState.configuration.bluePatientsEnabled
-                );
-
-                currentPatient.currentHealthStateId = patientUpdate.nextStateId;
-                currentPatient.health = patientUpdate.nextHealthPoints;
-                currentPatient.stateTime = patientUpdate.nextStateTime;
-                currentPatient.treatmentTime = patientUpdate.treatmentTime;
-                currentPatient.realStatus = getStatus(currentPatient.health);
-
-                const visibleStatusAfter = Patient.getVisibleStatus(
-                    currentPatient,
-                    draftState.configuration.pretriageEnabled,
-                    draftState.configuration.bluePatientsEnabled
-                );
-                // Save this to the state because the treatments aren't refreshed in every tick
-                currentPatient.visibleStatusChanged =
-                    visibleStatusBefore !== visibleStatusAfter;
-                if (
-                    // We only want to do this expensive calculation, when it is really necessary
-                    currentPatient.visibleStatusChanged
-                ) {
-                    updateTreatments(draftState, currentPatient);
-                    logPatientVisibleStatusChanged(
+                try {
+                    const currentPatient = getElement(
                         draftState,
-                        currentPatient.id
+                        'patient',
+                        patientUpdate.id
                     );
+
+                    const visibleStatusBefore = Patient.getVisibleStatus(
+                        currentPatient,
+                        draftState.configuration.pretriageEnabled,
+                        draftState.configuration.bluePatientsEnabled
+                    );
+
+                    currentPatient.currentHealthStateId =
+                        patientUpdate.nextStateId;
+                    currentPatient.health = patientUpdate.nextHealthPoints;
+                    currentPatient.stateTime = patientUpdate.nextStateTime;
+                    currentPatient.treatmentTime = patientUpdate.treatmentTime;
+                    currentPatient.realStatus = getStatus(
+                        currentPatient.health
+                    );
+
+                    const visibleStatusAfter = Patient.getVisibleStatus(
+                        currentPatient,
+                        draftState.configuration.pretriageEnabled,
+                        draftState.configuration.bluePatientsEnabled
+                    );
+                    // Save this to the state because the treatments aren't refreshed in every tick
+                    currentPatient.visibleStatusChanged =
+                        visibleStatusBefore !== visibleStatusAfter;
+                    if (
+                        // We only want to do this expensive calculation, when it is really necessary
+                        currentPatient.visibleStatusChanged
+                    ) {
+                        updateTreatments(draftState, currentPatient);
+                        logPatientVisibleStatusChanged(
+                            draftState,
+                            currentPatient.id
+                        );
+                    }
+                } catch (e: unknown) {
+                    if (e instanceof ElementOmittedError) {
+                        return;
+                    }
+                    throw e;
                 }
             });
 

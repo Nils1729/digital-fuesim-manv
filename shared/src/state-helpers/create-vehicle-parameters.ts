@@ -1,5 +1,5 @@
+import { Material, Personnel} from '../models';
 import type { Vehicle, VehicleTemplate } from '../models';
-import { Material, Personnel } from '../models';
 import type { MaterialTemplate } from '../models/material-template';
 import type { PersonnelTemplate } from '../models/personnel-template';
 import type { PersonnelType, MapCoordinates } from '../models/utils';
