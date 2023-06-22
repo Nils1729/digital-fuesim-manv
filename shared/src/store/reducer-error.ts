@@ -31,6 +31,7 @@ export class SimulatedRegionMissingError extends ReducerError {
 
 export class ElementOmittedError extends ReducerError {
     constructor(
+        readonly omittingRegion: SimulatedRegionStandIn,
         readonly elementType: StandInElement['type'],
         readonly elementId: UUID
     ) {

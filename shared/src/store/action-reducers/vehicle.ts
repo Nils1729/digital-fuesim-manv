@@ -33,7 +33,7 @@ import {
 } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
+import { ElementOmittedError, ReducerError } from '../reducer-error';
 import { sendSimulationEvent } from '../../simulation/events/utils';
 import {
     MaterialAvailableEvent,
@@ -45,6 +45,8 @@ import {
 } from '../../simulation/events';
 import { Vehicle } from '../../models/vehicle';
 import { Personnel } from '../../models/personnel';
+import { removeOmitted } from '../../state-helpers/standin-helpers/omit-elements';
+import type { SimulatedRegionStandIn } from '../../models';
 import { deletePatient } from './patient';
 import { completelyLoadVehicle as completelyLoadVehicleHelper } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';
@@ -61,8 +63,19 @@ export function deleteVehicle(
     vehicleId: UUID
 ) {
     logVehicleRemoved(draftState, vehicleId);
-
-    const vehicle = getElement(draftState, 'vehicle', vehicleId);
+    let vehicle;
+    try {
+        vehicle = getElement(draftState, 'vehicle', vehicleId);
+    } catch (e: unknown) {
+        if (e instanceof ElementOmittedError) {
+            removeOmitted(
+                e.omittingRegion as unknown as Mutable<SimulatedRegionStandIn>,
+                'vehicles',
+                e.elementId
+            );
+        }
+        return
+    }
 
     // Delete related material and personnel
     Object.keys(vehicle.materialIds).forEach((materialId) => {

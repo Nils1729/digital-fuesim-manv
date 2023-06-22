@@ -27,9 +27,11 @@ import {
 } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
-import { ReducerError } from '../reducer-error';
+import { ElementOmittedError, ReducerError } from '../reducer-error';
 import { PatientRemovedEvent } from '../../simulation/events';
 import { sendSimulationEvent } from '../../simulation/events/utils';
+import { removeOmitted } from '../../state-helpers/standin-helpers/omit-elements';
+import type { SimulatedRegionStandIn } from '../../models';
 import { updateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
 import { removeElementPosition } from './utils/spatial-elements';
@@ -44,7 +46,19 @@ export function deletePatient(
     draftState: Mutable<ExerciseState>,
     patientId: UUID
 ) {
-    const patient = getElement(draftState, 'patient', patientId);
+    let patient;
+    try {
+        patient = getElement(draftState, 'patient', patientId);
+    } catch (e: unknown) {
+        if (e instanceof ElementOmittedError) {
+            removeOmitted(
+                e.omittingRegion as unknown as Mutable<SimulatedRegionStandIn>,
+                'patients',
+                e.elementId
+            );
+        }
+        return
+    }
     if (isInSimulatedRegion(patient)) {
         const simulatedRegion = currentSimulatedRegionOf(draftState, patient);
         sendSimulationEvent(

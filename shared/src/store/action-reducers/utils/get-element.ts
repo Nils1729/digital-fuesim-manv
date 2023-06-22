@@ -31,8 +31,13 @@ export function getElement<
             case 'personnel':
             case 'material':
             case 'vehicle': {
-                if (isOmitted(state, elementType, elementId)) {
-                    throw new ElementOmittedError(elementType, elementId);
+                const omittingRegion = isOmitted(state, elementType, elementId);
+                if (omittingRegion !== undefined) {
+                    throw new ElementOmittedError(
+                        omittingRegion,
+                        elementType,
+                        elementId
+                    );
                 }
                 break;
             }

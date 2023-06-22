@@ -37,6 +37,14 @@ export function addOmitted(
     simulatedRegion.elements[type]![id] = true;
 }
 
+export function removeOmitted(
+    simulatedRegion: Mutable<SimulatedRegionStandIn>,
+    type: keyof SimulatedRegionStandIn['elements'],
+    id: UUID
+) {
+    delete simulatedRegion.elements[type]?.[id];
+}
+
 export function extractAssociatedElements(
     state: ExerciseState,
     simulatedRegionId: UUID
