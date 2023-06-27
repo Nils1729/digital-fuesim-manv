@@ -64,8 +64,8 @@ export namespace StrictObject {
         object: T,
         map: <K extends keyof T>(key: K, value: T[K]) => TT
     ) {
-        return fromEntries(
-            entries(object).map(([k, v]) => [k, map(k,v)])
-        ) as { [key in keyof T]: TT };
+        return fromEntries(entries(object).map(([k, v]) => [k, map(k, v)])) as {
+            [key in keyof T]: TT;
+        };
     }
 }

@@ -3,7 +3,7 @@ import { cloneDeepMutable } from '../../../utils/clone-deep';
 import { getCreate } from '../../../models/utils/get-create';
 import { RadiogramUnpublishedStatus } from '../../../models/radiogram/status/radiogram-unpublished-status';
 import { publishRadiogram } from '../../../models/radiogram/radiogram-helpers-mutable';
-import { nextUUID } from '../../../simulation/utils/randomness';
+import { nextUUIDSimulatedRegion } from '../../../simulation/utils/randomness';
 import { ResourceRequestRadiogram } from '../../radiogram/resource-request-radiogram';
 import type { Mutable } from '../../../utils/immutability';
 import { isDone, isUnread } from '../../radiogram/radiogram-helpers';
@@ -28,7 +28,7 @@ export const traineesRequestTarget: RequestTarget<TraineesRequestTargetConfigura
         configuration: TraineesRequestTargetConfiguration,
         createRequest: (
             draftState,
-            requestingSimulatedRegionId,
+            requestingSimulatedRegion,
             _configuration,
             requestedResource,
             key
@@ -64,8 +64,8 @@ export const traineesRequestTarget: RequestTarget<TraineesRequestTargetConfigura
                     draftState,
                     cloneDeepMutable(
                         ResourceRequestRadiogram.create(
-                            nextUUID(draftState),
-                            requestingSimulatedRegionId,
+                            nextUUIDSimulatedRegion(requestingSimulatedRegion),
+                            requestingSimulatedRegion.id,
                             RadiogramUnpublishedStatus.create(),
                             requestedResource,
                             key

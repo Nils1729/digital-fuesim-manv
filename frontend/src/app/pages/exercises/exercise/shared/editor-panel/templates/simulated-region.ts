@@ -20,6 +20,7 @@ import {
     RequestBehaviorState,
     TreatPatientsBehaviorState,
     UnloadArrivingVehiclesBehaviorState,
+    seededRandomState,
 } from 'digital-fuesim-manv-shared';
 
 export interface SimulatedRegionDragTemplate {
@@ -55,6 +56,7 @@ export const stereotypes: SimulatedRegion[] = [
         inEvents: [],
         position,
         size,
+        randomState: seededRandomState(),
     },
     {
         type: 'simulatedRegion',
@@ -72,6 +74,7 @@ export const stereotypes: SimulatedRegion[] = [
         inEvents: [],
         position,
         size,
+        randomState: seededRandomState(),
     },
     {
         type: 'simulatedRegion',
@@ -87,6 +90,7 @@ export const stereotypes: SimulatedRegion[] = [
         inEvents: [],
         position,
         size,
+        randomState: seededRandomState(),
     },
     {
         type: 'simulatedRegion',
@@ -101,6 +105,7 @@ export const stereotypes: SimulatedRegion[] = [
         inEvents: [],
         position,
         size,
+        randomState: seededRandomState(),
     },
 ];
 
@@ -158,5 +163,6 @@ export function reconstituteSimulatedRegionTemplate(
     region.behaviors.forEach((behavior) => {
         reconstituteBehavior(behavior, state);
     });
+    region.randomState = seededRandomState();
     return region;
 }

@@ -11,7 +11,7 @@ import {
 import { IsLiteralUnionMap, IsValue } from '../../utils/validators';
 import { GenerateReportActivityState } from '../activities/generate-report';
 import { CollectInformationEvent } from '../events/collect';
-import { nextUUID } from '../utils/randomness';
+import { nextUUIDSimulatedRegion } from '../utils/randomness';
 import {
     TransferCategoryCompletedRadiogram,
     TreatmentStatusRadiogram,
@@ -58,14 +58,14 @@ export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
     handleEvent: (draftState, simulatedRegion, behaviorState, event) => {
         switch (event.type) {
             case 'startCollectingInformationEvent': {
-                const activityId = nextUUID(draftState);
+                const activityId = nextUUIDSimulatedRegion(simulatedRegion);
 
                 addActivity(
                     simulatedRegion,
                     GenerateReportActivityState.create(
                         activityId,
                         createRadiogramMap[event.informationType](
-                            nextUUID(draftState),
+                            nextUUIDSimulatedRegion(simulatedRegion),
                             simulatedRegion.id,
                             RadiogramUnpublishedStatus.create()
                         ),
@@ -88,7 +88,7 @@ export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
 
                 const radiogram = cloneDeepMutable(
                     TreatmentStatusRadiogram.create(
-                        nextUUID(draftState),
+                        nextUUIDSimulatedRegion(simulatedRegion),
                         simulatedRegion.id,
                         RadiogramUnpublishedStatus.create()
                     )
@@ -100,7 +100,7 @@ export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
                 addActivity(
                     simulatedRegion,
                     PublishRadiogramActivityState.create(
-                        nextUUID(draftState),
+                        nextUUIDSimulatedRegion(simulatedRegion),
                         radiogram
                     )
                 );
@@ -115,7 +115,7 @@ export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
                 ) {
                     const radiogram = cloneDeepMutable(
                         TransferCategoryCompletedRadiogram.create(
-                            nextUUID(draftState),
+                            nextUUIDSimulatedRegion(simulatedRegion),
                             simulatedRegion.id,
                             RadiogramUnpublishedStatus.create()
                         )
@@ -129,7 +129,7 @@ export const reportBehavior: SimulationBehavior<ReportBehaviorState> = {
                     addActivity(
                         simulatedRegion,
                         PublishRadiogramActivityState.create(
-                            nextUUID(draftState),
+                            nextUUIDSimulatedRegion(simulatedRegion),
                             radiogram
                         )
                     );

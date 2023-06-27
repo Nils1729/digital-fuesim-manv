@@ -9,6 +9,7 @@ import type { ExerciseSimulationActivityState } from '../simulation/activities/e
 import { getSimulationActivityConstructor } from '../simulation/activities/exercise-simulation-activity';
 import type { ExerciseSimulationBehaviorState } from '../simulation/behaviors/exercise-simulation-behavior';
 import { simulationBehaviorTypeOptions } from '../simulation/behaviors/exercise-simulation-behavior';
+import { RandomState, seededRandomState } from '../simulation/utils/randomness';
 import type { ImageProperties, MapCoordinates } from './utils';
 import { MapPosition, Position, Size, getCreate } from './utils';
 
@@ -37,6 +38,10 @@ export class SimulatedRegion {
 
     @IsString()
     public readonly borderColor: string;
+
+    @Type(() => RandomState)
+    @ValidateNested()
+    public readonly randomState: RandomState = seededRandomState();
 
     @Type(...simulationEventTypeOptions)
     @ValidateNested()

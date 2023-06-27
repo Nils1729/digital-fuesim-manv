@@ -29,7 +29,7 @@ import {
     VehicleTransferSuccessfulEvent,
 } from '../events';
 import { sendSimulationEvent } from '../events/utils';
-import { nextUUID } from '../utils/randomness';
+import { nextUUIDSimulatedRegion } from '../utils/randomness';
 import {
     TransferDestination,
     transferDestinationTypeAllowedValues,
@@ -169,7 +169,7 @@ export const transferVehicleActivity: SimulationActivity<TransferVehicleActivity
                             draftState,
                             cloneDeepMutable(
                                 MissingTransferConnectionRadiogram.create(
-                                    nextUUID(draftState),
+                                    nextUUIDSimulatedRegion(simulatedRegion),
                                     simulatedRegion.id,
                                     RadiogramUnpublishedStatus.create(),
                                     activityState.transferDestinationId

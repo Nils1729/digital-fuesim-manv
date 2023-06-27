@@ -19,7 +19,7 @@ import { Patient } from '../../models/patient';
 import type { ExerciseState } from '../../state';
 import { addActivity } from '../activities/utils';
 import { DelayEventActivityState } from '../activities';
-import { nextUUID } from '../utils/randomness';
+import { nextUUIDSimulatedRegion } from '../utils/randomness';
 import { PatientCategoryTransferToHospitalFinishedEvent } from '../events';
 import {
     getActivityById,
@@ -127,7 +127,7 @@ export const transferToHospitalBehavior: SimulationBehavior<TransferToHospitalBe
                     addActivity(
                         simulatedRegion,
                         TransferPatientToHospitalActivityState.create(
-                            nextUUID(draftState),
+                            nextUUIDSimulatedRegion(simulatedRegion),
                             patientsToTransfer,
                             event.vehicleId,
                             vehicle.occupation.transportManagementRegionId
@@ -175,7 +175,9 @@ export const transferToHospitalBehavior: SimulationBehavior<TransferToHospitalBe
                                     addActivity(
                                         simulatedRegion,
                                         DelayEventActivityState.create(
-                                            nextUUID(draftState),
+                                            nextUUIDSimulatedRegion(
+                                                simulatedRegion
+                                            ),
                                             PatientCategoryTransferToHospitalFinishedEvent.create(
                                                 status,
                                                 true

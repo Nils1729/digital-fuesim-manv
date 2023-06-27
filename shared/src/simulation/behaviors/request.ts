@@ -17,7 +17,7 @@ import {
 } from '../../store/action-reducers/utils';
 import type { ExerciseState } from '../../state';
 import { addActivity } from '../activities/utils';
-import { nextUUID } from '../utils/randomness';
+import { nextUUIDSimulatedRegion } from '../utils/randomness';
 import { RecurringEventActivityState } from '../activities';
 import { SendRequestEvent } from '../events/send-request';
 import { CreateRequestActivityState } from '../activities/create-request';
@@ -85,7 +85,7 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
             case 'tickEvent': {
                 if (!behaviorState.recurringEventActivityId) {
                     behaviorState.recurringEventActivityId =
-                        nextUUID(draftState);
+                        nextUUIDSimulatedRegion(simulatedRegion);
                     addActivity(
                         simulatedRegion,
                         RecurringEventActivityState.create(
@@ -167,7 +167,7 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
                 addActivity(
                     simulatedRegion,
                     CreateRequestActivityState.create(
-                        nextUUID(draftState),
+                        nextUUIDSimulatedRegion(simulatedRegion),
                         behaviorState.requestTarget,
                         resource,
                         requestBehaviorKey(simulatedRegion)
@@ -183,7 +183,7 @@ export const requestBehavior: SimulationBehavior<RequestBehaviorState> = {
         addActivity(
             simulatedRegion,
             CreateRequestActivityState.create(
-                nextUUID(draftState),
+                nextUUIDSimulatedRegion(simulatedRegion),
                 behaviorState.requestTarget,
                 VehicleResource.create({}),
                 requestBehaviorKey(simulatedRegion)
@@ -205,7 +205,7 @@ export function updateBehaviorsRequestTarget(
     addActivity(
         simulatedRegion,
         CreateRequestActivityState.create(
-            nextUUID(draftState),
+            nextUUIDSimulatedRegion(simulatedRegion),
             behaviorState.requestTarget,
             VehicleResource.create({}),
             requestBehaviorKey(simulatedRegion)

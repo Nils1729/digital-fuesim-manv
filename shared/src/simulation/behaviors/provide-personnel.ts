@@ -9,7 +9,7 @@ import {
 import { IsValue } from '../../utils/validators';
 import { ProvidePersonnelFromVehiclesActivityState } from '../activities/provide-personnel-from-vehicles';
 import { addActivity } from '../activities/utils';
-import { nextUUID } from '../utils/randomness';
+import { nextUUIDSimulatedRegion } from '../utils/randomness';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -46,7 +46,7 @@ export const providePersonnelBehavior: SimulationBehavior<ProvidePersonnelBehavi
                 addActivity(
                     simulatedRegion,
                     ProvidePersonnelFromVehiclesActivityState.create(
-                        nextUUID(draftState),
+                        nextUUIDSimulatedRegion(simulatedRegion),
                         event.requiredResource.personnelCounts,
                         behaviorState.vehicleTemplatePriorities,
                         event.key

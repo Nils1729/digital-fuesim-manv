@@ -11,7 +11,7 @@ import {
 } from '../activities';
 import { addActivity } from '../activities/utils';
 import { TryToDistributeEvent } from '../events/try-to-distribute';
-import { nextUUID } from '../utils/randomness';
+import { nextUUIDSimulatedRegion } from '../utils/randomness';
 import { TransferVehiclesRequestEvent } from '../events';
 import type {
     SimulationBehavior,
@@ -66,7 +66,7 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                     if (!behaviorState.recurringActivityId) {
                         // initialize recurring activity
                         behaviorState.recurringActivityId =
-                            nextUUID(draftState);
+                            nextUUIDSimulatedRegion(simulatedRegion);
                         addActivity(
                             simulatedRegion,
                             RecurringEventActivityState.create(
@@ -183,7 +183,7 @@ export const automaticallyDistributeVehiclesBehavior: SimulationBehavior<Automat
                             addActivity(
                                 simulatedRegion,
                                 DelayEventActivityState.create(
-                                    nextUUID(draftState),
+                                    nextUUIDSimulatedRegion(simulatedRegion),
                                     TransferVehiclesRequestEvent.create(
                                         cloneDeep(vehiclesToBeSent[region]!),
                                         'transferPoint',

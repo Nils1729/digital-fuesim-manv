@@ -34,7 +34,7 @@ export const simulatedRegionRequestTarget: RequestTarget<SimulatedRegionRequestT
         configuration: SimulatedRegionRequestTargetConfiguration,
         createRequest: (
             draftState,
-            requestingSimulatedRegionId,
+            requestingSimulatedRegion,
             configuration,
             requestedResource,
             key
@@ -48,7 +48,7 @@ export const simulatedRegionRequestTarget: RequestTarget<SimulatedRegionRequestT
             sendSimulationEvent(
                 simulatedRegion,
                 ResourceRequiredEvent.create(
-                    requestingSimulatedRegionId,
+                    requestingSimulatedRegion.id,
                     requestedResource,
                     key
                 )

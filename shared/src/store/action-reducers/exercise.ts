@@ -1,4 +1,9 @@
-import { Allow, IsBoolean, IsInt, IsOptional, IsPositive } from 'class-validator';
+import {
+    IsBoolean,
+    IsInt,
+    IsOptional,
+    IsPositive,
+} from 'class-validator';
 import type { Personnel, PersonnelType, Vehicle } from '../../models';
 import {
     createPersonnelTypeTag,
@@ -71,10 +76,12 @@ export class ExerciseTickAction implements Action {
     public readonly tickInterval!: number;
 
     @IsOptional()
-    public readonly inEvents?: {[key: UUID]: readonly ExerciseSimulationEvent[]}
+    public readonly inEvents?: {
+        [key: UUID]: readonly ExerciseSimulationEvent[];
+    };
 
     @IsOptional()
-    public readonly newRadiograms?: {[key: UUID]: ExerciseRadiogram}
+    public readonly newRadiograms?: { [key: UUID]: ExerciseRadiogram };
 }
 
 export namespace ExerciseActionReducers {
@@ -104,8 +111,17 @@ export namespace ExerciseActionReducers {
 
     export const exerciseTick: ActionReducer<ExerciseTickAction> = {
         action: ExerciseTickAction,
-        reducer: (draftState, { tickInterval, patientUpdates: actionPatientUpdates, inEvents , newRadiograms}) => {
-            const patientUpdates = actionPatientUpdates ?? patientTick(draftState, tickInterval);
+        reducer: (
+            draftState,
+            {
+                tickInterval,
+                patientUpdates: actionPatientUpdates,
+                inEvents,
+                newRadiograms,
+            }
+        ) => {
+            const patientUpdates =
+                actionPatientUpdates ?? patientTick(draftState, tickInterval);
 
             // Refresh the current time
             draftState.currentTime += tickInterval;
@@ -166,11 +182,18 @@ export namespace ExerciseActionReducers {
 
             if (inEvents) {
                 StrictObject.entries(inEvents).forEach(([sid, events]) => {
-                    const simReg = getElement(draftState, 'simulatedRegion', sid);
-                    if (!isStandIn(simReg) && events.length !== simReg.inEvents.length) {
-                        simReg.inEvents = cloneDeepMutable(events)
+                    const simReg = getElement(
+                        draftState,
+                        'simulatedRegion',
+                        sid
+                    );
+                    if (
+                        !isStandIn(simReg) &&
+                        events.length !== simReg.inEvents.length
+                    ) {
+                        simReg.inEvents = cloneDeepMutable(events);
                     }
-                })
+                });
             }
 
             simulateAllRegions(draftState, tickInterval);
@@ -178,9 +201,9 @@ export namespace ExerciseActionReducers {
             if (newRadiograms) {
                 StrictObject.entries(newRadiograms).forEach(([rid, rad]) => {
                     if (!(rid in draftState.radiograms)) {
-                        draftState.radiograms[rid] = cloneDeepMutable(rad)
+                        draftState.radiograms[rid] = cloneDeepMutable(rad);
                     }
-                })
+                });
             }
 
             if (logActive(draftState)) {

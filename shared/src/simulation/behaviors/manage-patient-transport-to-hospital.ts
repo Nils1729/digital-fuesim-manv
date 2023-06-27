@@ -28,7 +28,7 @@ import {
 } from '../../utils';
 import { IsLiteralUnion, IsUUIDSet, IsValue } from '../../utils/validators';
 import { addActivity, terminateActivity } from '../activities/utils';
-import { nextUUID } from '../utils/randomness';
+import { nextUUIDSimulatedRegion } from '../utils/randomness';
 import {
     DelayEventActivityState,
     PublishRadiogramActivityState,
@@ -272,7 +272,7 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
                         addActivity(
                             simulatedRegion,
                             SendRemoteEventActivityState.create(
-                                nextUUID(draftState),
+                                nextUUIDSimulatedRegion(simulatedRegion),
                                 behaviorState.requestTargetId,
                                 TransferVehiclesRequestEvent.create(
                                     { [vehicleType]: 1 },
@@ -326,7 +326,7 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
                             addActivity(
                                 simulatedRegion,
                                 DelayEventActivityState.create(
-                                    nextUUID(draftState),
+                                    nextUUIDSimulatedRegion(simulatedRegion),
                                     PatientCategoryTransferToHospitalFinishedEvent.create(
                                         event.patientCategory,
                                         false
@@ -361,7 +361,7 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
                         addActivity(
                             simulatedRegion,
                             CountPatientsActivityState.create(
-                                nextUUID(draftState)
+                                nextUUIDSimulatedRegion(simulatedRegion)
                             )
                         );
                     }
@@ -377,9 +377,9 @@ export const managePatientTransportToHospitalBehavior: SimulationBehavior<Manage
                         addActivity(
                             simulatedRegion,
                             PublishRadiogramActivityState.create(
-                                nextUUID(draftState),
+                                nextUUIDSimulatedRegion(simulatedRegion),
                                 NewPatientDataRequestedRadiogram.create(
-                                    nextUUID(draftState),
+                                    nextUUIDSimulatedRegion(simulatedRegion),
                                     simulatedRegion.id,
                                     RadiogramUnpublishedStatus.create()
                                 )
@@ -582,7 +582,7 @@ function addActivities(
 ) {
     if (!behaviorState.recurringPatientDataRequestActivityId) {
         behaviorState.recurringPatientDataRequestActivityId =
-            nextUUID(draftState);
+            nextUUIDSimulatedRegion(simulatedRegion);
         addActivity(
             simulatedRegion,
             RecurringEventActivityState.create(
@@ -595,7 +595,8 @@ function addActivities(
     }
 
     if (!behaviorState.recurringSendToHospitalActivityId) {
-        behaviorState.recurringSendToHospitalActivityId = nextUUID(draftState);
+        behaviorState.recurringSendToHospitalActivityId =
+            nextUUIDSimulatedRegion(simulatedRegion);
         addActivity(
             simulatedRegion,
             RecurringEventActivityState.create(

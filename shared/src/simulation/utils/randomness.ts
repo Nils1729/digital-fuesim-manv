@@ -6,6 +6,7 @@ import { getCreate } from '../../models/utils/get-create';
 import type { ExerciseState } from '../../state';
 import type { Mutable, UUID } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
+import type { SimulatedRegion } from '../../models/simulated-region';
 
 export class RandomState {
     @IsValue('randomState' as const)
@@ -39,6 +40,14 @@ export function nextUUID(draftState: Mutable<ExerciseState>): UUID {
     });
 }
 
+export function nextUUIDSimulatedRegion(
+    simulatedRegion: Mutable<SimulatedRegion>
+): UUID {
+    return v4({
+        random: advanceSimulatedRegion(simulatedRegion),
+    });
+}
+
 /**
  * Draws the next integer from a pseudo random number generator persisted in `draftState`.
  * @param draftState The exercise state where the pseudo random number generator state is stored
@@ -65,6 +74,15 @@ export function nextInt(
 function advance(draftState: Mutable<ExerciseState>): Uint8Array {
     const state = draftState.randomState;
     const result = sha256(`${draftState.id}${state.counter.toString()}`);
+    state.counter++;
+    return result;
+}
+
+export function advanceSimulatedRegion(
+    simulatedRegion: Mutable<SimulatedRegion>
+): Uint8Array {
+    const state = simulatedRegion.randomState;
+    const result = sha256(`${simulatedRegion.id}${state.counter.toString()}`);
     state.counter++;
     return result;
 }

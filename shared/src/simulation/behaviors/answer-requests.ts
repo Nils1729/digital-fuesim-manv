@@ -14,7 +14,7 @@ import {
 } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { addActivity } from '../activities/utils';
-import { nextUUID } from '../utils/randomness';
+import { nextUUIDSimulatedRegion } from '../utils/randomness';
 import { DelayEventActivityState } from '../activities';
 import { ResourceRequiredEvent, TransferVehiclesRequestEvent } from '../events';
 import type { ResourceDescription } from '../../models/utils/resource-description';
@@ -77,7 +77,7 @@ export const answerRequestsBehavior: SimulationBehavior<AnswerRequestsBehaviorSt
                             addActivity(
                                 simulatedRegion,
                                 DelayEventActivityState.create(
-                                    nextUUID(draftState),
+                                    nextUUIDSimulatedRegion(simulatedRegion),
                                     eventToSend,
                                     draftState.currentTime
                                 )
@@ -127,7 +127,7 @@ export const answerRequestsBehavior: SimulationBehavior<AnswerRequestsBehaviorSt
                             addActivity(
                                 simulatedRegion,
                                 DelayEventActivityState.create(
-                                    nextUUID(draftState),
+                                    nextUUIDSimulatedRegion(simulatedRegion),
                                     ResourceRequiredEvent.create(
                                         simulatedRegion.id,
                                         VehicleResource.create(

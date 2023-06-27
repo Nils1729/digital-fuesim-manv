@@ -11,7 +11,7 @@ import { StrictObject, UUID, uuid, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { LeaderChangedEvent } from '../events/leader-changed';
 import type { ExerciseState } from '../../state';
-import { nextUUID } from '../utils/randomness';
+import { nextUUIDSimulatedRegion } from '../utils/randomness';
 import { getCreate } from '../../models/utils/get-create';
 import type { PersonnelType } from '../../models/utils/personnel-type';
 import { isInSpecificSimulatedRegion } from '../../models/utils/position/position-helpers';
@@ -279,7 +279,7 @@ function changeLeader(
     addActivity(
         simulatedRegion,
         DelayEventActivityState.create(
-            nextUUID(draftState),
+            nextUUIDSimulatedRegion(simulatedRegion),
             LeaderChangedEvent.create(
                 behaviorState.leaderId ?? null,
                 newLeaderId ?? null

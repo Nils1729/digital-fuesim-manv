@@ -66,7 +66,7 @@ export const createRequestActivity: SimulationActivity<CreateRequestActivityStat
             ] as RequestTarget<ExerciseRequestTargetConfiguration>;
             requestTarget.createRequest(
                 draftState,
-                simulatedRegion.id,
+                simulatedRegion,
                 activityState.targetConfiguration,
                 activityState.requestedResource,
                 activityState.key

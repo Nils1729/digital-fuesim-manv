@@ -13,8 +13,8 @@ import {
 } from '../../utils/validators/is-uuid-uuid-map';
 import { UnloadVehicleActivityState } from '../activities/unload-vehicle';
 import { addActivity, terminateActivity } from '../activities/utils';
-import { nextUUID } from '../utils/randomness';
 import { tryGetElement } from '../../store/action-reducers/utils';
+import { nextUUIDSimulatedRegion } from '../utils/randomness';
 import type {
     SimulationBehavior,
     SimulationBehaviorState,
@@ -72,7 +72,8 @@ export const unloadArrivingVehiclesBehavior: SimulationBehavior<UnloadArrivingVe
                         event.vehicleId
                     );
                     if (vehicle && isUnoccupied(draftState, vehicle)) {
-                        const activityId = nextUUID(draftState);
+                        const activityId =
+                            nextUUIDSimulatedRegion(simulatedRegion);
                         behaviorState.vehicleActivityMap[event.vehicleId] =
                             activityId;
                         changeOccupation(

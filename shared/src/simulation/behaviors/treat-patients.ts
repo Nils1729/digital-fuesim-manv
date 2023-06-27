@@ -21,7 +21,7 @@ import { DelayEventActivityState } from '../activities';
 import { ReassignTreatmentsActivityState } from '../activities/reassign-treatments';
 import { addActivity, terminateActivity } from '../activities/utils';
 import { TreatmentsTimerEvent } from '../events/treatments-timer-event';
-import { nextUUID } from '../utils/randomness';
+import { nextUUIDSimulatedRegion } from '../utils/randomness';
 import {
     TreatmentProgress,
     treatmentProgressAllowedValues,
@@ -141,7 +141,7 @@ export const treatPatientsBehavior: SimulationBehavior<TreatPatientsBehaviorStat
                                 behaviorState.treatmentActivityId
                             ] === undefined)
                     ) {
-                        const id = nextUUID(draftState);
+                        const id = nextUUIDSimulatedRegion(simulatedRegion);
                         addActivity(
                             simulatedRegion,
                             DelayEventActivityState.create(
@@ -296,7 +296,7 @@ function startNewTreatmentReassignment(
         behaviorState.treatmentActivityId = null;
     }
 
-    const id = nextUUID(draftState);
+    const id = nextUUIDSimulatedRegion(simulatedRegion);
     addActivity(
         simulatedRegion,
         ReassignTreatmentsActivityState.create(
