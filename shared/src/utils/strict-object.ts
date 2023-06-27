@@ -59,4 +59,13 @@ export namespace StrictObject {
             entries(object).filter(([k, v]) => predicate(k, v))
         ) as { [key in keyof T]: T[key] };
     }
+
+    export function mapValues<T extends { [key: string]: any }, TT>(
+        object: T,
+        map: <K extends keyof T>(key: K, value: T[K]) => TT
+    ) {
+        return fromEntries(
+            entries(object).map(([k, v]) => [k, map(k,v)])
+        ) as { [key in keyof T]: TT };
+    }
 }

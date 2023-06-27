@@ -1,4 +1,4 @@
-import { IsBoolean, IsInt, IsOptional, IsPositive } from 'class-validator';
+import { Allow, IsBoolean, IsInt, IsOptional, IsPositive } from 'class-validator';
 import type { Personnel, PersonnelType, Vehicle } from '../../models';
 import {
     createPersonnelTypeTag,
@@ -22,6 +22,9 @@ import { elementTypePluralMap } from '../../utils/element-type-plural-map';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ElementOmittedError, ReducerError } from '../reducer-error';
+import type { ExerciseSimulationEvent } from '../../simulation';
+import { isStandIn } from '../../state-helpers';
+import type { ExerciseRadiogram } from '../../models/radiogram';
 import type { TransferableElementType } from './transfer';
 import { letElementArrive } from './transfer';
 import { updateTreatments } from './utils/calculate-treatments';
@@ -66,6 +69,12 @@ export class ExerciseTickAction implements Action {
     @IsInt()
     @IsPositive()
     public readonly tickInterval!: number;
+
+    @IsOptional()
+    public readonly inEvents?: {[key: UUID]: readonly ExerciseSimulationEvent[]}
+
+    @IsOptional()
+    public readonly newRadiograms?: {[key: UUID]: ExerciseRadiogram}
 }
 
 export namespace ExerciseActionReducers {
@@ -95,8 +104,8 @@ export namespace ExerciseActionReducers {
 
     export const exerciseTick: ActionReducer<ExerciseTickAction> = {
         action: ExerciseTickAction,
-        reducer: (draftState, { tickInterval }) => {
-            const patientUpdates = patientTick(draftState, tickInterval);
+        reducer: (draftState, { tickInterval, patientUpdates: actionPatientUpdates, inEvents , newRadiograms}) => {
+            const patientUpdates = actionPatientUpdates ?? patientTick(draftState, tickInterval);
 
             // Refresh the current time
             draftState.currentTime += tickInterval;
@@ -155,7 +164,24 @@ export namespace ExerciseActionReducers {
             refreshTransfer(draftState, 'vehicle', tickInterval);
             refreshTransfer(draftState, 'personnel', tickInterval);
 
+            if (inEvents) {
+                StrictObject.entries(inEvents).forEach(([sid, events]) => {
+                    const simReg = getElement(draftState, 'simulatedRegion', sid);
+                    if (!isStandIn(simReg) && events.length !== simReg.inEvents.length) {
+                        simReg.inEvents = cloneDeepMutable(events)
+                    }
+                })
+            }
+
             simulateAllRegions(draftState, tickInterval);
+
+            if (newRadiograms) {
+                StrictObject.entries(newRadiograms).forEach(([rid, rad]) => {
+                    if (!(rid in draftState.radiograms)) {
+                        draftState.radiograms[rid] = cloneDeepMutable(rad)
+                    }
+                })
+            }
 
             if (logActive(draftState)) {
                 const newTreatmentAssignment =

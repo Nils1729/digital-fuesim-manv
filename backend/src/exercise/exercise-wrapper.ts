@@ -1,8 +1,12 @@
 import type {
     ExerciseAction,
     ExerciseIds,
+    ExerciseRadiogram,
+    ExerciseTickAction,
     ExerciseTimeline,
+    Mutable,
     Role,
+    SimulatedRegion,
     StateExport,
     UUID,
 } from 'digital-fuesim-manv-shared';
@@ -12,6 +16,7 @@ import {
     ExerciseState,
     reduceExerciseState,
     ReducerError,
+    StrictObject,
     validateExerciseAction,
     validateExerciseState,
 } from 'digital-fuesim-manv-shared';
@@ -207,7 +212,13 @@ export class ExerciseWrapper extends NormalType<
      */
     private readonly tick = async () => {
         try {
-            const updateAction: ExerciseAction = {
+            // Thesis TODO: Optional: check for events not sent by self
+            const inEvents = StrictObject.mapValues(
+                this.currentState.simulatedRegions,
+                (sid, simReg) =>
+                    cloneDeepMutable((simReg as SimulatedRegion).inEvents)
+            );
+            const updateAction: Mutable<ExerciseTickAction> = {
                 type: '[Exercise] Tick',
                 /**
                  * Refresh every {@link refreshTreatmentInterval} * {@link tickInterval} ms seconds
@@ -216,8 +227,25 @@ export class ExerciseWrapper extends NormalType<
                 refreshTreatments:
                     this.tickCounter % this.refreshTreatmentInterval === 0,
                 tickInterval: this.tickInterval,
+                inEvents,
             };
-            this.applyAction(updateAction, this.emitterId);
+            const preActionRadiograms = this.currentState.radiograms;
+            let newRadiograms: { [key: UUID]: ExerciseRadiogram };
+            this.applyAction(
+                updateAction,
+                this.emitterId,
+                () => {
+                    // Thesis TODO: This could be easier if we asked immer what changed.
+                    newRadiograms = StrictObject.filterValues(
+                        this.currentState.radiograms,
+                        (k) => !(k in preActionRadiograms)
+                    );
+                },
+                (action) => ({
+                    ...action,
+                    newRadiograms,
+                })
+            );
             this.tickCounter++;
             this.markAsModified();
         } catch (e: unknown) {
@@ -546,11 +574,12 @@ export class ExerciseWrapper extends NormalType<
     public applyAction(
         action: ExerciseAction,
         emitterId: UUID | null,
-        intermediateAction?: () => void
+        intermediateAction?: () => void,
+        actionMapper: (action: ExerciseAction) => ExerciseAction = (a) => a
     ): void {
         this.reduce(action, emitterId);
         intermediateAction?.();
-        this.emitAction(action);
+        this.emitAction(actionMapper(action));
     }
 
     /**

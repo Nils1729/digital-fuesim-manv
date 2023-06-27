@@ -1,14 +1,12 @@
 import { IsInt, IsUUID, Min } from 'class-validator';
-import {
-    changeOccupation,
-    getCreate,
-    isInSpecificSimulatedRegion,
-} from '../../models/utils';
 import { NoOccupation } from '../../models/utils/occupations/no-occupation';
 import { UUID, uuidValidationOptions } from '../../utils';
 import { IsValue } from '../../utils/validators';
 import { unloadVehicle } from '../utils/vehicle';
 import { tryGetElement } from '../../store/action-reducers/utils';
+import { getCreate } from '../../models/utils/get-create';
+import { isInSpecificSimulatedRegion } from '../../models/utils/position/position-helpers';
+import { changeOccupation } from '../../models/utils/occupations/occupation-helpers-mutable';
 import type {
     SimulationActivity,
     SimulationActivityState,

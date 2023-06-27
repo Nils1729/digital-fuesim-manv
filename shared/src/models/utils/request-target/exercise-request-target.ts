@@ -1,7 +1,7 @@
 import type { Type } from 'class-transformer';
 import { simulatedRegionRequestTarget } from './simulated-region';
-import { traineesRequestTarget } from './trainees';
 import { RequestTargetConfiguration } from './request-target';
+import { traineesRequestTarget } from './trainees';
 
 export const requestTargets = {
     simulatedRegionRequestTarget,
