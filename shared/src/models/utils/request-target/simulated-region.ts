@@ -35,14 +35,14 @@ export const simulatedRegionRequestTarget: RequestTarget<SimulatedRegionRequestT
         createRequest: (
             draftState,
             requestingSimulatedRegion,
-            configuration,
+            { targetSimulatedRegionId },
             requestedResource,
             key
         ) => {
             const simulatedRegion = getElement(
                 draftState,
                 'simulatedRegion',
-                configuration.targetSimulatedRegionId
+                targetSimulatedRegionId
             );
 
             sendSimulationEvent(
@@ -51,7 +51,8 @@ export const simulatedRegionRequestTarget: RequestTarget<SimulatedRegionRequestT
                     requestingSimulatedRegion.id,
                     requestedResource,
                     key
-                )
+                ),
+                targetSimulatedRegionId !== requestingSimulatedRegion.id
             );
         },
     };

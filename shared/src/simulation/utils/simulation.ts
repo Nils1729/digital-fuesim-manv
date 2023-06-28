@@ -23,7 +23,8 @@ function simulateSingleRegion(
     simulatedRegion: Mutable<SimulatedRegion>,
     tickInterval: number
 ) {
-    sendSimulationEvent(simulatedRegion, TickEvent.create(tickInterval));
+    // We claim this TickEvent was sent by another region to keep it as last event
+    sendSimulationEvent(simulatedRegion, TickEvent.create(tickInterval), true);
     handleSimulationEvents(draftState, simulatedRegion);
     tickActivities(draftState, simulatedRegion, tickInterval);
 }
@@ -55,14 +56,17 @@ export function handleSimulationEvents(
     simulatedRegion: Mutable<SimulatedRegion>
 ) {
     simulatedRegion.behaviors.forEach((behaviorState) => {
-        simulatedRegion.inEvents.forEach((event) => {
-            simulationBehaviorDictionary[behaviorState.type].handleEvent(
-                draftState,
-                simulatedRegion,
-                behaviorState as any,
-                event
-            );
-        });
+        [...simulatedRegion.ownEvents, ...simulatedRegion.inEvents].forEach(
+            (event) => {
+                simulationBehaviorDictionary[behaviorState.type].handleEvent(
+                    draftState,
+                    simulatedRegion,
+                    behaviorState as any,
+                    event
+                );
+            }
+        );
     });
     simulatedRegion.inEvents = [];
+    simulatedRegion.ownEvents = [];
 }

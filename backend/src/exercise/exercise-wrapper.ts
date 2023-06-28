@@ -214,7 +214,11 @@ export class ExerciseWrapper extends NormalType<
         try {
             // Thesis TODO: Optional: check for events not sent by self
             const inEvents = StrictObject.mapValues(
-                this.currentState.simulatedRegions,
+                StrictObject.filterValues(
+                    this.currentState.simulatedRegions,
+                    (sid, simReg) =>
+                        (simReg as SimulatedRegion).inEvents.length > 0
+                ),
                 (sid, simReg) =>
                     cloneDeepMutable((simReg as SimulatedRegion).inEvents)
             );

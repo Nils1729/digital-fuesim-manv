@@ -57,7 +57,11 @@ export const sendRemoteEventActivity: SimulationActivity<SendRemoteEventActivity
                 activityState.targetSimulatedRegionId
             );
             if (targetSimulatedRegion) {
-                sendSimulationEvent(targetSimulatedRegion, activityState.event);
+                sendSimulationEvent(
+                    targetSimulatedRegion,
+                    activityState.event,
+                    true
+                );
             }
             terminate();
         },

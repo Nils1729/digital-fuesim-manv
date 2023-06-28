@@ -47,6 +47,10 @@ export class SimulatedRegion {
     @ValidateNested()
     public readonly inEvents: readonly ExerciseSimulationEvent[] = [];
 
+    @Type(...simulationEventTypeOptions)
+    @ValidateNested()
+    public readonly ownEvents: readonly ExerciseSimulationEvent[] = [];
+
     @Type(...simulationBehaviorTypeOptions)
     @ValidateNested()
     public readonly behaviors: readonly ExerciseSimulationBehaviorState[] = [];

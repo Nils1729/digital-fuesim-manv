@@ -234,7 +234,6 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
             case 'transferVehiclesRequestEvent':
                 {
                     // group vehicles
-
                     const vehicles = Object.values(draftState.vehicles)
                         .filter((vehicle) =>
                             isInSpecificSimulatedRegion(
@@ -315,7 +314,6 @@ export const transferBehavior: SimulationBehavior<TransferBehaviorState> = {
                     );
 
                     // Send RequestReceivedEvent into own region
-
                     addActivity(
                         simulatedRegion,
                         DelayEventActivityState.create(

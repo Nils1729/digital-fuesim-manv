@@ -117,7 +117,8 @@ export const transferPatientToHospitalActivity: SimulationActivity<TransferPatie
                                 draftState.configuration.bluePatientsEnabled
                             ),
                             simulatedRegion.id
-                        )
+                        ),
+                        transferManagementRegion.id !== simulatedRegion.id
                     );
                 });
             }

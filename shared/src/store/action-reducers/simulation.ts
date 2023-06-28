@@ -25,9 +25,7 @@ import {
 } from '../../simulation';
 import { StartCollectingInformationEvent } from '../../simulation/events/start-collecting';
 import { sendSimulationEvent } from '../../simulation/events/utils';
-import {
-    nextUUIDSimulatedRegion,
-} from '../../simulation/utils/randomness';
+import { nextUUIDSimulatedRegion } from '../../simulation/utils/randomness';
 import {
     UUID,
     uuidValidationOptions,
