@@ -97,6 +97,10 @@ export class RemovePatientFromSimulatedRegionAction implements Action {
 
     @IsUUID(4, uuidValidationOptions)
     public readonly patientId!: UUID;
+
+    @Type(() => Patient)
+    @ValidateNested()
+    public readonly beforePatient!: Patient;
 }
 
 export class RemovePatientAction implements Action {
@@ -190,8 +194,22 @@ export namespace PatientActionReducers {
     export const removePatientFromSimulatedRegion: ActionReducer<RemovePatientFromSimulatedRegionAction> =
         {
             action: RemovePatientFromSimulatedRegionAction,
-            reducer: (draftState, { patientId }) => {
-                const patient = getElement(draftState, 'patient', patientId);
+            reducer: (draftState, { patientId, beforePatient }) => {
+                let patient: Mutable<Patient>;
+                try {
+                    patient = getElement(draftState, 'patient', patientId);
+                } catch (e: unknown) {
+                    if (
+                        e instanceof ElementOmittedError &&
+                        e.elementType === 'patient'
+                    ) {
+                        removeOmitted(e.omittingRegion, 'patients', patientId);
+                        patient = cloneDeepMutable(beforePatient);
+                        draftState.patients[patientId] = patient;
+                    } else {
+                        throw e;
+                    }
+                }
 
                 if (isNotInSimulatedRegion(patient)) {
                     throw new ReducerError(

@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
+import {
+    Allow,
+    IsArray,
+    IsString,
+    IsUUID,
+    ValidateNested,
+} from 'class-validator';
 import { Material } from '../../models/material';
 import {
     changePosition,
@@ -29,7 +35,8 @@ import {
 import { Vehicle } from '../../models/vehicle';
 import { Personnel } from '../../models/personnel';
 import {
-    getAssociatedElements,
+    getAssociatedElementIds,
+    removeOmitted,
     removeOmittedVehicle,
 } from '../../state-helpers/standin-helpers/omit-elements';
 import {
@@ -94,7 +101,7 @@ export function deleteVehicle(
     }
 
     // Protect against race conditions
-    const actualAssociatedElements = getAssociatedElements(vehicle);
+    const actualAssociatedElements = getAssociatedElementIds(vehicle);
     if (
         StrictObject.entries(actualAssociatedElements).some(([k, ids]) =>
             StrictObject.keys(ids).some((id) => !associatedElements[k]?.[id])
@@ -261,6 +268,16 @@ export class RemoveVehicleFromSimulatedRegionAction implements Action {
 
     @IsUUID(4, uuidValidationOptions)
     public readonly simulatedRegionId!: UUID;
+
+    @Type(() => Vehicle)
+    @ValidateNested()
+    public readonly beforeVehicle!: Vehicle;
+
+    @Allow()
+    public readonly beforeAssociatedElements!: Pick<
+        ExerciseState,
+        'materials' | 'patients' | 'personnel'
+    >;
 }
 
 export class SetVehicleOccupationAction implements Action {
@@ -612,8 +629,49 @@ export namespace VehicleActionReducers {
     export const removeVehicleFromSimulatedRegion: ActionReducer<RemoveVehicleFromSimulatedRegionAction> =
         {
             action: RemoveVehicleFromSimulatedRegionAction,
-            reducer: (draftState, { vehicleId, simulatedRegionId }) => {
-                const vehicle = getElement(draftState, 'vehicle', vehicleId);
+            reducer: (
+                draftState,
+                {
+                    vehicleId,
+                    simulatedRegionId,
+                    beforeVehicle,
+                    beforeAssociatedElements,
+                }
+            ) => {
+                let vehicle: Mutable<Vehicle>;
+                try {
+                    vehicle = getElement(draftState, 'vehicle', vehicleId);
+                } catch (err: unknown) {
+                    if (
+                        err instanceof ElementOmittedError &&
+                        err.elementType === 'vehicle'
+                    ) {
+                        removeOmitted(
+                            err.omittingRegion,
+                            'patients',
+                            vehicleId
+                        );
+                        vehicle = cloneDeepMutable(beforeVehicle);
+                        draftState.vehicles[vehicleId] = vehicle;
+                        StrictObject.entries(beforeAssociatedElements).forEach(
+                            ([type, ids]) =>
+                                StrictObject.entries(ids).forEach(
+                                    ([id, element]) => {
+                                        removeOmitted(
+                                            (err as ElementOmittedError)
+                                                .omittingRegion,
+                                            type,
+                                            id
+                                        );
+                                        draftState[type][id] =
+                                            cloneDeepMutable(element);
+                                    }
+                                )
+                        );
+                    } else {
+                        throw err;
+                    }
+                }
 
                 if (!isInSpecificSimulatedRegion(vehicle, simulatedRegionId)) {
                     throw new ReducerError(

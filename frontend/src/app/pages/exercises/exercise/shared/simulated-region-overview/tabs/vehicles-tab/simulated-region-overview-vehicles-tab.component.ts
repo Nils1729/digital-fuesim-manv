@@ -11,6 +11,7 @@ import {
     Patient,
     isInSpecificVehicle,
     SimulatedRegion,
+    getAssociatedElementIds,
     getAssociatedElements,
 } from 'digital-fuesim-manv-shared';
 import { groupBy } from 'lodash-es';
@@ -20,12 +21,14 @@ import type { AppState } from 'src/app/state/app.state';
 import {
     createSelectElementsInSimulatedRegion,
     selectConfiguration,
+    selectExerciseState,
     selectPatients,
     selectPersonnel,
     selectVehicleTemplates,
     selectVehicles,
 } from 'src/app/state/application/selectors/exercise.selectors';
 import { ExerciseService } from 'src/app/core/exercise.service';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import type { PatientWithVisibleStatus } from '../../patients-table/simulated-region-overview-patients-table.component';
 import { StartTransferService } from '../../start-transfer.service';
 
@@ -158,15 +161,20 @@ export class SimulatedRegionOverviewVehiclesTabComponent implements OnInit {
         this.exerciseService.proposeAction({
             type: '[Vehicle] Remove vehicle',
             vehicleId: vehicle.id,
-            associatedElements: getAssociatedElements(vehicle),
+            associatedElements: getAssociatedElementIds(vehicle),
         });
     }
 
-    moveVehicleToMap(vehicleId: UUID) {
+    moveVehicleToMap(vehicle: Vehicle) {
         this.exerciseService.proposeAction({
             type: '[Vehicle] Remove from simulated region',
-            vehicleId,
+            vehicleId: vehicle.id,
             simulatedRegionId: this.simulatedRegion.id,
+            beforeVehicle: vehicle,
+            beforeAssociatedElements: getAssociatedElements(
+                selectStateSnapshot(selectExerciseState, this.store),
+                vehicle
+            ),
         });
     }
 

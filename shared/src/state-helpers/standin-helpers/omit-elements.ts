@@ -13,6 +13,7 @@ import {
 } from '../../models/utils/position/position-helpers';
 import type { Vehicle } from '../../models/vehicle';
 import type { ExerciseState } from '../../state';
+import { getElement } from '../../store/action-reducers/utils';
 import { removeElementPosition } from '../../store/action-reducers/utils/spatial-elements';
 import type { ElementTypePluralMap } from '../../utils/element-type-plural-map';
 import { elementTypePluralMap } from '../../utils/element-type-plural-map';
@@ -46,11 +47,29 @@ export function removeOmitted(
     delete simulatedRegion.elements[type]?.[id];
 }
 
-export function getAssociatedElements(vehicle: Vehicle) {
+export function getAssociatedElementIds(vehicle: Vehicle) {
     return {
         personnel: vehicle.personnelIds,
         materials: vehicle.materialIds,
         patients: vehicle.patientIds,
+    };
+}
+
+export function getAssociatedElements(
+    draftState: ExerciseState,
+    vehicle: Vehicle
+): Pick<ExerciseState, 'materials' | 'patients' | 'personnel'> {
+    const elements = getAssociatedElementIds(vehicle);
+    return {
+        materials: StrictObject.mapValues(elements.materials, (id) =>
+            getElement(draftState, 'material', id)
+        ),
+        patients: StrictObject.mapValues(elements.patients, (id) =>
+            getElement(draftState, 'patient', id)
+        ),
+        personnel: StrictObject.mapValues(elements.personnel, (id) =>
+            getElement(draftState, 'personnel', id)
+        ),
     };
 }
 

@@ -2,8 +2,12 @@ import { Component, Input } from '@angular/core';
 import type { Mutable, UUIDSet } from 'digital-fuesim-manv-shared';
 import { UUID } from 'digital-fuesim-manv-shared';
 import { ExerciseService } from 'src/app/core/exercise.service';
-import { SelectPatientService } from '../../../select-patient.service';
+import type { AppState } from 'src/app/state/app.state';
+import { Store } from '@ngrx/store';
+import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
+import { createSelectPatient } from 'src/app/state/application/selectors/exercise.selectors';
 import { StartTransferService } from '../../../start-transfer.service';
+import { SelectPatientService } from '../../../select-patient.service';
 
 @Component({
     selector: 'app-simulated-region-overview-patient-interaction-bar',
@@ -17,6 +21,7 @@ export class SimulatedRegionOverviewPatientInteractionBarComponent {
     @Input() patientId!: UUID;
 
     constructor(
+        private readonly store: Store<AppState>,
         private readonly exerciseService: ExerciseService,
         readonly selectPatientService: SelectPatientService,
         readonly startTransferService: StartTransferService
@@ -26,6 +31,10 @@ export class SimulatedRegionOverviewPatientInteractionBarComponent {
         this.exerciseService.proposeAction({
             type: '[Patient] Remove patient from simulated region',
             patientId: this.patientId,
+            beforePatient: selectStateSnapshot(
+                createSelectPatient(this.patientId),
+                this.store
+            ),
         });
         this.selectPatientService.selectPatient('');
     }
