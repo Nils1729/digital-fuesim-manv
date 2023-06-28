@@ -12,21 +12,16 @@ export function simulateAllRegions(
     draftState: Mutable<ExerciseState>,
     tickInterval: number
 ) {
-    Object.values(draftState.simulatedRegions).forEach((simulatedRegion) => {
-        if (isStandIn(simulatedRegion)) return;
-        simulateSingleRegion(draftState, simulatedRegion, tickInterval);
-    });
-}
-
-function simulateSingleRegion(
-    draftState: Mutable<ExerciseState>,
-    simulatedRegion: Mutable<SimulatedRegion>,
-    tickInterval: number
-) {
+    const regionsToSimulate = Object.values(draftState.simulatedRegions).filter(
+        (region): region is Mutable<SimulatedRegion> => !isStandIn(region)
+    );
+    const forEach = (fn: (region: Mutable<SimulatedRegion>) => void) =>
+        regionsToSimulate.forEach(fn);
+    const tickEvent = TickEvent.create(tickInterval);
     // We claim this TickEvent was sent by another region to keep it as last event
-    sendSimulationEvent(simulatedRegion, TickEvent.create(tickInterval), true);
-    handleSimulationEvents(draftState, simulatedRegion);
-    tickActivities(draftState, simulatedRegion, tickInterval);
+    forEach((region) => sendSimulationEvent(region, tickEvent, true));
+    forEach((region) => handleSimulationEvents(draftState, region));
+    forEach((region) => tickActivities(draftState, region, tickInterval));
 }
 
 function tickActivities(
@@ -55,18 +50,18 @@ export function handleSimulationEvents(
     draftState: Mutable<ExerciseState>,
     simulatedRegion: Mutable<SimulatedRegion>
 ) {
-    simulatedRegion.behaviors.forEach((behaviorState) => {
-        [...simulatedRegion.ownEvents, ...simulatedRegion.inEvents].forEach(
-            (event) => {
+    [...simulatedRegion.ownEvents, ...simulatedRegion.inEvents].forEach(
+        (event) => {
+            simulatedRegion.behaviors.forEach((behaviorState) => {
                 simulationBehaviorDictionary[behaviorState.type].handleEvent(
                     draftState,
                     simulatedRegion,
                     behaviorState as any,
                     event
                 );
-            }
-        );
-    });
+            });
+        }
+    );
     simulatedRegion.inEvents = [];
     simulatedRegion.ownEvents = [];
 }
