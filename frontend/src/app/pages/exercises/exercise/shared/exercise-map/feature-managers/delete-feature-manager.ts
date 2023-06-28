@@ -16,6 +16,7 @@ import { selectCurrentRole } from 'src/app/state/application/selectors/shared.se
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 // eslint-disable-next-line @typescript-eslint/no-shadow
 import type { Element } from 'digital-fuesim-manv-shared';
+import { getAssociatedElements } from 'digital-fuesim-manv-shared';
 import type { FeatureManager } from '../utility/feature-manager';
 import type { OlMapInteractionsManager } from '../utility/ol-map-interactions-manager';
 
@@ -100,6 +101,7 @@ export class DeleteFeatureManager implements FeatureManager<Point> {
                 this.exerciseService.proposeAction({
                     type: '[Vehicle] Remove vehicle',
                     vehicleId: id,
+                    associatedElements: getAssociatedElements(droppedElement),
                 });
                 return true;
             }

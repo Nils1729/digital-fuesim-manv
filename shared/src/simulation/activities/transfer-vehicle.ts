@@ -5,16 +5,6 @@ import {
     RadiogramUnpublishedStatus,
 } from '../../models/radiogram';
 import { publishRadiogram } from '../../models/radiogram/radiogram-helpers-mutable';
-import {
-    changeOccupation,
-    ExerciseOccupation,
-    getCreate,
-    isInSpecificSimulatedRegion,
-    isInSpecificVehicle,
-    NoOccupation,
-    occupationTypeOptions,
-    TransferStartPoint,
-} from '../../models/utils';
 import { VehicleResource } from '../../models/utils/rescue-resource';
 import { TransferActionReducers } from '../../store/action-reducers/transfer';
 import {
@@ -36,6 +26,18 @@ import {
 } from '../utils/transfer-destination';
 import { HospitalActionReducers } from '../../store/action-reducers/hospital';
 import type { ResourceDescription } from '../../models/utils/resource-description';
+import {
+    ExerciseOccupation,
+    occupationTypeOptions,
+} from '../../models/utils/occupations/exercise-occupation';
+import { getCreate } from '../../models/utils/get-create';
+import {
+    isInSpecificSimulatedRegion,
+    isInSpecificVehicle,
+} from '../../models/utils/position/position-helpers';
+import { changeOccupation } from '../../models/utils/occupations/occupation-helpers-mutable';
+import { NoOccupation } from '../../models/utils/occupations/no-occupation';
+import { TransferStartPoint } from '../../models/utils/start-points';
 import type {
     SimulationActivity,
     SimulationActivityState,

@@ -10,12 +10,13 @@ export namespace StrictObject {
      * See {@link StrictObject}
      * @returns an array of key/values of the enumerable properties of an object
      */
-    export function entries<T extends { [key: string]: any }>(
-        object: T
-    ): {
-        [Key in keyof T]: [Key, T[Key]];
-    }[keyof T][] {
-        return Object.entries(object);
+    export function entries<T extends { [key: string]: any }>(object: T) {
+        return Object.entries(object) as Exclude<
+            {
+                [Key in keyof T]: [Key, T[Key]];
+            }[keyof T],
+            undefined
+        >[];
     }
 
     /**

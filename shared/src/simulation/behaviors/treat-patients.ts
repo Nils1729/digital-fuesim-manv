@@ -17,7 +17,7 @@ import { getActivityById } from '../../store/action-reducers/utils';
 import type { Mutable } from '../../utils';
 import { uuid, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
-import { DelayEventActivityState } from '../activities';
+import { DelayEventActivityState } from '../activities/delay-event';
 import { ReassignTreatmentsActivityState } from '../activities/reassign-treatments';
 import { addActivity, terminateActivity } from '../activities/utils';
 import { TreatmentsTimerEvent } from '../events/treatments-timer-event';

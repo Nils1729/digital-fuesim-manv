@@ -14,6 +14,7 @@ import {
 import type { Vehicle } from '../../models/vehicle';
 import type { ExerciseState } from '../../state';
 import { removeElementPosition } from '../../store/action-reducers/utils/spatial-elements';
+import type { ElementTypePluralMap } from '../../utils/element-type-plural-map';
 import { elementTypePluralMap } from '../../utils/element-type-plural-map';
 import type { Mutable } from '../../utils/immutability';
 import { StrictObject } from '../../utils/strict-object';
@@ -43,6 +44,32 @@ export function removeOmitted(
     id: UUID
 ) {
     delete simulatedRegion.elements[type]?.[id];
+}
+
+export function getAssociatedElements(vehicle: Vehicle) {
+    return {
+        personnel: vehicle.personnelIds,
+        materials: vehicle.materialIds,
+        patients: vehicle.patientIds,
+    };
+}
+
+export function removeOmittedVehicle(
+    simulatedRegion: Mutable<SimulatedRegionStandIn>,
+    vehicleId: UUID,
+    associatedElements: {
+        [key in ElementTypePluralMap[Exclude<
+            StandInElement['type'],
+            'vehicle'
+        >]]?: UUIDSet;
+    }
+) {
+    StrictObject.entries(associatedElements).forEach(([type, ids]) =>
+        StrictObject.keys(ids!).forEach((id) =>
+            removeOmitted(simulatedRegion, type, id)
+        )
+    );
+    removeOmitted(simulatedRegion, 'vehicles', vehicleId);
 }
 
 export function extractAssociatedElements(
@@ -215,7 +242,7 @@ function shouldKeepVehicle(
     );
 }
 
-function deleteElement(
+function omitElement(
     draftState: Mutable<ExerciseState>,
     simulatedRegion: Mutable<SimulatedRegionStandIn>,
     type: StandInElement['type'],
@@ -233,14 +260,14 @@ export function standInElement(
 ) {
     if (element.type === 'vehicle') {
         StrictObject.keys(element.materialIds).forEach((id) =>
-            deleteElement(draftState, simulatedRegion, 'material', id)
+            omitElement(draftState, simulatedRegion, 'material', id)
         );
         StrictObject.keys(element.personnelIds).forEach((id) =>
-            deleteElement(draftState, simulatedRegion, 'personnel', id)
+            omitElement(draftState, simulatedRegion, 'personnel', id)
         );
         StrictObject.keys(element.patientIds).forEach((id) =>
-            deleteElement(draftState, simulatedRegion, 'patient', id)
+            omitElement(draftState, simulatedRegion, 'patient', id)
         );
     }
-    deleteElement(draftState, simulatedRegion, element.type, element.id);
+    omitElement(draftState, simulatedRegion, element.type, element.id);
 }

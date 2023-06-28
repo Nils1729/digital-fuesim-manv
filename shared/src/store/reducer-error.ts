@@ -4,6 +4,7 @@ import type {
     StandInElement,
 } from '../models/simulated-region-standin';
 import { isStandIn } from '../state-helpers/standin-helpers/is-standin';
+import type { Mutable } from '../utils/immutability';
 import type { UUID } from '../utils/uuid';
 
 /**
@@ -31,7 +32,7 @@ export class SimulatedRegionMissingError extends ReducerError {
 
 export class ElementOmittedError extends ReducerError {
     constructor(
-        readonly omittingRegion: SimulatedRegionStandIn,
+        readonly omittingRegion: Mutable<SimulatedRegionStandIn>,
         readonly elementType: StandInElement['type'],
         readonly elementId: UUID
     ) {

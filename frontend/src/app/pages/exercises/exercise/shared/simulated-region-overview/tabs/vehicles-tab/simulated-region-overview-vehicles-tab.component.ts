@@ -11,6 +11,7 @@ import {
     Patient,
     isInSpecificVehicle,
     SimulatedRegion,
+    getAssociatedElements,
 } from 'digital-fuesim-manv-shared';
 import { groupBy } from 'lodash-es';
 import type { Observable } from 'rxjs';
@@ -153,10 +154,11 @@ export class SimulatedRegionOverviewVehiclesTabComponent implements OnInit {
         this.selectedVehicleId$.next(vehicleId);
     }
 
-    removeVehicle(vehicleId: UUID) {
+    removeVehicle(vehicle: Vehicle) {
         this.exerciseService.proposeAction({
             type: '[Vehicle] Remove vehicle',
-            vehicleId,
+            vehicleId: vehicle.id,
+            associatedElements: getAssociatedElements(vehicle),
         });
     }
 

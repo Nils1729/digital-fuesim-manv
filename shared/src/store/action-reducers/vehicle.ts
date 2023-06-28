@@ -2,29 +2,12 @@ import { Type } from 'class-transformer';
 import { IsArray, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Material } from '../../models/material';
 import {
-    changeOccupation,
-    currentCoordinatesOf,
-    currentSimulatedRegionIdOf,
-    currentSimulatedRegionOf,
-    ExerciseOccupation,
-    isInSimulatedRegion,
-    isInSpecificSimulatedRegion,
-    isInTransfer,
-    isInVehicle,
-    isOnMap,
-    MapCoordinates,
-    MapPosition,
-    occupationTypeOptions,
-    SimulatedRegionPosition,
-    VehiclePosition,
-} from '../../models/utils';
-import {
     changePosition,
     changePositionWithId,
 } from '../../models/utils/position/position-helpers-mutable';
 import type { ExerciseState } from '../../state';
 import { imageSizeToPosition } from '../../state-helpers/image-size-to-position';
-import type { Mutable } from '../../utils';
+import type { ElementTypePluralMap, Mutable, UUIDSet } from '../../utils';
 import {
     cloneDeepMutable,
     StrictObject,
@@ -45,13 +28,39 @@ import {
 } from '../../simulation/events';
 import { Vehicle } from '../../models/vehicle';
 import { Personnel } from '../../models/personnel';
-import { removeOmitted } from '../../state-helpers/standin-helpers/omit-elements';
-import type { SimulatedRegionStandIn } from '../../models';
-import { deletePatient } from './patient';
-import { completelyLoadVehicle as completelyLoadVehicleHelper } from './utils/completely-load-vehicle';
-import { getElement } from './utils/get-element';
-import { removeElementPosition } from './utils/spatial-elements';
+import {
+    getAssociatedElements,
+    removeOmittedVehicle,
+} from '../../state-helpers/standin-helpers/omit-elements';
+import {
+    IsElementSet,
+    elementSetAllowedValues,
+} from '../../utils/validators/is-element-set';
+import type { StandInElement } from '../../models/simulated-region-standin';
+import {
+    currentCoordinatesOf,
+    currentSimulatedRegionIdOf,
+    currentSimulatedRegionOf,
+    isInSimulatedRegion,
+    isInSpecificSimulatedRegion,
+    isInTransfer,
+    isInVehicle,
+    isOnMap,
+} from '../../models/utils/position/position-helpers';
+import { MapCoordinates } from '../../models/utils/position/map-coordinates';
+import {
+    ExerciseOccupation,
+    occupationTypeOptions,
+} from '../../models/utils/occupations/exercise-occupation';
+import { VehiclePosition } from '../../models/utils/position/vehicle-position';
+import { MapPosition } from '../../models/utils/position/map-position';
+import { SimulatedRegionPosition } from '../../models/utils/position/simulated-region-position';
+import { changeOccupation } from '../../models/utils/occupations/occupation-helpers-mutable';
 import { logVehicleAdded, logVehicleRemoved } from './utils/log';
+import { removeElementPosition } from './utils/spatial-elements';
+import { getElement } from './utils/get-element';
+import { completelyLoadVehicle as completelyLoadVehicleHelper } from './utils/completely-load-vehicle';
+import { deletePatient } from './patient';
 
 /**
  * Performs all necessary actions to remove a vehicle from the state.
@@ -60,7 +69,14 @@ import { logVehicleAdded, logVehicleRemoved } from './utils/log';
  */
 export function deleteVehicle(
     draftState: Mutable<ExerciseState>,
-    vehicleId: UUID
+    vehicleId: UUID,
+    associatedElements:
+        | {
+              [key in ElementTypePluralMap[Exclude<
+                  StandInElement['type'],
+                  'vehicle'
+              >]]?: UUIDSet;
+          }
 ) {
     logVehicleRemoved(draftState, vehicleId);
     let vehicle;
@@ -68,13 +84,30 @@ export function deleteVehicle(
         vehicle = getElement(draftState, 'vehicle', vehicleId);
     } catch (e: unknown) {
         if (e instanceof ElementOmittedError) {
-            removeOmitted(
-                e.omittingRegion as unknown as Mutable<SimulatedRegionStandIn>,
-                'vehicles',
-                e.elementId
+            removeOmittedVehicle(
+                e.omittingRegion,
+                vehicleId,
+                associatedElements
             );
         }
         return;
+    }
+
+    // Protect against race conditions
+    const actualAssociatedElements = getAssociatedElements(vehicle);
+    if (
+        StrictObject.entries(actualAssociatedElements).some(([k, ids]) =>
+            StrictObject.keys(ids).some((id) => !associatedElements[k]?.[id])
+        ) ||
+        StrictObject.entries(associatedElements).some(([k, ids]) =>
+            StrictObject.keys(ids!).some(
+                (id) => !actualAssociatedElements[k][id]
+            )
+        )
+    ) {
+        throw new ReducerError(
+            `Deleting vehicle failed: AssociatedElements do not match`
+        );
     }
 
     // Delete related material and personnel
@@ -174,6 +207,14 @@ export class RemoveVehicleAction implements Action {
     public readonly type = '[Vehicle] Remove vehicle';
     @IsUUID(4, uuidValidationOptions)
     public readonly vehicleId!: UUID;
+
+    @IsElementSet(elementSetAllowedValues)
+    public readonly associatedElements: {
+        [key in ElementTypePluralMap[Exclude<
+            StandInElement['type'],
+            'vehicle'
+        >]]?: UUIDSet;
+    } = {};
 }
 
 export class UnloadVehicleAction implements Action {
@@ -321,8 +362,8 @@ export namespace VehicleActionReducers {
 
     export const removeVehicle: ActionReducer<RemoveVehicleAction> = {
         action: RemoveVehicleAction,
-        reducer: (draftState, { vehicleId }) => {
-            deleteVehicle(draftState, vehicleId);
+        reducer: (draftState, { vehicleId, associatedElements }) => {
+            deleteVehicle(draftState, vehicleId, associatedElements);
             return draftState;
         },
         rights: 'trainer',

@@ -14,6 +14,7 @@ import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError } from '../reducer-error';
 import { catchAllHospitalId } from '../../data/default-state/catch-all-hospital';
 import { createHospitalTag } from '../../models/utils/tag-helpers';
+import { getAssociatedElements } from '../../state-helpers/standin-helpers/omit-elements';
 import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';
 import { deleteVehicle } from './vehicle';
@@ -156,7 +157,11 @@ export namespace HospitalActionReducers {
                         );
                     hospital.patientIds[patientId] = true;
                 }
-                deleteVehicle(draftState, vehicleId);
+                deleteVehicle(
+                    draftState,
+                    vehicleId,
+                    getAssociatedElements(vehicle)
+                );
                 return draftState;
             },
             rights: 'participant',

@@ -46,6 +46,7 @@ export function deletePatient(
     draftState: Mutable<ExerciseState>,
     patientId: UUID
 ) {
+    logPatientRemoved(draftState, patientId);
     let patient;
     try {
         patient = getElement(draftState, 'patient', patientId);
@@ -232,20 +233,6 @@ export namespace PatientActionReducers {
     export const removePatient: ActionReducer<RemovePatientAction> = {
         action: RemovePatientAction,
         reducer: (draftState, { patientId }) => {
-            // TODO: might crash if patient is not present
-            const patient = getElement(draftState, 'patient', patientId);
-            if (isInSimulatedRegion(patient)) {
-                const simulatedRegion = getElement(
-                    draftState,
-                    'simulatedRegion',
-                    currentSimulatedRegionIdOf(patient)
-                );
-                sendSimulationEvent(
-                    simulatedRegion,
-                    PatientRemovedEvent.create(patientId)
-                );
-            }
-            logPatientRemoved(draftState, patientId);
             deletePatient(draftState, patientId);
             return draftState;
         },
