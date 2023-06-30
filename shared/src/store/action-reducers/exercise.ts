@@ -23,8 +23,17 @@ import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ElementOmittedError, ReducerError } from '../reducer-error';
 import type { ExerciseSimulationEvent } from '../../simulation';
-import { isStandIn } from '../../state-helpers';
-import type { ExerciseRadiogram } from '../../models/radiogram';
+import type {
+    HospitalUpdate,
+    RadiogramUpdate,
+    TransfersAssociatedElements,
+} from '../../state-helpers';
+import {
+    isOmittedMutable,
+    isStandIn,
+    removeOmittedVehicle,
+    insertVehicle,
+} from '../../state-helpers';
 import type { TransferableElementType } from './transfer';
 import { letElementArrive } from './transfer';
 import { updateTreatments } from './utils/calculate-treatments';
@@ -76,7 +85,17 @@ export class ExerciseTickAction implements Action {
     };
 
     @IsOptional()
-    public readonly newRadiograms?: { [key: UUID]: ExerciseRadiogram };
+    public readonly radiogramUpdates?: {
+        readonly [key: UUID]: RadiogramUpdate;
+    };
+
+    @IsOptional()
+    public readonly hospitalUpdates?: { readonly [key: UUID]: HospitalUpdate };
+
+    @IsOptional()
+    public readonly transferUpdates?: {
+        readonly [key: UUID]: TransfersAssociatedElements;
+    };
 }
 
 export namespace ExerciseActionReducers {
@@ -112,7 +131,9 @@ export namespace ExerciseActionReducers {
                 tickInterval,
                 patientUpdates: actionPatientUpdates,
                 inEvents,
-                newRadiograms,
+                hospitalUpdates,
+                transferUpdates,
+                radiogramUpdates,
             }
         ) => {
             const patientUpdates =
@@ -193,12 +214,90 @@ export namespace ExerciseActionReducers {
 
             simulateAllRegions(draftState, tickInterval);
 
-            if (newRadiograms) {
-                StrictObject.entries(newRadiograms).forEach(([rid, rad]) => {
-                    if (!(rid in draftState.radiograms)) {
-                        draftState.radiograms[rid] = cloneDeepMutable(rad);
+            if (radiogramUpdates) {
+                StrictObject.entries(radiogramUpdates).forEach(([rid, rad]) => {
+                    switch (rad.kind) {
+                        case 'add':
+                            if (!(rid in draftState.radiograms)) {
+                                draftState.radiograms[rid] = cloneDeepMutable(
+                                    rad.radiogram
+                                );
+                            }
+                            break;
+                        case 'mod':
+                            if (
+                                isStandIn(
+                                    getElement(
+                                        draftState,
+                                        'simulatedRegion',
+                                        rad.radiogram.simulatedRegionId
+                                    )
+                                )
+                            ) {
+                                draftState.radiograms[rid] = cloneDeepMutable(
+                                    rad.radiogram
+                                );
+                            }
+                            break;
+                        case 'del':
+                            delete draftState.radiograms[rid];
                     }
                 });
+            }
+
+            if (hospitalUpdates) {
+                StrictObject.entries(hospitalUpdates).forEach(
+                    ([hid, update]) => {
+                        const { hospitalPatients, vehicleId, elementIds } =
+                            update;
+                        StrictObject.entries(hospitalPatients).forEach(
+                            ([pid, hospitalPatient]) => {
+                                if (!(pid in draftState.hospitalPatients)) {
+                                    draftState.hospitalPatients[pid] =
+                                        cloneDeepMutable(hospitalPatient);
+                                    const hospital = getElement(
+                                        draftState,
+                                        'hospital',
+                                        hid
+                                    );
+                                    hospital.patientIds[pid] = true;
+                                }
+                            }
+                        );
+                        const omittedRegion = isOmittedMutable(
+                            draftState,
+                            'vehicle',
+                            'vehicleId'
+                        );
+                        if (omittedRegion !== undefined) {
+                            removeOmittedVehicle(
+                                omittedRegion,
+                                vehicleId,
+                                elementIds
+                            );
+                        }
+                    }
+                );
+            }
+            if (transferUpdates) {
+                StrictObject.entries(transferUpdates).forEach(
+                    ([vid, update]) => {
+                        const omittedRegion = isOmittedMutable(
+                            draftState,
+                            'vehicle',
+                            vid
+                        );
+                        if (omittedRegion) {
+                            const { vehicle, ...elements } = update;
+                            insertVehicle(
+                                draftState,
+                                omittedRegion,
+                                cloneDeepMutable(vehicle),
+                                cloneDeepMutable(elements)
+                            );
+                        }
+                    }
+                );
             }
 
             if (logActive(draftState)) {

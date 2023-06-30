@@ -1,4 +1,8 @@
 import type { ExerciseState } from '../../state';
+import {
+    collectRadiogram,
+    ifCollectUpdates,
+} from '../../state-helpers/standin-helpers/tick-updates';
 import { getExerciseRadiogramById } from '../../store/action-reducers/utils/get-element';
 import { logRadiogram } from '../../store/action-reducers/utils/log';
 import type { Mutable, UUID } from '../../utils';
@@ -15,6 +19,9 @@ export function publishRadiogram(
         publishTime: draftState.currentTime,
     };
     draftState.radiograms[radiogram.id] = radiogram;
+    ifCollectUpdates(draftState, () => {
+        collectRadiogram(draftState, radiogram, 'add');
+    });
     logRadiogram(
         draftState,
         [createRadiogramActionTag(draftState, radiogram.status.type)],

@@ -4,9 +4,9 @@ import type { ExerciseState } from '../../state';
 import type { Mutable, UUID } from '../../utils';
 import { StrictObject, elementTypePluralMap } from '../../utils';
 
-export function isStandIn(
-    simulatedRegion: SimulatedRegion | SimulatedRegionStandIn
-): simulatedRegion is Mutable<SimulatedRegionStandIn> | SimulatedRegionStandIn {
+export function isStandIn<S extends SimulatedRegion | SimulatedRegionStandIn>(
+    simulatedRegion: S
+): simulatedRegion is Extract<S, SimulatedRegionStandIn> {
     return simulatedRegion.type === 'simulatedRegionStandIn';
 }
 
@@ -27,6 +27,16 @@ export function isOmittedWithRegion(
 
 export function isOmitted(
     state: ExerciseState,
+    type: StandInElement['type'],
+    id: UUID
+) {
+    return StrictObject.values(state.simulatedRegions)
+        .filter(isStandIn)
+        .find((standIn) => isOmittedWithRegion(standIn, type, id));
+}
+
+export function isOmittedMutable(
+    state: Mutable<ExerciseState>,
     type: StandInElement['type'],
     id: UUID
 ) {

@@ -1,8 +1,8 @@
 import type { HealthPoints, PersonnelType } from '../../../models';
-import { healthPointsDefaults } from '../../../models/utils';
+import { healthPointsDefaults } from '../../../models/utils/health-points';
 import { Patient } from '../../../models/patient';
 import type { ExerciseState } from '../../../state';
-import { StrictObject } from '../../../utils';
+import { StrictObject } from '../../../utils/strict-object';
 import { getElement } from './get-element';
 import type { PatientUpdate } from './patient-updates';
 

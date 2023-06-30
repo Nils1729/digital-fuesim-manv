@@ -27,11 +27,7 @@ import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
 import { IsLiteralUnion, IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError, ReducerError } from '../reducer-error';
-import {
-    isMutableStandIn,
-    isStandIn,
-    standInElement,
-} from '../../state-helpers';
+import { isMutableStandIn, isStandIn, omitElement } from '../../state-helpers';
 import { TransferPointActionReducers } from './transfer-point';
 import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement, getElementByPredicate } from './utils/get-element';
@@ -286,11 +282,7 @@ export namespace SimulatedRegionActionReducers {
                     switch (element.type) {
                         case 'patient':
                         case 'vehicle': {
-                            standInElement(
-                                draftState,
-                                simulatedRegion,
-                                element
-                            );
+                            omitElement(draftState, simulatedRegion, element);
                             break;
                         }
                         case 'material':

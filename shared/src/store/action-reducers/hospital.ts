@@ -8,13 +8,22 @@ import {
 } from 'class-validator';
 import { Hospital } from '../../models/hospital';
 import { HospitalPatient } from '../../models/hospital-patient';
-import { cloneDeepMutable, UUID, uuidValidationOptions } from '../../utils';
+import {
+    cloneDeepMutable,
+    StrictObject,
+    UUID,
+    uuidValidationOptions,
+} from '../../utils';
 import { IsValue } from '../../utils/validators';
 import type { Action, ActionReducer } from '../action-reducer';
 import { ExpectedReducerError } from '../reducer-error';
 import { catchAllHospitalId } from '../../data/default-state/catch-all-hospital';
 import { createHospitalTag } from '../../models/utils/tag-helpers';
-import { getAssociatedElementIds } from '../../state-helpers/standin-helpers/omit-elements';
+import {
+    collectHospitalUpdate,
+    ifCollectUpdates,
+} from '../../state-helpers/standin-helpers/tick-updates';
+import { getAssociatedElementIds } from '../../state-helpers/standin-helpers/association';
 import { isCompletelyLoaded } from './utils/completely-load-vehicle';
 import { getElement } from './utils/get-element';
 import { deleteVehicle } from './vehicle';
@@ -157,6 +166,18 @@ export namespace HospitalActionReducers {
                         );
                     hospital.patientIds[patientId] = true;
                 }
+                ifCollectUpdates(draftState, () => {
+                    collectHospitalUpdate(draftState, hospitalId, {
+                        vehicleId,
+                        elementIds: cloneDeepMutable(
+                            getAssociatedElementIds(vehicle)
+                        ),
+                        hospitalPatients: StrictObject.mapValues(
+                            vehicle.patientIds,
+                            (pid) => draftState.hospitalPatients[pid]!
+                        ),
+                    });
+                });
                 deleteVehicle(
                     draftState,
                     vehicleId,

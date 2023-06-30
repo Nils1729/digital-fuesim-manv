@@ -30,8 +30,10 @@ import type { Action, ActionReducer } from '../action-reducer';
 import { ElementOmittedError, ReducerError } from '../reducer-error';
 import { PatientRemovedEvent } from '../../simulation/events';
 import { sendSimulationEvent } from '../../simulation/events/utils';
-import { removeOmitted } from '../../state-helpers/standin-helpers/omit-elements';
-import type { SimulatedRegionStandIn } from '../../models';
+import {
+    insertPatient,
+    removeOmittedPatient,
+} from '../../state-helpers/standin-helpers/omission';
 import { updateTreatments } from './utils/calculate-treatments';
 import { getElement } from './utils/get-element';
 import { removeElementPosition } from './utils/spatial-elements';
@@ -52,11 +54,7 @@ export function deletePatient(
         patient = getElement(draftState, 'patient', patientId);
     } catch (e: unknown) {
         if (e instanceof ElementOmittedError) {
-            removeOmitted(
-                e.omittingRegion as unknown as Mutable<SimulatedRegionStandIn>,
-                'patients',
-                e.elementId
-            );
+            removeOmittedPatient(e.omittingRegion, e.elementId);
         }
         return;
     }
@@ -203,9 +201,8 @@ export namespace PatientActionReducers {
                         e instanceof ElementOmittedError &&
                         e.elementType === 'patient'
                     ) {
-                        removeOmitted(e.omittingRegion, 'patients', patientId);
                         patient = cloneDeepMutable(beforePatient);
-                        draftState.patients[patientId] = patient;
+                        insertPatient(draftState, e.omittingRegion, patient);
                     } else {
                         throw e;
                     }

@@ -31,6 +31,14 @@ import { VehicleArrivedEvent } from '../../simulation/events/vehicle-arrived';
 import { imageSizeToPosition } from '../../state-helpers/image-size-to-position';
 import type { Vehicle } from '../../models/vehicle';
 import { ExpectedReducerError, ReducerError } from '../reducer-error';
+import { omitElement } from '../../state-helpers/standin-helpers/omission';
+import type { SimulatedRegionStandIn } from '../../models';
+import { isStandIn } from '../../state-helpers/standin-helpers/is-standin';
+import {
+    collectTransferElements,
+    ifCollectUpdates,
+} from '../../state-helpers/standin-helpers/tick-updates';
+import { getAssociatedElementsMutable } from '../../state-helpers/standin-helpers/association';
 import { getElement } from './utils';
 import {
     logElementAddedToTransfer,
@@ -66,6 +74,7 @@ export function letElementArrive(
         currentTransferOf(element).targetTransferPointId
     );
     const newPosition = cloneDeepMutable(targetTransferPoint.position);
+    let standIn: Mutable<SimulatedRegionStandIn> | undefined;
     if (isPositionOnMap(newPosition)) {
         offsetMapPositionBy(newPosition as Mutable<MapPosition>, {
             x: 0,
@@ -78,6 +87,9 @@ export function letElementArrive(
             'simulatedRegion',
             simulatedRegionIdOfPosition(newPosition)
         );
+        if (isStandIn(simulatedRegion)) {
+            standIn = simulatedRegion;
+        }
         if (elementType === 'personnel') {
             sendSimulationEvent(
                 simulatedRegion,
@@ -92,6 +104,15 @@ export function letElementArrive(
         }
     }
     changePosition(element, newPosition, draftState);
+    if (standIn !== undefined) {
+        switch (element.type) {
+            case 'vehicle':
+                omitElement(draftState, standIn, element);
+                break;
+            case 'personnel':
+                break;
+        }
+    }
     if (elementType === 'vehicle') {
         logVehicle(
             draftState,
@@ -233,6 +254,15 @@ export namespace TransferActionReducers {
                 }),
                 draftState
             );
+
+            ifCollectUpdates(draftState, () => {
+                if (element.type === 'vehicle') {
+                    collectTransferElements(draftState, {
+                        ...getAssociatedElementsMutable(draftState, element),
+                        vehicle: element,
+                    });
+                }
+            });
             logElementAddedToTransfer(
                 draftState,
                 startPoint.type === 'alarmGroupStartPoint'

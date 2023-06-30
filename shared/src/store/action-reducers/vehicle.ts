@@ -35,10 +35,9 @@ import {
 import { Vehicle } from '../../models/vehicle';
 import { Personnel } from '../../models/personnel';
 import {
-    getAssociatedElementIds,
-    removeOmitted,
     removeOmittedVehicle,
-} from '../../state-helpers/standin-helpers/omit-elements';
+    insertVehicle,
+} from '../../state-helpers/standin-helpers/omission';
 import {
     IsElementSet,
     elementSetAllowedValues,
@@ -63,6 +62,10 @@ import { VehiclePosition } from '../../models/utils/position/vehicle-position';
 import { MapPosition } from '../../models/utils/position/map-position';
 import { SimulatedRegionPosition } from '../../models/utils/position/simulated-region-position';
 import { changeOccupation } from '../../models/utils/occupations/occupation-helpers-mutable';
+import {
+    VehicleAssociatedElements,
+    getAssociatedElementIds,
+} from '../../state-helpers/standin-helpers/association';
 import { logVehicleAdded, logVehicleRemoved } from './utils/log';
 import { removeElementPosition } from './utils/spatial-elements';
 import { getElement } from './utils/get-element';
@@ -77,7 +80,7 @@ import { deletePatient } from './patient';
 export function deleteVehicle(
     draftState: Mutable<ExerciseState>,
     vehicleId: UUID,
-    associatedElements:
+    associatedElementIds:
         | {
               [key in ElementTypePluralMap[Exclude<
                   StandInElement['type'],
@@ -94,7 +97,7 @@ export function deleteVehicle(
             removeOmittedVehicle(
                 e.omittingRegion,
                 vehicleId,
-                associatedElements
+                associatedElementIds
             );
         }
         return;
@@ -104,9 +107,9 @@ export function deleteVehicle(
     const actualAssociatedElements = getAssociatedElementIds(vehicle);
     if (
         StrictObject.entries(actualAssociatedElements).some(([k, ids]) =>
-            StrictObject.keys(ids).some((id) => !associatedElements[k]?.[id])
+            StrictObject.keys(ids).some((id) => !associatedElementIds[k]?.[id])
         ) ||
-        StrictObject.entries(associatedElements).some(([k, ids]) =>
+        StrictObject.entries(associatedElementIds).some(([k, ids]) =>
             StrictObject.keys(ids!).some(
                 (id) => !actualAssociatedElements[k][id]
             )
@@ -274,10 +277,7 @@ export class RemoveVehicleFromSimulatedRegionAction implements Action {
     public readonly beforeVehicle!: Vehicle;
 
     @Allow()
-    public readonly beforeAssociatedElements!: Pick<
-        ExerciseState,
-        'materials' | 'patients' | 'personnel'
-    >;
+    public readonly beforeAssociatedElements!: VehicleAssociatedElements;
 }
 
 export class SetVehicleOccupationAction implements Action {
@@ -646,27 +646,12 @@ export namespace VehicleActionReducers {
                         err instanceof ElementOmittedError &&
                         err.elementType === 'vehicle'
                     ) {
-                        removeOmitted(
-                            err.omittingRegion,
-                            'patients',
-                            vehicleId
-                        );
                         vehicle = cloneDeepMutable(beforeVehicle);
-                        draftState.vehicles[vehicleId] = vehicle;
-                        StrictObject.entries(beforeAssociatedElements).forEach(
-                            ([type, ids]) =>
-                                StrictObject.entries(ids).forEach(
-                                    ([id, element]) => {
-                                        removeOmitted(
-                                            (err as ElementOmittedError)
-                                                .omittingRegion,
-                                            type,
-                                            id
-                                        );
-                                        draftState[type][id] =
-                                            cloneDeepMutable(element);
-                                    }
-                                )
+                        insertVehicle(
+                            draftState,
+                            err.omittingRegion,
+                            vehicle,
+                            cloneDeepMutable(beforeAssociatedElements)
                         );
                     } else {
                         throw err;

@@ -1,7 +1,6 @@
 import type {
     ExerciseAction,
     ExerciseIds,
-    ExerciseRadiogram,
     ExerciseTickAction,
     ExerciseTimeline,
     Mutable,
@@ -16,6 +15,7 @@ import {
     ExerciseState,
     reduceExerciseState,
     ReducerError,
+    setTickUpdates,
     StrictObject,
     validateExerciseAction,
     validateExerciseState,
@@ -212,7 +212,6 @@ export class ExerciseWrapper extends NormalType<
      */
     private readonly tick = async () => {
         try {
-            // Thesis TODO: Optional: check for events not sent by self
             const inEvents = StrictObject.mapValues(
                 StrictObject.filterValues(
                     this.currentState.simulatedRegions,
@@ -233,23 +232,18 @@ export class ExerciseWrapper extends NormalType<
                 tickInterval: this.tickInterval,
                 inEvents,
             };
-            const preActionRadiograms = this.currentState.radiograms;
-            let newRadiograms: { [key: UUID]: ExerciseRadiogram };
+
+            this.reduceTickUpdates({});
             this.applyAction(
                 updateAction,
                 this.emitterId,
-                () => {
-                    // Thesis TODO: This could be easier if we asked immer what changed.
-                    newRadiograms = StrictObject.filterValues(
-                        this.currentState.radiograms,
-                        (k) => !(k in preActionRadiograms)
-                    );
-                },
+                undefined,
                 (action) => ({
                     ...action,
-                    newRadiograms,
+                    ...this.currentState.tickUpdates,
                 })
             );
+            this.reduceTickUpdates(undefined);
             this.tickCounter++;
             this.markAsModified();
         } catch (e: unknown) {
@@ -598,6 +592,10 @@ export class ExerciseWrapper extends NormalType<
         } else if (action.type === '[Exercise] Start') {
             this.start();
         }
+    }
+
+    private reduceTickUpdates(tickUpdates: ExerciseState['tickUpdates']) {
+        this.currentState = setTickUpdates(this.currentState, tickUpdates);
     }
 
     private validateInitialState() {

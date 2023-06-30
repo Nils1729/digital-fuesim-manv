@@ -43,6 +43,16 @@ export function applyAction(
     );
 }
 
+export function setTickUpdates(
+    state: ExerciseState,
+    tickUpdates: ExerciseState['tickUpdates']
+) {
+    return {
+        ...state,
+        tickUpdates,
+    };
+}
+
 /**
  * @param actions all the actions that were applied to the {@link initialState} to get to the present state
  * @returns the state after applying all the actions

@@ -9,6 +9,10 @@ import type { Mutable } from '../../../utils/immutability';
 import { isDone, isUnread } from '../../radiogram/radiogram-helpers';
 import { StrictObject } from '../../../utils/strict-object';
 import { isEmptyResource } from '../rescue-resource';
+import {
+    collectRadiogram,
+    ifCollectUpdates,
+} from '../../../state-helpers/standin-helpers/tick-updates';
 import type {
     RequestTarget,
     RequestTargetConfiguration,
@@ -44,8 +48,14 @@ export const traineesRequestTarget: RequestTarget<TraineesRequestTargetConfigura
             if (unreadRadiogram) {
                 if (isEmptyResource(requestedResource)) {
                     delete draftState.radiograms[unreadRadiogram.id];
+                    ifCollectUpdates(draftState, () => {
+                        collectRadiogram(draftState, unreadRadiogram, 'del');
+                    });
                 } else {
                     unreadRadiogram.requiredResource = requestedResource;
+                    ifCollectUpdates(draftState, () => {
+                        collectRadiogram(draftState, unreadRadiogram, 'mod');
+                    });
                 }
                 return;
             }

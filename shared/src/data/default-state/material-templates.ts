@@ -1,5 +1,5 @@
-import { CanCaterFor } from '../../models/utils';
 import { MaterialTemplate } from '../../models/material-template';
+import { CanCaterFor } from '../../models/utils/cater-for';
 import type { MaterialType } from '../../models/utils/material-type';
 import {
     defaultOverrideTreatmentRange,

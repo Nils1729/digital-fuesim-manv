@@ -57,6 +57,7 @@ import { defaultVehicleTemplates } from './data/default-state/vehicle-templates'
 import { defaultMapImagesTemplates } from './data/default-state/map-images-templates';
 import type { LogEntry } from './models/log-entry';
 import { TreatmentAssignment } from './store/action-reducers/exercise';
+import { OmittableTickActionUpdates } from './state-helpers';
 
 export class ExerciseState {
     @IsUUID(4, uuidValidationOptions)
@@ -156,6 +157,9 @@ export class ExerciseState {
     @Type(() => ExerciseConfiguration)
     public readonly configuration = ExerciseConfiguration.create();
 
+    @Equals(undefined)
+    public previousTreatmentAssignment?: TreatmentAssignment;
+
     /**
      * The log entries generated for the statistics.
      * This must not be defined on a normal state,
@@ -164,8 +168,13 @@ export class ExerciseState {
     @Equals(undefined)
     public logEntries?: LogEntry[];
 
+    /**
+     * The changes imposed by a tick action.
+     * This must not be defined on a normal state,
+     * unless the backend executes a tick action.
+     */
     @Equals(undefined)
-    public previousTreatmentAssignment?: TreatmentAssignment;
+    public tickUpdates?: OmittableTickActionUpdates;
 
     /**
      * @deprecated Use {@link create} instead.

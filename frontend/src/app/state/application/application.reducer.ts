@@ -2,11 +2,11 @@ import { createReducer, on } from '@ngrx/store';
 import type { ExerciseState } from 'digital-fuesim-manv-shared';
 import {
     ElementOmittedError,
+    insertSimulatedRegion,
+    omitSimulatedRegion,
     reduceExerciseState,
     ReducerError,
     SimulatedRegionMissingError,
-    addAssociatedElements,
-    omitAssociatedElementsForRegion,
 } from 'digital-fuesim-manv-shared';
 import {
     createApplyServerActionAction,
@@ -43,6 +43,7 @@ export const applicationReducer = createReducer(
                 console.warn(
                     `Element of type ${error.elementType} with id ${error.elementId} was omitted`
                 );
+                console.warn(error);
                 return state;
             } else if (error instanceof ReducerError) {
                 console.warn(
@@ -64,7 +65,7 @@ export const applicationReducer = createReducer(
         (state, { initialExerciseState, endTime }) => ({
             ...state,
             exerciseState: initialExerciseState,
-            exerciseStateMode: 'timeTravel',
+            exerciseStateMode: 'timeTravel' as const,
             timeConstraints: {
                 start: initialExerciseState.currentTime,
                 current: initialExerciseState.currentTime,
@@ -88,7 +89,7 @@ export const applicationReducer = createReducer(
         (state, { ownClientId, exerciseId, clientName, exerciseState }) => ({
             ...state,
             exerciseState,
-            exerciseStateMode: 'exercise',
+            exerciseStateMode: 'exercise' as const,
             exerciseId,
             ownClientId,
             lastClientName: clientName,
@@ -102,7 +103,7 @@ export const applicationReducer = createReducer(
         createReplaceRegionWithStandInAction,
         (state, { simulatedRegionId }) => ({
             ...state,
-            exerciseState: omitAssociatedElementsForRegion(
+            exerciseState: omitSimulatedRegion(
                 state.exerciseState!,
                 simulatedRegionId
             ),
@@ -110,7 +111,7 @@ export const applicationReducer = createReducer(
     ),
     on(createRestoreRegionStandInAction, (state, associatedElements) => ({
         ...state,
-        exerciseState: addAssociatedElements(
+        exerciseState: insertSimulatedRegion(
             state.exerciseState!,
             associatedElements
         ),
