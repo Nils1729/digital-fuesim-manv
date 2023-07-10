@@ -1,4 +1,4 @@
-import type { OnDestroy } from '@angular/core';
+import type { OnDestroy, OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
@@ -24,13 +24,14 @@ import {
 import { selectStateSnapshot } from 'src/app/state/get-state-snapshot';
 import { selectOwnClient } from 'src/app/state/application/selectors/shared.selectors';
 import Package from 'package.json';
+import { SimulatedRegionStandInService } from 'src/app/state/standins/simreg-standin.service';
 
 @Component({
     selector: 'app-exercise',
     templateUrl: './exercise.component.html',
     styleUrls: ['./exercise.component.scss'],
 })
-export class ExerciseComponent implements OnDestroy {
+export class ExerciseComponent implements OnInit, OnDestroy {
     private readonly destroy = new Subject<void>();
 
     public readonly exerciseStateMode$ = this.store.select(
@@ -46,7 +47,8 @@ export class ExerciseComponent implements OnDestroy {
         private readonly store: Store<AppState>,
         private readonly apiService: ApiService,
         private readonly applicationService: ApplicationService,
-        private readonly messageService: MessageService
+        private readonly messageService: MessageService,
+        private readonly standInService: SimulatedRegionStandInService
     ) {}
 
     public shareExercise(type: 'participantId' | 'trainerId') {
@@ -119,7 +121,13 @@ export class ExerciseComponent implements OnDestroy {
         saveBlob(blob, `exercise-state-${currentState.participantId}.json`);
     }
 
+    ngOnInit(): void {
+        this.standInService.reset();
+        this.standInService.start();
+    }
+
     ngOnDestroy(): void {
+        this.standInService.stop();
         this.destroy.next();
     }
 }

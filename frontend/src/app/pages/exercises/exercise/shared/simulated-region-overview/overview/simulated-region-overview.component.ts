@@ -95,9 +95,11 @@ export class SimulatedRegionOverviewGeneralComponent
                 this.initialTransferOptions = transferOptions;
                 this.activeNavId = 'behaviors';
             });
+        this.standInService.requireRegion(this.simulatedRegionId);
     }
 
     ngOnDestroy(): void {
+        this.standInService.unRequireRegion(this.simulatedRegionId);
         this.destroy$.next();
     }
 }
