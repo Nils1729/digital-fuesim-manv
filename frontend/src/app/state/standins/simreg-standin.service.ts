@@ -3,11 +3,7 @@ import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import type { UUID } from 'digital-fuesim-manv-shared';
-import {
-    StrictObject,
-    extractAssociatedElements,
-    isStandIn,
-} from 'digital-fuesim-manv-shared';
+import { StrictObject, isStandIn } from 'digital-fuesim-manv-shared';
 import type { AppState } from '../app.state';
 import {
     createReplaceRegionWithStandInAction,
@@ -81,14 +77,17 @@ export class SimulatedRegionStandInService implements OnDestroy {
 
     async replaceStandInWithRegion(simulatedRegionId: UUID) {
         if (!this.active) return;
-        // TODO: This is a temporary hack. You would want to select specifically those elements you need instead of all state.
-        const completeState = await this.exerciseService.fetchStateFromServer();
+        const associatedElements =
+            await this.exerciseService.fetchPartialStateFromServer(
+                simulatedRegionId
+            );
+        console.log(associatedElements);
         console.log(`RELOAD: ${simulatedRegionId}`);
-        this.store.dispatch(
-            createRestoreRegionStandInAction(
-                extractAssociatedElements(completeState!, simulatedRegionId)
-            )
-        );
+        if (associatedElements) {
+            this.store.dispatch(
+                createRestoreRegionStandInAction(associatedElements)
+            );
+        }
     }
 
     updateLastNeeded() {

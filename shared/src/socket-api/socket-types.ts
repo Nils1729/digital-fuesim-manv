@@ -1,4 +1,5 @@
 import type { ExerciseState } from '../state';
+import type { SimRegAssociatedElements } from '../state-helpers';
 import type { ExerciseAction } from '../store';
 import type { UUID } from '../utils';
 
@@ -19,6 +20,10 @@ export interface ClientToServerEvents {
     ) => void;
     getState: (
         callback: (response: SocketResponse<ExerciseState>) => void
+    ) => void;
+    getPartialState: (
+        simulatedRegionId: UUID,
+        callback: (response: SocketResponse<SimRegAssociatedElements>) => void
     ) => void;
 }
 

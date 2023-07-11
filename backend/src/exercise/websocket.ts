@@ -7,6 +7,7 @@ import type { ExerciseSocket, ExerciseServer } from '../exercise-server';
 import { clientMap } from './client-map';
 import { ClientWrapper } from './client-wrapper';
 import {
+    registerGetPartialStateHandler,
     registerGetStateHandler,
     registerJoinExerciseHandler,
     registerProposeActionHandler,
@@ -38,6 +39,7 @@ export class ExerciseWebsocketServer {
 
         // register handlers
         registerGetStateHandler(this.exerciseServer, client);
+        registerGetPartialStateHandler(this.exerciseServer, client);
         registerProposeActionHandler(this.exerciseServer, client);
         registerJoinExerciseHandler(this.exerciseServer, client);
 

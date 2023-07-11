@@ -5,6 +5,7 @@ import type {
     ExerciseAction,
     ExerciseState,
     ServerToClientEvents,
+    SimRegAssociatedElements,
     SocketResponse,
     UUID,
 } from 'digital-fuesim-manv-shared';
@@ -191,6 +192,23 @@ export class ExerciseService {
             SocketResponse<ExerciseState>
         >((resolve) => {
             this.socket.emit('getState', resolve);
+        });
+        freeze(getStateResponse, true);
+        if (!getStateResponse.success) {
+            this.messageService.postError({
+                title: 'Fehler beim Laden der Übung',
+                error: getStateResponse.message,
+            });
+            return;
+        }
+        return getStateResponse.payload;
+    }
+
+    public async fetchPartialStateFromServer(simulatedRegionId: UUID) {
+        const getStateResponse = await new Promise<
+            SocketResponse<SimRegAssociatedElements>
+        >((resolve) => {
+            this.socket.emit('getPartialState', simulatedRegionId, resolve);
         });
         freeze(getStateResponse, true);
         if (!getStateResponse.success) {
