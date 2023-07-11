@@ -40,7 +40,7 @@ describe('execute some patient ticks', () => {
         run: number;
         config: ExerciseConfiguration['standInConfig'];
     }[] = [];
-    const pa_counts = [5, 10, 20, 21, 30, 31];
+    const pa_counts = [5, 10, 20];
     const tick_counts = [300];
     const repetitions = 1;
     for (let i = 0; i < repetitions; i++) {
@@ -64,8 +64,9 @@ describe('execute some patient ticks', () => {
             run + 1
         } / ${repetitions})`, () => {
             cy.prepareScenario(pas, config);
-            cy.get('[data-cy=confirmationModalOkButton]').click();
-            cy.get('span:contains(0:00:01)', { timeout: 5_000 });
+            // cy.get('[data-cy=confirmationModalOkButton]').click();
+            // cy.get('span:contains(0:00:01)', { timeout: 5_000 });
+            cy.wait(2_000);
             cy.actionTiming().then((a) => a.clear());
 
             cy.get('[data-cy=trainerToolbarExecutionButton]').click();

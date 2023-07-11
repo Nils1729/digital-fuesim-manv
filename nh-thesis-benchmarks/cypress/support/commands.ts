@@ -3,10 +3,12 @@ import {
     SocketResponse,
     ExerciseAction,
     StateExport,
+    SimulatedRegion,
 } from 'digital-fuesim-manv-shared';
 import { io } from 'socket.io-client';
 import { ActionTiming } from '../../../frontend/src/app/shared/benchmark-data';
 import { ScenarioBuilder } from '../../src/scenario-generator';
+import { stereotypes } from '../../../frontend/src/app/pages/exercises/exercise/shared/editor-panel/templates/simulated-region';
 
 declare global {
     interface Window {
@@ -182,10 +184,14 @@ namespace CustomCommands {
 
     export function prepareScenario(pa_count, config?) {
         const builder = new ScenarioBuilder();
-        if (config) builder.setStandInConfig(config);
         for (let i = 0; i < pa_count; i++) {
-            builder.addFullPatientTray(i);
+            builder.addCluster(
+                i * stereotypes[0]!.size.width * 2,
+                `Cluser ${i}`
+            );
+            builder.ageTicks(60);
         }
+        if (config) builder.setStandInConfig(config);
         const body = new StateExport(builder.build());
 
         cy.reload(true).createExercise(body).joinExerciseAsTrainer();
