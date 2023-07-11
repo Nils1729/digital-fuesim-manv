@@ -279,6 +279,7 @@ export namespace ExerciseActionReducers {
                     }
                 );
             }
+
             if (transferUpdates) {
                 StrictObject.entries(transferUpdates).forEach(
                     ([vid, update]) => {

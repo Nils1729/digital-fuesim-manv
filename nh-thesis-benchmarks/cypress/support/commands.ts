@@ -45,8 +45,8 @@ namespace CustomCommands {
         return cy.window().its('__thesis');
     }
 
-    export function actionTiming() {
-        return cy.thesis().its('actionTiming');
+    export function actionTiming(options?) {
+        return cy.thesis().its('actionTiming', options);
     }
 
     export function getState() {
@@ -180,8 +180,9 @@ namespace CustomCommands {
         return cy;
     }
 
-    export function prepareScenario(pa_count) {
+    export function prepareScenario(pa_count, config?) {
         const builder = new ScenarioBuilder();
+        if (config) builder.setStandInConfig(config);
         for (let i = 0; i < pa_count; i++) {
             builder.addFullPatientTray(i);
         }

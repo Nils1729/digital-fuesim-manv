@@ -13,6 +13,7 @@ import {
     applyAction,
     cloneDeepMutable,
     ExerciseState,
+    patientTick,
     reduceExerciseState,
     ReducerError,
     setTickUpdates,
@@ -212,38 +213,51 @@ export class ExerciseWrapper extends NormalType<
      */
     private readonly tick = async () => {
         try {
-            const inEvents = StrictObject.mapValues(
-                StrictObject.filterValues(
-                    this.currentState.simulatedRegions,
-                    (sid, simReg) =>
-                        (simReg as SimulatedRegion).inEvents.length > 0
-                ),
-                (sid, simReg) =>
-                    cloneDeepMutable((simReg as SimulatedRegion).inEvents)
-            );
+            const preComputation =
+                this.currentState.configuration.standInConfig.preComputation;
             const updateAction: Mutable<ExerciseTickAction> = {
                 type: '[Exercise] Tick',
-                /**
-                 * Refresh every {@link refreshTreatmentInterval} * {@link tickInterval} ms seconds
-                 */
-                // TODO: Refactor this: do this in the reducer instead of sending it in the action
                 refreshTreatments:
                     this.tickCounter % this.refreshTreatmentInterval === 0,
                 tickInterval: this.tickInterval,
-                inEvents,
             };
 
-            this.reduceTickUpdates({});
-            this.applyAction(
-                updateAction,
-                this.emitterId,
-                undefined,
-                (action) => ({
-                    ...action,
-                    ...this.currentState.tickUpdates,
-                })
-            );
-            this.reduceTickUpdates(undefined);
+            if (preComputation.patients) {
+                const patientUpdates = patientTick(
+                    this.currentState,
+                    this.tickInterval
+                );
+                updateAction.patientUpdates = patientUpdates;
+            }
+
+            if (preComputation.standIns) {
+                const inEvents = StrictObject.mapValues(
+                    StrictObject.filterValues(
+                        this.currentState.simulatedRegions,
+                        (sid, simReg) =>
+                            (simReg as SimulatedRegion).inEvents.length > 0
+                    ),
+                    (sid, simReg) =>
+                        cloneDeepMutable((simReg as SimulatedRegion).inEvents)
+                );
+                if (Object.keys(inEvents).length > 0) {
+                    updateAction.inEvents = inEvents;
+                }
+                this.reduceTickUpdates({});
+                this.applyAction(
+                    updateAction,
+                    this.emitterId,
+                    undefined,
+                    (action) => ({
+                        ...action,
+                        ...this.currentState.tickUpdates,
+                    })
+                );
+                this.reduceTickUpdates(undefined);
+            } else {
+                this.applyAction(updateAction, this.emitterId);
+            }
+
             this.tickCounter++;
             this.markAsModified();
         } catch (e: unknown) {

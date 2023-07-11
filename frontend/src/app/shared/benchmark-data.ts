@@ -12,6 +12,10 @@ export interface ActionTimeRecord {
 export class ActionTiming {
     _timings: ActionTimeRecord[] = [];
 
+    get sampleCount() {
+        return this.series().reduce((a, b) => Math.max(a, b.times.length), 0);
+    }
+
     add(time: number, context: ActionTimeRecord['ctx']) {
         this._timings.push({
             ms: time,

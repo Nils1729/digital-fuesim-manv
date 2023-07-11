@@ -18,6 +18,33 @@ export class ExerciseConfiguration {
     public readonly tileMapProperties: TileMapProperties =
         defaultTileMapProperties;
 
+    @Allow()
+    public readonly standInConfig:
+        | {
+              useStandIns: false;
+              preComputation: {
+                  patients: boolean;
+                  standIns: boolean;
+              };
+          }
+        | {
+              useStandIns: true;
+              preComputation: {
+                  patients: boolean;
+                  standIns: true;
+              };
+              updateInterval: number;
+              holdInterval: number;
+          } = {
+        preComputation: {
+            patients: false,
+            standIns: true,
+        },
+        holdInterval: 20_000,
+        updateInterval: 10_000,
+        useStandIns: true,
+    };
+
     /**
      * @deprecated Use {@link create} instead
      */

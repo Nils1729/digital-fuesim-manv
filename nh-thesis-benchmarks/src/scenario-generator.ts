@@ -5,6 +5,7 @@ import type {
     Personnel,
     Vehicle,
     SimulatedRegion,
+    ExerciseConfiguration,
 } from 'digital-fuesim-manv-shared';
 import {
     MapPosition,
@@ -28,6 +29,10 @@ export class ScenarioBuilder {
     draftState: Mutable<ExerciseState>;
     constructor(participantId = '123456') {
         this.draftState = cloneDeepMutable(ExerciseState.create(participantId));
+    }
+
+    setStandInConfig(config: ExerciseConfiguration['standInConfig']) {
+        this.draftState.configuration.standInConfig = cloneDeepMutable(config);
     }
 
     addRegion(
@@ -54,7 +59,7 @@ export class ScenarioBuilder {
 
     addFullPatientTray(index: number, cols = 16) {
         const region = reconstituteSimulatedRegionTemplate(
-            stereotypes[1]!,
+            stereotypes[0]!,
             this.draftState
         );
         region.position = MapPosition.create({

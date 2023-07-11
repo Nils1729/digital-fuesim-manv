@@ -13,7 +13,10 @@ import {
     createReplaceRegionWithStandInAction,
     createRestoreRegionStandInAction,
 } from '../application/application.actions';
-import { selectSimulatedRegions } from '../application/selectors/exercise.selectors';
+import {
+    selectConfiguration,
+    selectSimulatedRegions,
+} from '../application/selectors/exercise.selectors';
 import { selectStateSnapshot } from '../get-state-snapshot';
 
 @Injectable({
@@ -23,25 +26,39 @@ export class SimulatedRegionStandInService implements OnDestroy {
     private requiredRegions: { [key: UUID]: number } = {};
     private lastNeededRegions: { [key: UUID]: number } = {};
     private subscription?: any;
-    private readonly holdingDuration = 3000;
-    private readonly updateInterval = 1000;
+    private readonly holdingDuration;
+    private readonly updateInterval;
+    private readonly active;
 
     constructor(
         private readonly store: Store<AppState>,
         private readonly exerciseService: ExerciseService
-    ) {}
+    ) {
+        const { standInConfig } = selectStateSnapshot(
+            selectConfiguration,
+            this.store
+        );
+        this.active = standInConfig.useStandIns;
+        if (standInConfig.useStandIns) {
+            this.holdingDuration = standInConfig.holdInterval;
+            this.updateInterval = standInConfig.updateInterval;
+        }
+    }
 
     start() {
+        if (!this.active) return;
         this.subscription = setInterval(async () => {
             await this.updateStandIns();
         }, this.updateInterval);
     }
 
     stop() {
+        if (!this.active) return;
         clearInterval(this.subscription);
     }
 
     reset() {
+        if (!this.active) return;
         console.log('STANDIN SERVICE RESET');
         this.requiredRegions = {};
         this.lastNeededRegions = {};
@@ -55,6 +72,7 @@ export class SimulatedRegionStandInService implements OnDestroy {
     }
 
     replaceRegionWithStandIn(simulatedRegionId: UUID) {
+        if (!this.active) return;
         console.log(`STANDIN: ${simulatedRegionId}`);
         this.store.dispatch(
             createReplaceRegionWithStandInAction(simulatedRegionId)
@@ -62,6 +80,7 @@ export class SimulatedRegionStandInService implements OnDestroy {
     }
 
     async replaceStandInWithRegion(simulatedRegionId: UUID) {
+        if (!this.active) return;
         // TODO: This is a temporary hack. You would want to select specifically those elements you need instead of all state.
         const completeState = await this.exerciseService.fetchStateFromServer();
         console.log(`RELOAD: ${simulatedRegionId}`);
@@ -73,17 +92,20 @@ export class SimulatedRegionStandInService implements OnDestroy {
     }
 
     updateLastNeeded() {
+        if (!this.active) return;
         const now = Date.now();
         this.lastNeededRegions = StrictObject.mapValues(
             this.requiredRegions,
             (k, v) =>
                 v > 0
                     ? now
-                    : this.lastNeededRegions[k] ?? now - this.holdingDuration
+                    : this.lastNeededRegions[k] ??
+                      now - (this.holdingDuration ?? 0)
         );
     }
 
     requireRegion(simulatedRegionId: UUID) {
+        if (!this.active) return;
         this.requiredRegions[simulatedRegionId] =
             (this.requiredRegions[simulatedRegionId] ?? 0) + 1;
         this.stop();
@@ -92,11 +114,13 @@ export class SimulatedRegionStandInService implements OnDestroy {
     }
 
     unRequireRegion(simulatedRegionId: UUID) {
+        if (!this.active) return;
         this.requiredRegions[simulatedRegionId] =
             (this.requiredRegions[simulatedRegionId] ?? 0) - 1;
     }
 
     private async updateStandIns() {
+        if (!this.active) return;
         const loadedRegions = this.loadedRegions;
         this.updateLastNeeded();
         const regionsToBeLoaded = StrictObject.keys(
@@ -105,7 +129,7 @@ export class SimulatedRegionStandInService implements OnDestroy {
                 (k, v) => v > 0 && !loadedRegions[k]
             )
         );
-        const discard = Date.now() - this.holdingDuration;
+        const discard = Date.now() - (this.holdingDuration ?? 0);
         const regionsToBeUnloaded = StrictObject.keys(
             StrictObject.filterValues(
                 loadedRegions,
