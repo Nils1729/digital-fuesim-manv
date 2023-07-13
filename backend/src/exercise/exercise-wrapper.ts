@@ -247,13 +247,12 @@ export class ExerciseWrapper extends NormalType<
                 this.applyAction(
                     updateAction,
                     this.emitterId,
-                    undefined,
+                    () => this.reduceTickUpdates(undefined),
                     (action) => ({
                         ...action,
                         ...this.currentState.tickUpdates,
                     })
                 );
-                this.reduceTickUpdates(undefined);
             } else {
                 this.applyAction(updateAction, this.emitterId);
             }

@@ -1,9 +1,5 @@
 import type {
-    Material,
     Mutable,
-    Patient,
-    Personnel,
-    Vehicle,
     SimulatedRegion,
     ExerciseConfiguration,
     UUID,
@@ -19,21 +15,13 @@ import {
     SimulatedRegionPosition,
     TransferPoint,
     uuid,
-    unloadVehicle,
-    elementTypePluralMap,
-    applyAction,
-    VehicleTemplate,
     isInSpecificSimulatedRegion,
+    applyAction,
 } from 'digital-fuesim-manv-shared';
 import {
     reconstituteSimulatedRegionTemplate,
     stereotypes,
 } from '../../frontend/src/app/pages/exercises/exercise/shared/editor-panel/templates/simulated-region';
-import {
-    AddElementToSimulatedRegionAction,
-    SimulatedRegionActionReducers,
-} from 'digital-fuesim-manv-shared/dist/store/action-reducers/simulated-region';
-import { random, trim } from 'cypress/types/lodash';
 
 export class ScenarioBuilder {
     draftState: Mutable<ExerciseState>;
@@ -230,7 +218,7 @@ export class ScenarioBuilder {
         });
     }
 
-    addCluster(x: number, prefix: string) {
+    addCluster(x: number, prefix: string, num_pas: number) {
         let y = 0;
         let paIds = [];
         const stagingId = this.addFullStagingArea(
@@ -238,13 +226,17 @@ export class ScenarioBuilder {
             `${prefix} - Staging`
         );
         y += stereotypes[0]!.size.height * 1.1;
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < num_pas; i++) {
             paIds.push(
                 this.addFullPatientTray({ x, y }, `${prefix} - PA ${i}`)
             );
             this.connectRegions(stagingId, paIds[paIds.length - 1]!);
             y += stereotypes[0]!.size.height * 1.1;
         }
+        return {
+            br: stagingId,
+            pas: paIds,
+        };
     }
 
     ageTicks(n: number, tickInterval: number = 1000) {
@@ -256,6 +248,36 @@ export class ScenarioBuilder {
                 refreshTreatments: true,
             });
             applyAction(this.draftState, { type: '[Exercise] Pause' });
+        }
+    }
+
+    generate(
+        pa_count: number,
+        loaded_pas: number,
+        config?: ExerciseConfiguration['standInConfig']
+    ) {
+        const max_cluster_size = 5;
+        let cluster_num = 0;
+        const regionIds = [];
+
+        for (let regions = 0; regions < pa_count; ) {
+            const cluster_size = Math.min(max_cluster_size, pa_count - regions);
+            const { br, pas } = this.addCluster(
+                cluster_num++ * stereotypes[0]!.size.width * 2,
+                `Cluster ${cluster_num}`,
+                cluster_size - 1
+            );
+            regionIds.push(br, ...pas);
+            regions += cluster_size;
+        }
+        const standIns = regionIds.slice(loaded_pas);
+
+        if (config) {
+            if (config.useStandIns) {
+                this.setStandInConfig({ ...config, standInIds: standIns });
+            } else {
+                this.setStandInConfig(config);
+            }
         }
     }
 

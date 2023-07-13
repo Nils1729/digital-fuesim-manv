@@ -21,6 +21,7 @@ import { selectStateSnapshot } from '../get-state-snapshot';
 export class SimulatedRegionStandInService implements OnDestroy {
     private requiredRegions: { [key: UUID]: number } = {};
     private lastNeededRegions: { [key: UUID]: number } = {};
+    private fixedStandIns?: UUID[];
     private subscription?: any;
     private readonly holdingDuration;
     private readonly updateInterval;
@@ -38,6 +39,9 @@ export class SimulatedRegionStandInService implements OnDestroy {
         if (standInConfig.useStandIns) {
             this.holdingDuration = standInConfig.holdInterval;
             this.updateInterval = standInConfig.updateInterval;
+            if (standInConfig.standInIds !== undefined) {
+                this.fixedStandIns = standInConfig.standInIds;
+            }
         }
     }
 
@@ -121,24 +125,38 @@ export class SimulatedRegionStandInService implements OnDestroy {
     private async updateStandIns() {
         if (!this.active) return;
         const loadedRegions = this.loadedRegions;
-        this.updateLastNeeded();
-        const regionsToBeLoaded = StrictObject.keys(
-            StrictObject.filterValues(
-                this.requiredRegions,
-                (k, v) => v > 0 && !loadedRegions[k]
-            )
-        );
-        const discard = Date.now() - (this.holdingDuration ?? 0);
-        const regionsToBeUnloaded = StrictObject.keys(
-            StrictObject.filterValues(
-                loadedRegions,
-                (k, v) =>
-                    v &&
-                    (this.requiredRegions[k] ?? 0) === 0 &&
-                    (this.lastNeededRegions[k] === undefined ||
-                        this.lastNeededRegions[k]! < discard)
-            )
-        );
+        let regionsToBeLoaded, regionsToBeUnloaded;
+
+        if (this.fixedStandIns === undefined) {
+            this.updateLastNeeded();
+            regionsToBeLoaded = StrictObject.keys(
+                StrictObject.filterValues(
+                    this.requiredRegions,
+                    (k, v) => v > 0 && !loadedRegions[k]
+                )
+            );
+            const discard = Date.now() - (this.holdingDuration ?? 0);
+            regionsToBeUnloaded = StrictObject.keys(
+                StrictObject.filterValues(
+                    loadedRegions,
+                    (k, v) =>
+                        v &&
+                        (this.requiredRegions[k] ?? 0) === 0 &&
+                        (this.lastNeededRegions[k] === undefined ||
+                            this.lastNeededRegions[k]! < discard)
+                )
+            );
+        } else {
+            regionsToBeUnloaded = this.fixedStandIns.filter(
+                (id) => loadedRegions[id]
+            );
+            regionsToBeLoaded = StrictObject.keys(
+                StrictObject.filterValues(
+                    loadedRegions,
+                    (k, v) => !v && !this.fixedStandIns?.includes(k as string)
+                )
+            );
+        }
 
         regionsToBeUnloaded.forEach((rid) =>
             this.replaceRegionWithStandIn(rid as UUID)

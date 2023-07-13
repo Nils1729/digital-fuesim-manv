@@ -3,6 +3,7 @@ import { Allow, IsBoolean, ValidateNested } from 'class-validator';
 import { IsValue } from '../utils/validators';
 import { defaultTileMapProperties } from '../data/default-state/tile-map-properties';
 import { getCreate, TileMapProperties } from './utils';
+import { UUID, uuid } from '../utils';
 
 export class ExerciseConfiguration {
     @IsValue('exerciseConfiguration' as const)
@@ -33,6 +34,7 @@ export class ExerciseConfiguration {
                   patients: boolean;
                   standIns: true;
               };
+              standInIds?: UUID[];
               updateInterval: number;
               holdInterval: number;
           } = {

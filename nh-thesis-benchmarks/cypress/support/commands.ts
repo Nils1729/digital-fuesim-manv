@@ -3,7 +3,6 @@ import {
     SocketResponse,
     ExerciseAction,
     StateExport,
-    SimulatedRegion,
 } from 'digital-fuesim-manv-shared';
 import { io } from 'socket.io-client';
 import { ActionTiming } from '../../../frontend/src/app/shared/benchmark-data';
@@ -187,11 +186,27 @@ namespace CustomCommands {
         for (let i = 0; i < pa_count; i++) {
             builder.addCluster(
                 i * stereotypes[0]!.size.width * 2,
-                `Cluser ${i}`
+                `Cluser ${i}`,
+                4
             );
             builder.ageTicks(60);
         }
         if (config) builder.setStandInConfig(config);
+        const body = new StateExport(builder.build());
+
+        cy.reload(true).createExercise(body).joinExerciseAsTrainer();
+        cy.log('start an exercise')
+            .get('[data-cy=trainerToolbarStartButton]', { timeout: 10_000 })
+            .click();
+    }
+
+    export function preparePartialScenario(
+        pa_count: number,
+        loaded_pas: number,
+        config?
+    ) {
+        const builder = new ScenarioBuilder();
+        builder.generate(pa_count, loaded_pas, config);
         const body = new StateExport(builder.build());
 
         cy.reload(true).createExercise(body).joinExerciseAsTrainer();
