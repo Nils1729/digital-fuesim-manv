@@ -2,6 +2,7 @@
     "name": "nh-thesis",
     "version": "1.0.0",
     "description": "",
+    "type": "module",
     "scripts": {
         "cy:tick:firefox": "cypress run --spec cypress/tick-patients.cy.ts --browser firefox",
         "cy:fractions:firefox": "cypress run --spec cypress/partial-state-fractions.cy.ts --browser firefox"
@@ -11,6 +12,7 @@
         "cypress": "^12.13.0",
         "digital-fuesim-manv-shared": "file:../shared",
         "digital-fuesim-manv-frontend": "file:../frontend",
-        "socket.io-client": "^4.6.2"
+        "socket.io-client": "^4.6.2",
+        "ts-node": "^10.9.1"
     }
 }

@@ -129,7 +129,7 @@ function coloredImageUrl(borderColor: string): ImageProperties {
          y="0.036193207" />
     </svg>
     `;
-    const url = `data:image/svg+xml;base64,${window.btoa(content)}`;
+    const url = `data:image/svg+xml;base64,${btoa(content)}`;
     return {
         ...SimulatedRegion.image,
         url,

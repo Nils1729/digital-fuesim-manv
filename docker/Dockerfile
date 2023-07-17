@@ -1,8 +1,10 @@
 # set path
 ARG PRODUCTION_PATH="/usr/local/app"
+ARG DFM_COMMIT="HEAD"
 
 # Use official node image as the base image
 FROM node:18-bullseye-slim AS builder
+RUN apt-get update && apt install -y git git-lfs
 
 # needed to use PRODUCTION_PATH before the first FROM
 ARG PRODUCTION_PATH
@@ -12,6 +14,10 @@ COPY ./ $PRODUCTION_PATH
 
 # set workdir
 WORKDIR $PRODUCTION_PATH
+
+ARG DFM_COMMIT
+# select version
+RUN git reset --hard $DFM_COMMIT
 
 # install for production and cleanup
 RUN npm run deployment
