@@ -3,7 +3,8 @@
     "version": "1.0.0",
     "description": "",
     "scripts": {
-        "cy:tick:firefox": "cypress run --spec cypress/tick-patients.cy.ts --browser firefox"
+        "cy:tick:firefox": "cypress run --spec cypress/tick-patients.cy.ts --browser firefox",
+        "cy:fractions:firefox": "cypress run --spec cypress/partial-state-fractions.cy.ts --browser firefox"
     },
     "private": true,
     "dependencies": {
