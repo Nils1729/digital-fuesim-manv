@@ -589,8 +589,9 @@ export class ExerciseWrapper extends NormalType<
         actionMapper: (action: ExerciseAction) => ExerciseAction = (a) => a
     ): void {
         this.reduce(action, emitterId);
+        const mapped = actionMapper(action);
         intermediateAction?.();
-        this.emitAction(actionMapper(action));
+        this.emitAction(mapped);
     }
 
     /**
