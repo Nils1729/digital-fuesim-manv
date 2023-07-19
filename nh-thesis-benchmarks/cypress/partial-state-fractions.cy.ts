@@ -43,37 +43,39 @@ describe('execute some patient ticks', () => {
         cy.get('span:contains(0:00:10)', { timeout: 15_000 });
     });
 
-    settings.forEach(({ pas, loaded_pas, fraction_pas, ticks, run, config }) => {
-        it(`records ${ticks} ticks with ${pas} regions, ${loaded_pas} loaded (${
-            run + 1
-        } / ${repetitions})`, () => {
-            cy.preparePartialScenario(pas, loaded_pas, config);
-            cy.get('[data-cy=confirmationModalOkButton]').click();
-            cy.get('[data-cy=trainerToolbarExecutionButton]').click();
-            cy.get('button:contains(Simulationsübersicht)').click();
-            cy.wait(5_000);
+    settings.forEach(
+        ({ pas, loaded_pas, fraction_pas, ticks, run, config }) => {
+            it(`records ${ticks} ticks with ${pas} regions, ${loaded_pas} loaded (${
+                run + 1
+            } / ${repetitions})`, () => {
+                cy.preparePartialScenario(pas, loaded_pas, config);
+                cy.get('[data-cy=confirmationModalOkButton]').click();
+                cy.get('[data-cy=trainerToolbarExecutionButton]').click();
+                cy.get('button:contains(Simulationsübersicht)').click();
+                cy.wait(5_000);
 
-            cy.actionTiming().then((a) => a.clear());
+                cy.actionTiming().then((a) => a.clear());
 
-            cy.actionTiming()
-                .its('sampleCount', { timeout: ticks * 1_500 })
-                .should('be.at.least', ticks + 1);
-            cy.actionTiming().then((a) => {
-                timings.push({
-                    settings: {
-                        pas,
-                        loaded_pas,
-                        fraction_pas,
-                        ticks,
-                        run,
-                        config,
-                    },
-                    stats: a.series_stats(ticks),
-                    raw: a.series(ticks),
+                cy.actionTiming()
+                    .its('sampleCount', { timeout: ticks * 1_500 })
+                    .should('be.at.least', ticks + 1);
+                cy.actionTiming().then((a) => {
+                    timings.push({
+                        settings: {
+                            pas,
+                            loaded_pas,
+                            fraction_pas,
+                            ticks,
+                            run,
+                            config,
+                        },
+                        stats: a.series_stats(ticks),
+                        raw: a.series(ticks),
+                    });
                 });
             });
-        });
-    });
+        }
+    );
 
     it('saves recorded timings', () => {
         cy.writeFile(

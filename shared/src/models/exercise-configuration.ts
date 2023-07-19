@@ -2,8 +2,8 @@ import { Type } from 'class-transformer';
 import { Allow, IsBoolean, ValidateNested } from 'class-validator';
 import { IsValue } from '../utils/validators';
 import { defaultTileMapProperties } from '../data/default-state/tile-map-properties';
+import type { UUID } from '../utils';
 import { getCreate, TileMapProperties } from './utils';
-import { UUID, uuid } from '../utils';
 
 export class ExerciseConfiguration {
     @IsValue('exerciseConfiguration' as const)

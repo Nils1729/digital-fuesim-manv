@@ -82,6 +82,15 @@ namespace CustomCommands {
         return cy;
     }
 
+    export function createExerciseProduction(stateExport?: object) {
+        cy.request('POST', '/api/exercise', stateExport)
+            .its('body')
+            .as('createBody');
+        cy.get('@createBody').its('trainerId').as('trainerId');
+        cy.get('@createBody').its('participantId').as('participantId');
+        return cy;
+    }
+
     export function joinExerciseAsTrainer() {
         cy.get('@trainerId').then((trainerId) =>
             cy.visit(`exercises/${trainerId}`)

@@ -83,8 +83,25 @@ export class ScenarioBuilder {
         );
         region.position = MapPosition.create(coords);
         region.name = name;
-        const vehicles = ['RTW'];
-        this.addRegionWithVehicles(region, vehicles);
+        this.addRegionWithVehicles(region, []);
+        applyAction(this.draftState, {
+            type: '[TreatPatientsBehavior] Update TreatPatientsIntervals',
+            behaviorStateId: region.behaviors.find(
+                (b) => b.type === 'treatPatientsBehavior'
+            )!.id,
+            simulatedRegionId: region.id,
+            countingTimePerPatient: 0,
+        });
+        applyAction(this.draftState, {
+            type: '[RequestBehavior] Update RequestInterval',
+            behaviorId: region.behaviors.find(
+                (b) => b.type === 'requestBehavior'
+            )!.id,
+            simulatedRegionId: region.id,
+            requestInterval: 60_000,
+        });
+
+        this.addUnloadedVehicleToRegion('RTW', region.id);
 
         const position = SimulatedRegionPosition.create(region.id);
         const patients = defaultPatientCategories.flatMap((category) =>
@@ -111,7 +128,7 @@ export class ScenarioBuilder {
             });
         });
 
-        return region.id;
+        return region;
     }
 
     addFullStagingArea(coords: { x: number; y: number }, name: string) {
@@ -121,8 +138,17 @@ export class ScenarioBuilder {
         );
         region.position = MapPosition.create(coords);
         region.name = name;
-        // TODO: more vehicles
-        const vehicles = ['RTW', 'RTW', 'KTW'];
+        const vehicles = [
+            'KTW',
+            'KTW',
+            'KTW',
+            'RTW',
+            'RTW',
+            'RTW',
+            'NEF',
+            'NEF',
+            'NEF',
+        ];
         this.addRegionWithVehicles(region, vehicles);
 
         // Add leader vehicle
@@ -227,10 +253,23 @@ export class ScenarioBuilder {
         );
         y += stereotypes[0]!.size.height * 1.1;
         for (let i = 0; i < num_pas; i++) {
-            paIds.push(
-                this.addFullPatientTray({ x, y }, `${prefix} - PA ${i}`)
+            const region = this.addFullPatientTray(
+                { x, y },
+                `${prefix} - PA ${i}`
             );
-            this.connectRegions(stagingId, paIds[paIds.length - 1]!);
+            paIds.push(region.id);
+            this.connectRegions(stagingId, region.id);
+            applyAction(this.draftState, {
+                type: '[RequestBehavior] Update RequestTarget',
+                behaviorId: region.behaviors.find(
+                    (b) => b.type === 'requestBehavior'
+                )!.id,
+                simulatedRegionId: region.id,
+                requestTarget: {
+                    type: 'simulatedRegionRequestTarget',
+                    targetSimulatedRegionId: stagingId,
+                },
+            });
             y += stereotypes[0]!.size.height * 1.1;
         }
         return {
