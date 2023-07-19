@@ -4,7 +4,7 @@ ARG DFM_COMMIT="HEAD"
 
 # Use official node image as the base image
 FROM node:18-bullseye-slim AS builder
-RUN apt-get update && apt install -y git git-lfs
+RUN apt-get update && apt install --no-install-recommends -y git git-lfs
 
 # needed to use PRODUCTION_PATH before the first FROM
 ARG PRODUCTION_PATH
