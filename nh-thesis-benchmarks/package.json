@@ -5,7 +5,8 @@
     "type": "module",
     "scripts": {
         "cy:tick:firefox": "cypress run --spec cypress/tick-patients.cy.ts --browser firefox",
-        "cy:fractions:firefox": "cypress run --spec cypress/partial-state-fractions.cy.ts --browser firefox"
+        "cy:fractions:firefox": "cypress run --spec cypress/partial-state-fractions.cy.ts --browser firefox",
+        "cy:scenarios:firefox": "cypress run --spec cypress/scenarios.cy.ts --browser firefox"
     },
     "private": true,
     "dependencies": {
