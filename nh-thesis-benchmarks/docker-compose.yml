@@ -44,7 +44,7 @@ services:
           - dfm-main
           - dfm-thesis
         volumes:
-          - type: digital-fuesim-manv
+          - type: bind
             source: ./benchmark/
             target: /usr/local/app/nh-thesis-benchmarks/
         networks:
