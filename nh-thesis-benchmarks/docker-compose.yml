@@ -5,7 +5,7 @@ services:
             context: ..
             dockerfile: docker/Dockerfile
             args:
-                DFM_COMMIT: thesis/separated-regions
+                DFM_COMMIT: thesis/test
         restart: unless-stopped
         ports:
             - 8001:80
@@ -23,7 +23,7 @@ services:
             context: ..
             dockerfile: docker/Dockerfile
             args:
-                DFM_COMMIT: main
+                DFM_COMMIT: thesis/control
         restart: unless-stopped
         ports:
             - 8002:80
