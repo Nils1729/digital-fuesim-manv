@@ -11,6 +11,7 @@ import { writeFileSync } from 'node:fs';
 
 const pa_counts = [0, 5, 10, 15, 20, 30, 40, 50];
 const pa_fractions = [0, 0.2, 0.4, 0.6, 0.8, 1];
+const pa_totals = [0, 5, 10, 15, 20, 25, 30];
 const repetitions = 1;
 const tick_count = 300;
 
@@ -42,6 +43,25 @@ function generate_thesis_scenarios() {
                     },
                 })
             )
+        );
+
+        pa_counts.forEach((pas) =>
+            pa_totals.forEach((pat) => {
+                if (pat > pas) return;
+                settings.push({
+                    pas,
+                    loaded_pas: pat,
+                    fraction_pas: -1,
+                    ticks: tick_count,
+                    run: i,
+                    config: {
+                        useStandIns: true,
+                        holdInterval: 1_000_000_000,
+                        updateInterval: 5,
+                        preComputation: { patients: false, standIns: true },
+                    },
+                });
+            })
         );
     }
 
