@@ -45,8 +45,11 @@ services:
           - dfm-thesis
         volumes:
           - type: bind
-            source: ./benchmark/
-            target: /usr/local/app/nh-thesis-benchmarks/
+            source: ./results/scenarios
+            target: /usr/local/app/nh-thesis-benchmarks/scenarios
+          - type: bind
+            source: ./results/data
+            target: /usr/local/app/nh-thesis-benchmarks/data
         networks:
           - nh-dfm
 networks:

@@ -11,6 +11,7 @@ RUN apt-get update && \
 
 COPY ./ $PRODUCTION_PATH
 
+WORKDIR $PRODUCTION_PATH
 RUN git checkout thesis/control
 RUN git checkout thesis/separated-regions
 RUN npm run setup
