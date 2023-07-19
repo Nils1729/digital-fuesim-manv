@@ -11,7 +11,7 @@ export default defineConfig({
         viewportWidth: 1920,
         viewportHeight: 1080,
         experimentalStudio: true,
-        baseUrl: 'http://127.0.0.1:4200',
+        // baseUrl: 'http://127.0.0.1:4200',
         video: false,
         screenshotOnRunFailure: false,
     },

@@ -4,12 +4,12 @@ import { ExerciseConfiguration } from 'digital-fuesim-manv-shared';
 const implementations: { name: string; host: string; root: string }[] = [
     {
         name: 'test',
-        host: 'http://dfm-main',
+        host: 'http://dfm-thesis',
         root: 'scenarios/thesis',
     },
     {
         name: 'control',
-        host: 'http://dfm-thesis',
+        host: 'http://dfm-main',
         root: 'scenarios/main',
     },
 ];
