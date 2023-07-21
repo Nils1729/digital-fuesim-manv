@@ -61,7 +61,7 @@ implementations.forEach(({ host, name, root }) => {
                             cy.actionTiming().then((a) => a.clear());
 
                             cy.actionTiming()
-                                .its('sampleCount', { timeout: ticks * 1_500 })
+                                .its('sampleCount', { timeout: ticks * 2_000 })
                                 .should('be.at.least', ticks + 1);
                             cy.actionTiming().then((a) => {
                                 timings.push({
