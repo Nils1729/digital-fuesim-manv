@@ -6,9 +6,9 @@ import {
 import { ScenarioBuilder } from './scenario-generator';
 import { writeFileSync, mkdirSync } from 'node:fs';
 
-const pa_counts = [0, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200];
+const pa_counts = [0, 5, 10, 15, 20, 30, 40, 50];
 const pa_fractions = [0, 0.2, 0.4, 0.6, 0.8, 1];
-const pa_totals = [0, 5, 10, 15, 20, 25, 30];
+const pa_totals = [0, 5, 10, 15, 20, 30];
 const repetitions = 1;
 const tick_count = 300;
 

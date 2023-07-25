@@ -154,7 +154,7 @@ implementations.forEach(({ host, name, root }) => {
                                         pas,
                                         run,
                                         ticks,
-                                        actions: actions.slice(0, ticks),
+                                        actions: actions.slice(0),
                                     });
                                 }
                             );
