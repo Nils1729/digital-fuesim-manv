@@ -88,6 +88,7 @@ namespace CustomCommands {
             .as('createBody');
         cy.get('@createBody').its('trainerId').as('trainerId');
         cy.get('@createBody').its('participantId').as('participantId');
+        cy.wrap(Cypress.config('baseUrl')).as('websocketBaseUrl')
         return cy;
     }
 

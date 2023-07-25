@@ -4,7 +4,7 @@ import {
     StrictObject,
 } from 'digital-fuesim-manv-shared';
 import { ScenarioBuilder } from './scenario-generator';
-import { writeFileSync } from 'node:fs';
+import { writeFileSync, mkdirSync } from 'node:fs';
 
 const pa_counts = [0, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200];
 const pa_fractions = [0, 0.2, 0.4, 0.6, 0.8, 1];
@@ -12,8 +12,8 @@ const pa_totals = [0, 5, 10, 15, 20, 25, 30];
 const repetitions = 1;
 const tick_count = 300;
 
-function generate_thesis_scenarios() {
-    const root = 'scenarios/thesis';
+function generate_thesis_scenarios(root: string, preComputePatients = false) {
+    mkdirSync(root, {recursive: true})
     const settings: {
         filename?: string;
         pas: number;
@@ -36,7 +36,7 @@ function generate_thesis_scenarios() {
                         useStandIns: true,
                         holdInterval: 1_000_000_000,
                         updateInterval: 5,
-                        preComputation: { patients: false, standIns: true },
+                        preComputation: { patients: preComputePatients, standIns: true },
                     },
                 })
             )
@@ -81,10 +81,51 @@ function generate_thesis_scenarios() {
     );
 
     writeFileSync(`${root}/settings.json`, JSON.stringify(settings));
+
+    const scenario_settings: {
+        filename?: string;
+        pas: number;
+        ticks: number;
+        run: number;
+        config: ExerciseConfiguration['standInConfig'];
+    }[] = [];
+    for (let i = 0; i < repetitions; i++) {
+        pa_counts.forEach((pas) =>
+            scenario_settings.push({
+                pas,
+                ticks: tick_count,
+                run: i,
+                config: {
+                    useStandIns: true,
+                    holdInterval: 1_000_000_000,
+                    updateInterval: 5,
+                    preComputation: { patients: false, standIns: true },
+                },
+            })
+        );
+    }
+
+    scenario_settings.forEach(({ pas, ticks, run, config }, i) => {
+        const g = new ScenarioBuilder();
+        g.generate(pas, pas, config);
+        const scenario = g.build();
+        const filename = `${i
+            .toString()
+            .padStart(2, '0')}_${pas}_${ticks}_${run}_${
+            config.preComputation.patients ? 'P' : ''
+        }${config.preComputation.standIns ? 'S' : ''}_scenario.json`;
+        writeFileSync(
+            `${root}/${filename}`,
+            JSON.stringify(new StateExport(scenario))
+        );
+        settings[i]!.filename = filename;
+    });
+
+    writeFileSync(`${root}/settings_scenarios.json`, JSON.stringify(settings));
 }
 
-function generate_main_scenarios() {
-    const root = 'scenarios/main';
+function generate_main_scenarios(root: string) {
+    mkdirSync(root, {recursive: true})
     const settings: {
         filename?: string;
         pas: number;
@@ -130,6 +171,7 @@ function generate_main_scenarios() {
     });
 
     writeFileSync(`${root}/settings.json`, JSON.stringify(settings));
+    writeFileSync(`${root}/settings_scenarios.json`, JSON.stringify(settings));
 }
 
 function thesis_to_main(scenario: any) {
@@ -140,7 +182,9 @@ function thesis_to_main(scenario: any) {
     });
 }
 
-generate_thesis_scenarios();
-generate_main_scenarios();
+generate_thesis_scenarios('scenarios/thesis', true);
+generate_thesis_scenarios('scenarios/thesis-client-patients', false);
+generate_main_scenarios('scenarios/main');
+generate_main_scenarios('scenarios/main-client-patients');
 
 // npx node --experimental-specifier-resolution=node --loader ts-node/esm src/scenarios.ts
