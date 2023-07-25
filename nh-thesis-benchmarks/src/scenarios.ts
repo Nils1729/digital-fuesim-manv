@@ -55,7 +55,7 @@ function generate_thesis_scenarios(root: string, preComputePatients = false) {
                         useStandIns: true,
                         holdInterval: 1_000_000_000,
                         updateInterval: 5,
-                        preComputation: { patients: false, standIns: true },
+                        preComputation: { patients: preComputePatients, standIns: true },
                     },
                 });
             })
@@ -99,7 +99,7 @@ function generate_thesis_scenarios(root: string, preComputePatients = false) {
                     useStandIns: true,
                     holdInterval: 1_000_000_000,
                     updateInterval: 5,
-                    preComputation: { patients: false, standIns: true },
+                    preComputation: { patients: preComputePatients, standIns: true },
                 },
             })
         );
