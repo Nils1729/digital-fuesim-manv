@@ -118,10 +118,10 @@ function generate_thesis_scenarios(root: string, preComputePatients = false) {
             `${root}/${filename}`,
             JSON.stringify(new StateExport(scenario))
         );
-        settings[i]!.filename = filename;
+        scenario_settings[i]!.filename = filename;
     });
 
-    writeFileSync(`${root}/settings_scenarios.json`, JSON.stringify(settings));
+    writeFileSync(`${root}/settings_scenarios.json`, JSON.stringify(scenario_settings));
 }
 
 function generate_main_scenarios(root: string) {
