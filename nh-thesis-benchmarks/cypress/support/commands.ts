@@ -88,7 +88,8 @@ namespace CustomCommands {
             .as('createBody');
         cy.get('@createBody').its('trainerId').as('trainerId');
         cy.get('@createBody').its('participantId').as('participantId');
-        cy.wrap(Cypress.config('baseUrl')).as('websocketBaseUrl')
+        cy.wrap(Cypress.config('baseUrl')).as('websocketBaseUrl');
+        cy.wrap(Cypress.config('baseUrl')).as('backendBaseUrl');
         return cy;
     }
 
@@ -189,6 +190,14 @@ namespace CustomCommands {
             });
 
         return cy;
+    }
+
+    export function deleteExercise() {
+        cy.get('@trainerId').then((tranerId) => {
+            cy.get('@backendBaseUrl').then((backendBaseUrl) => {
+                cy.request('DELETE', `${backendBaseUrl}/api/exercise/${tranerId}`)
+            })
+        })
     }
 
     export function prepareScenario(pa_count, config?) {

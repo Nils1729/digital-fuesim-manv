@@ -7,6 +7,7 @@ services:
             args:
                 DFM_COMMIT: thesis/test
         environment:
+            NODE_OPTIONS: "--max-old-space-size=32000"
             DFM_WEBSOCKET_PORT: 3200
             DFM_HTTP_PORT: 3201
             DFM_UPLOAD_LIMIT: 200
@@ -24,6 +25,7 @@ services:
             args:
                 DFM_COMMIT: thesis/control
         environment:
+            NODE_OPTIONS: "--max-old-space-size=32000"
             DFM_WEBSOCKET_PORT: 3200
             DFM_HTTP_PORT: 3201
             DFM_UPLOAD_LIMIT: 200
@@ -41,6 +43,7 @@ services:
             args:
                 DFM_COMMIT: thesis/client-ticks
         environment:
+            NODE_OPTIONS: "--max-old-space-size=32000"
             DFM_WEBSOCKET_PORT: 3200
             DFM_HTTP_PORT: 3201
             DFM_UPLOAD_LIMIT: 200

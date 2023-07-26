@@ -100,6 +100,7 @@ implementations.forEach(({ host, name, root }) => {
                                 });
                             });
                         });
+                        cy.deleteExercise();
                     });
                 }
             );
@@ -107,7 +108,8 @@ implementations.forEach(({ host, name, root }) => {
             it('saves recorded timings', () => {
                 cy.writeFile(
                     `data/${root}/${new Date().toISOString()}.json`,
-                    timings
+                    JSON.stringify(timings),
+                    { timeout: 300_000 }
                 );
             });
 
@@ -159,6 +161,7 @@ implementations.forEach(({ host, name, root }) => {
                                 }
                             );
                         });
+                        cy.deleteExercise();
                     });
                 }
             );
@@ -166,7 +169,8 @@ implementations.forEach(({ host, name, root }) => {
             it('saves recorded actions', () => {
                 cy.writeFile(
                     `data/${root}/${new Date().toISOString()}_actions.json`,
-                    implementation_actions
+                    JSON.stringify(implementation_actions),
+                    { timeout: 300_000 }
                 );
             });
         }
